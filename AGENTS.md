@@ -30,10 +30,8 @@
 
 - 仓库根目录：Maven 多模块父项目。父制品为 `io.github.cooltheworld:rcs-protocol-parent`。
 - `rcs-protocol-vda5050/`：VDA 5050 独立核心 jar，坐标为 `io.github.cooltheworld:rcs-protocol-vda5050:0.1.0-SNAPSHOT`。
-- `tasks/plan.md`：中文实施计划。
-- `tasks/todo.md`：中文可执行任务清单。
 - 外部参考仓库 `coolTheWorld/VDA5050`：VDA 5050 v3.0.0 规范正文、Schema 与图示，不因本仓库实现而修改。
-- 外部规格仓库 `coolTheWorld/rcs-protocol-spec`：中文实现规格、领域词汇、一致性清单和 ADR。
+- 外部规格仓库 `coolTheWorld/rcs-protocol-spec`：中文实现规格、领域词汇、一致性清单、ADR，以及位于 `tasks/vda5050-java/` 的实施计划、任务清单和项目进度。
 - 外部 Starter 仓库 `coolTheWorld/rcs-protocol-spring-boot-starter`：Spring Boot、MQTT 与状态存储基础设施集成，不承载协议业务。
 
 生产代码和测试分别放在模块的 `src/main/java` 与 `src/test/java`，测试包必须镜像生产包。Fixture 放在 `src/test/resources`，打包 Schema 放在 `src/main/resources/vda5050/v3.0.0`。
@@ -132,7 +130,7 @@ public final class Connection {
 - 本工作区中新生成或更新的说明文档、规格、ADR、计划、任务清单和仓库指南必须使用中文正文。
 - Maven 坐标、Java 标识符、协议正式术语、代码、命令、路径和引用标题可以保留原文；首次出现时尽量给出中文含义。
 - Markdown 标题应描述清晰，段落之间保留空行，链接使用相对路径，相关图像放在对应 `assets/`。
-- 规格是活文档。发现范围、模型或架构变化时，先更新 `rcs-protocol-spec` 和适用 ADR，再修改代码与 `tasks/`。
+- 规格是活文档。发现范围、模型或架构变化时，先更新 `rcs-protocol-spec`、适用 ADR 和 `tasks/vda5050-java/`，再修改代码。
 - 每条实现或新发现的强制协议规则都要更新一致性追踪清单。
 - `rcs-protocol-java/README.md` 持续维护 Maven 制品版本与协议版本兼容矩阵；两种版本独立演进。
 
@@ -171,7 +169,7 @@ Pull Request 必须说明受影响的协议及版本、行为变化、对应规�
 
 ## 成功标准
 
-- `tasks/plan.md` 和 `tasks/todo.md` 中对应任务的验收标准全部满足。
+- `rcs-protocol-spec/tasks/vda5050-java/plan.md` 和 `todo.md` 中对应任务的验收标准全部满足。
 - 使用 JDK 21 在干净检出目录执行 `.\mvnw.cmd verify` 成功。
 - 八个 Topic、双角色状态机、版本化 State/Effect Codec、安全上限和跨角色一致性测试完整。
 - 生成 jar 包含正确 Schema、许可证与 `Automatic-Module-Name`，依赖图符合核心边界。

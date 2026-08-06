@@ -13,6 +13,6 @@ Maven 制品版本与协议版本独立演进。只有达到项目规范定义�
 ## 项目文档
 
 - [VDA 5050 Java 实现规格](https://github.com/coolTheWorld/rcs-protocol-spec/blob/main/vda5050-java-implementation.md)
-- [实施计划](./tasks/plan.md)
-- [任务清单](./tasks/todo.md)
-- [当前进度](./tasks/progress.md)
+- [实施计划](https://github.com/coolTheWorld/rcs-protocol-spec/blob/main/tasks/vda5050-java/plan.md)
+- [任务清单](https://github.com/coolTheWorld/rcs-protocol-spec/blob/main/tasks/vda5050-java/todo.md)
+- [当前进度](https://github.com/coolTheWorld/rcs-protocol-spec/blob/main/tasks/vda5050-java/progress.md)
