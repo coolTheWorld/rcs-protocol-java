@@ -16,6 +16,12 @@
 
 本文件是 `rcs-protocol-spec` 当前 Spec 的派生执行说明，不是独立事实来源。本文件与 Spec 冲突时必须以 Spec 为准并同步更正；Spec 更新了本文件中也存在的声明时，必须在同一工作周期更新本文件。不得在本文件中自行引入 Spec 未确认的项目决定。
 
+相关仓库地址：
+
+- Java 核心库：`https://github.com/coolTheWorld/rcs-protocol-java.git`
+- Spring Boot Starter：`https://github.com/coolTheWorld/rcs-protocol-spring-boot-starter.git`
+- Spec：`https://github.com/coolTheWorld/rcs-protocol-spec.git`
+
 ## 技术栈与版本
 
 - Java：JDK 21，编译使用 `--release 21`。
