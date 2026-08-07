@@ -6,13 +6,12 @@
 
     <parent>
         <groupId>io.github.cooltheworld</groupId>
-        <artifactId>rcs-protocol-parent</artifactId>
+        <artifactId>rcs-protocol-java</artifactId>
         <version>0.1.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>rcs-protocol-vda5050</artifactId>
-    <name>RCS Protocol VDA 5050</name>
     <description>VDA 5050 v3.0.0 的强类型 Java 核心实现</description>
     <packaging>jar</packaging>
 
