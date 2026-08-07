@@ -24,7 +24,7 @@ final class TopicDescriptorTest {
             Set.of(TopicParticipant.FLEET_CONTROL),
             Set.of(TopicParticipant.MOBILE_ROBOT),
             TopicQos.AT_MOST_ONCE,
-            false,
+            RetainedPolicy.UNSPECIFIED,
             LastWillPolicy.NOT_REQUIRED
         );
         assertDescriptor(
@@ -32,7 +32,7 @@ final class TopicDescriptorTest {
             Set.of(TopicParticipant.FLEET_CONTROL),
             Set.of(TopicParticipant.MOBILE_ROBOT),
             TopicQos.AT_MOST_ONCE,
-            false,
+            RetainedPolicy.UNSPECIFIED,
             LastWillPolicy.NOT_REQUIRED
         );
         assertDescriptor(
@@ -40,7 +40,7 @@ final class TopicDescriptorTest {
             Set.of(TopicParticipant.MOBILE_ROBOT),
             Set.of(TopicParticipant.FLEET_CONTROL),
             TopicQos.AT_MOST_ONCE,
-            false,
+            RetainedPolicy.UNSPECIFIED,
             LastWillPolicy.NOT_REQUIRED
         );
         assertDescriptor(
@@ -48,7 +48,7 @@ final class TopicDescriptorTest {
             Set.of(TopicParticipant.MOBILE_ROBOT),
             Set.of(TopicParticipant.VISUALIZATION_SYSTEM),
             TopicQos.AT_MOST_ONCE,
-            false,
+            RetainedPolicy.UNSPECIFIED,
             LastWillPolicy.NOT_REQUIRED
         );
         assertDescriptor(
@@ -56,7 +56,7 @@ final class TopicDescriptorTest {
             Set.of(TopicParticipant.MOBILE_ROBOT, TopicParticipant.MQTT_BROKER),
             Set.of(TopicParticipant.FLEET_CONTROL),
             TopicQos.AT_LEAST_ONCE,
-            true,
+            RetainedPolicy.REQUIRED,
             LastWillPolicy.MOBILE_ROBOT_CONNECTION_BROKEN
         );
         assertDescriptor(
@@ -64,7 +64,7 @@ final class TopicDescriptorTest {
             Set.of(TopicParticipant.MOBILE_ROBOT),
             Set.of(TopicParticipant.FLEET_CONTROL),
             TopicQos.AT_MOST_ONCE,
-            true,
+            RetainedPolicy.REQUIRED,
             LastWillPolicy.NOT_REQUIRED
         );
         assertDescriptor(
@@ -72,7 +72,7 @@ final class TopicDescriptorTest {
             Set.of(TopicParticipant.FLEET_CONTROL),
             Set.of(TopicParticipant.MOBILE_ROBOT),
             TopicQos.AT_MOST_ONCE,
-            false,
+            RetainedPolicy.UNSPECIFIED,
             LastWillPolicy.NOT_REQUIRED
         );
         assertDescriptor(
@@ -80,7 +80,7 @@ final class TopicDescriptorTest {
             Set.of(TopicParticipant.FLEET_CONTROL),
             Set.of(TopicParticipant.MOBILE_ROBOT),
             TopicQos.AT_MOST_ONCE,
-            false,
+            RetainedPolicy.UNSPECIFIED,
             LastWillPolicy.NOT_REQUIRED
         );
     }
@@ -93,9 +93,20 @@ final class TopicDescriptorTest {
         assertSame(descriptor, TopicDescriptor.forTopic(TopicName.CONNECTION));
         assertThrows(
             UnsupportedOperationException.class,
+            () -> TopicDescriptor.standardTopics().add(descriptor)
+        );
+        assertThrows(
+            UnsupportedOperationException.class,
             () -> descriptor.publishers().add(TopicParticipant.FLEET_CONTROL)
         );
         assertThrows(NullPointerException.class, () -> TopicDescriptor.forTopic(null));
+    }
+
+    @Test
+    @DisplayName("[VDA3-SHARED-011] 协议自有 QoS 值精确映射 MQTT 数值级别")
+    void exposesTheNormativeMqttQosLevels() {
+        assertEquals(0L, TopicQos.AT_MOST_ONCE.level());
+        assertEquals(1L, TopicQos.AT_LEAST_ONCE.level());
     }
 
     private static void assertDescriptor(
@@ -103,13 +114,13 @@ final class TopicDescriptorTest {
         Set<TopicParticipant> publishers,
         Set<TopicParticipant> subscribers,
         TopicQos qos,
-        boolean retained,
+        RetainedPolicy retainedPolicy,
         LastWillPolicy lastWillPolicy
     ) {
         assertEquals(publishers, descriptor.publishers());
         assertEquals(subscribers, descriptor.subscribers());
         assertEquals(qos, descriptor.qos());
-        assertEquals(retained, descriptor.retained());
+        assertEquals(retainedPolicy, descriptor.retainedPolicy());
         assertEquals(lastWillPolicy, descriptor.lastWillPolicy());
     }
 }

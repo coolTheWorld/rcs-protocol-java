@@ -22,15 +22,23 @@ final class DefaultTopicLayoutTest {
 
         assertEquals("vda5050/v3/Café/SN-01/order", topicPath);
         assertEquals(address, topicLayout.parse(topicPath));
-        assertEquals(TopicName.ORDER, topicLayout.parse(topicPath, address.robotIdentity()));
+        assertEquals(
+            TopicName.ORDER,
+            TopicLayout.parseForRobot(topicLayout, topicPath, address.robotIdentity())
+        );
     }
 
     @Test
     @DisplayName("[VDA3-SHARED-011] 默认布局拒绝非标准层级、不安全身份与未知 Topic")
     void rejectsUnsafeOrInvalidTopicPaths() {
+        assertThrows(NullPointerException.class, () -> topicLayout.parse(null));
         assertThrows(
             IllegalArgumentException.class,
             () -> topicLayout.parse("vda5050/v3/ACME/SN-01/order/extra")
+        );
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> topicLayout.parse("vda5050/v3/ACME/SN-01/order/" + "extra/".repeat(10_000))
         );
         assertThrows(
             IllegalArgumentException.class,
@@ -58,8 +66,13 @@ final class DefaultTopicLayoutTest {
     @DisplayName("[VDA3-SHARED-011] 解析出的身份必须与消息头身份逐字符一致")
     void rejectsAParsedIdentityThatDoesNotMatchTheExpectedMessageHeaderIdentity() {
         assertThrows(
+            NullPointerException.class,
+            () -> TopicLayout.parseForRobot(topicLayout, "vda5050/v3/ACME/SN-01/state", null)
+        );
+        assertThrows(
             IllegalArgumentException.class,
-            () -> topicLayout.parse(
+            () -> TopicLayout.parseForRobot(
+                topicLayout,
                 "vda5050/v3/ACME/SN-01/state",
                 new RobotIdentity("ACME", "SN-02")
             )
@@ -92,14 +105,59 @@ final class DefaultTopicLayoutTest {
         RobotIdentity identity = new RobotIdentity("ACME", "SN-01");
         TopicAddress address = new TopicAddress(identity, TopicName.STATE);
 
-        String topicPath = customLayout.format(address);
+        String topicPath = TopicLayout.format(customLayout, address);
 
         assertEquals("tenant/ACME/state/SN-01", topicPath);
         assertEquals(address, customLayout.parse(topicPath));
-        assertEquals(TopicName.STATE, customLayout.parse(topicPath, identity));
+        assertEquals(
+            TopicName.STATE,
+            TopicLayout.parseForRobot(customLayout, topicPath, identity)
+        );
         assertThrows(
             IllegalArgumentException.class,
-            () -> customLayout.parse(topicPath, new RobotIdentity("ACME", "SN-02"))
+            () -> TopicLayout.parseForRobot(
+                customLayout,
+                topicPath,
+                new RobotIdentity("ACME", "SN-02")
+            )
+        );
+    }
+
+    @Test
+    @DisplayName("[VDA3-SHARED-011] 受控自定义布局拒绝丢失标准名称或地址往返的实现")
+    void rejectsCustomLayoutsThatChangeTopicSemantics() {
+        RobotIdentity identity = new RobotIdentity("ACME", "SN-01");
+        TopicAddress stateAddress = new TopicAddress(identity, TopicName.STATE);
+        TopicLayout missingStandardTopicName = new TopicLayout() {
+            @Override
+            public String format(TopicAddress address) {
+                return "tenant/ACME/internal/SN-01";
+            }
+
+            @Override
+            public TopicAddress parse(String topicPath) {
+                return stateAddress;
+            }
+        };
+        TopicLayout nonRoundTripping = new TopicLayout() {
+            @Override
+            public String format(TopicAddress address) {
+                return "tenant/ACME/state/SN-01";
+            }
+
+            @Override
+            public TopicAddress parse(String topicPath) {
+                return new TopicAddress(identity, TopicName.ORDER);
+            }
+        };
+
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> TopicLayout.format(missingStandardTopicName, stateAddress)
+        );
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> TopicLayout.format(nonRoundTripping, stateAddress)
         );
     }
 }

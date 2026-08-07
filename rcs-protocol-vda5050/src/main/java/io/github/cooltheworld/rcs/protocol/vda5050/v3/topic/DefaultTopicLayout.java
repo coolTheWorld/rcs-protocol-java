@@ -35,7 +35,7 @@ public final class DefaultTopicLayout implements TopicLayout {
     @Override
     public TopicAddress parse(String topicPath) {
         Objects.requireNonNull(topicPath, "topicPath");
-        String[] levels = topicPath.split("/", -1);
+        String[] levels = topicPath.split("/", 6);
         if (levels.length != 5) {
             throw new IllegalArgumentException("Topic path must contain exactly five levels");
         }

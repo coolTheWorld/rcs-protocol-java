@@ -12,7 +12,7 @@ public final class TopicDescriptor {
         Set.of(TopicParticipant.FLEET_CONTROL),
         Set.of(TopicParticipant.MOBILE_ROBOT),
         TopicQos.AT_MOST_ONCE,
-        false,
+        RetainedPolicy.UNSPECIFIED,
         LastWillPolicy.NOT_REQUIRED
     );
     private static final TopicDescriptor INSTANT_ACTIONS = descriptor(
@@ -20,7 +20,7 @@ public final class TopicDescriptor {
         Set.of(TopicParticipant.FLEET_CONTROL),
         Set.of(TopicParticipant.MOBILE_ROBOT),
         TopicQos.AT_MOST_ONCE,
-        false,
+        RetainedPolicy.UNSPECIFIED,
         LastWillPolicy.NOT_REQUIRED
     );
     private static final TopicDescriptor STATE = descriptor(
@@ -28,7 +28,7 @@ public final class TopicDescriptor {
         Set.of(TopicParticipant.MOBILE_ROBOT),
         Set.of(TopicParticipant.FLEET_CONTROL),
         TopicQos.AT_MOST_ONCE,
-        false,
+        RetainedPolicy.UNSPECIFIED,
         LastWillPolicy.NOT_REQUIRED
     );
     private static final TopicDescriptor VISUALIZATION = descriptor(
@@ -36,7 +36,7 @@ public final class TopicDescriptor {
         Set.of(TopicParticipant.MOBILE_ROBOT),
         Set.of(TopicParticipant.VISUALIZATION_SYSTEM),
         TopicQos.AT_MOST_ONCE,
-        false,
+        RetainedPolicy.UNSPECIFIED,
         LastWillPolicy.NOT_REQUIRED
     );
     private static final TopicDescriptor CONNECTION = descriptor(
@@ -44,7 +44,7 @@ public final class TopicDescriptor {
         Set.of(TopicParticipant.MOBILE_ROBOT, TopicParticipant.MQTT_BROKER),
         Set.of(TopicParticipant.FLEET_CONTROL),
         TopicQos.AT_LEAST_ONCE,
-        true,
+        RetainedPolicy.REQUIRED,
         LastWillPolicy.MOBILE_ROBOT_CONNECTION_BROKEN
     );
     private static final TopicDescriptor FACTSHEET = descriptor(
@@ -52,7 +52,7 @@ public final class TopicDescriptor {
         Set.of(TopicParticipant.MOBILE_ROBOT),
         Set.of(TopicParticipant.FLEET_CONTROL),
         TopicQos.AT_MOST_ONCE,
-        true,
+        RetainedPolicy.REQUIRED,
         LastWillPolicy.NOT_REQUIRED
     );
     private static final TopicDescriptor ZONE_SET = descriptor(
@@ -60,7 +60,7 @@ public final class TopicDescriptor {
         Set.of(TopicParticipant.FLEET_CONTROL),
         Set.of(TopicParticipant.MOBILE_ROBOT),
         TopicQos.AT_MOST_ONCE,
-        false,
+        RetainedPolicy.UNSPECIFIED,
         LastWillPolicy.NOT_REQUIRED
     );
     private static final TopicDescriptor RESPONSES = descriptor(
@@ -68,7 +68,7 @@ public final class TopicDescriptor {
         Set.of(TopicParticipant.FLEET_CONTROL),
         Set.of(TopicParticipant.MOBILE_ROBOT),
         TopicQos.AT_MOST_ONCE,
-        false,
+        RetainedPolicy.UNSPECIFIED,
         LastWillPolicy.NOT_REQUIRED
     );
     private static final List<TopicDescriptor> STANDARD_TOPICS = List.of(
@@ -96,7 +96,7 @@ public final class TopicDescriptor {
     private final Set<TopicParticipant> publishers;
     private final Set<TopicParticipant> subscribers;
     private final TopicQos qos;
-    private final boolean retained;
+    private final RetainedPolicy retainedPolicy;
     private final LastWillPolicy lastWillPolicy;
 
     private TopicDescriptor(
@@ -104,14 +104,14 @@ public final class TopicDescriptor {
         Set<TopicParticipant> publishers,
         Set<TopicParticipant> subscribers,
         TopicQos qos,
-        boolean retained,
+        RetainedPolicy retainedPolicy,
         LastWillPolicy lastWillPolicy
     ) {
         this.topicName = Objects.requireNonNull(topicName, "topicName");
         this.publishers = Set.copyOf(Objects.requireNonNull(publishers, "publishers"));
         this.subscribers = Set.copyOf(Objects.requireNonNull(subscribers, "subscribers"));
         this.qos = Objects.requireNonNull(qos, "qos");
-        this.retained = retained;
+        this.retainedPolicy = Objects.requireNonNull(retainedPolicy, "retainedPolicy");
         this.lastWillPolicy = Objects.requireNonNull(lastWillPolicy, "lastWillPolicy");
     }
 
@@ -120,7 +120,7 @@ public final class TopicDescriptor {
         Set<TopicParticipant> publishers,
         Set<TopicParticipant> subscribers,
         TopicQos qos,
-        boolean retained,
+        RetainedPolicy retainedPolicy,
         LastWillPolicy lastWillPolicy
     ) {
         return new TopicDescriptor(
@@ -128,7 +128,7 @@ public final class TopicDescriptor {
             publishers,
             subscribers,
             qos,
-            retained,
+            retainedPolicy,
             lastWillPolicy
         );
     }
@@ -168,8 +168,8 @@ public final class TopicDescriptor {
         return qos;
     }
 
-    public boolean retained() {
-        return retained;
+    public RetainedPolicy retainedPolicy() {
+        return retainedPolicy;
     }
 
     public LastWillPolicy lastWillPolicy() {
