@@ -73,12 +73,14 @@ final class ConformanceManifestTest {
         RequirementRow robotIdentityRule = rowsById.get("VDA3-SHARED-004");
         RequirementRow headerCounterRule = rowsById.get("VDA3-SHARED-005");
         RequirementRow protocolHeaderRule = rowsById.get("VDA3-SHARED-006");
+        RequirementRow extensionFieldsRule = rowsById.get("VDA3-SHARED-007");
         assertNotNull(timestampRule, "Missing strict timestamp rule");
         assertNotNull(unsigned32Rule, "Missing uint32 range rule");
         assertNotNull(versionProfileRule, "Missing explicit version profile rule");
         assertNotNull(robotIdentityRule, "Missing Robot Identity rule");
         assertNotNull(headerCounterRule, "Missing headerId counter rule");
         assertNotNull(protocolHeaderRule, "Missing common protocol header rule");
+        assertNotNull(extensionFieldsRule, "Missing extension fields rule");
         assertEquals(
             "SCHEMA_WEAKER",
             timestampRule.schemaGap(),
@@ -97,6 +99,7 @@ final class ConformanceManifestTest {
         assertEquals("SCHEMA_MISSING", robotIdentityRule.schemaGap());
         assertEquals("SCHEMA_MISSING", headerCounterRule.schemaGap());
         assertEquals("NONE", protocolHeaderRule.schemaGap());
+        assertEquals("NONE", extensionFieldsRule.schemaGap());
     }
 
     private static List<RequirementRow> readRows() throws IOException {
