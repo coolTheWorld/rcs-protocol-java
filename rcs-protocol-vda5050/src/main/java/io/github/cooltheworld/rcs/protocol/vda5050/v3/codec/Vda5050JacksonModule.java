@@ -84,7 +84,14 @@ public final class Vda5050JacksonModule extends SimpleModule {
                     parser
                 );
             }
-            return ProtocolVersion.parse(parser.getText());
+            try {
+                return ProtocolVersion.parse(parser.getText());
+            } catch (IllegalArgumentException exception) {
+                return context.reportInputMismatch(
+                    ProtocolVersion.class,
+                    "Protocol version does not satisfy model constraints"
+                );
+            }
         }
     }
 
@@ -121,7 +128,14 @@ public final class Vda5050JacksonModule extends SimpleModule {
                     parser
                 );
             }
-            return ProtocolTimestamp.parse(parser.getText());
+            try {
+                return ProtocolTimestamp.parse(parser.getText());
+            } catch (IllegalArgumentException exception) {
+                return context.reportInputMismatch(
+                    ProtocolTimestamp.class,
+                    "Protocol timestamp does not satisfy model constraints"
+                );
+            }
         }
     }
 

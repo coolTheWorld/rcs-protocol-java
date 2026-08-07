@@ -176,6 +176,40 @@ final class ConnectionCodecTest {
         );
     }
 
+    @ParameterizedTest(name = "[VDA3-CONNECTION-001] Connection 字段 {0} 拒绝非法协议值")
+    @MethodSource("invalidProtocolScalarValues")
+    void rejectsInvalidProtocolScalarValues(
+        String fieldName,
+        String invalidValue
+    ) throws Exception {
+        ObjectNode payload = (ObjectNode) TEST_MAPPER.readTree(
+            fixture("connection/valid/minimal.json")
+        );
+        payload.put(fieldName, invalidValue);
+
+        DecodingResult<Connection> result = CODEC.decode(
+            TopicName.CONNECTION,
+            TEST_MAPPER.writeValueAsBytes(payload),
+            Connection.class
+        );
+
+        RejectedInboundMessage<Connection> rejected = assertInstanceOf(
+            RejectedInboundMessage.class,
+            result
+        );
+        assertAll(
+            () -> assertEquals(
+                "INVALID_JSON_TYPE",
+                rejected.issues().getFirst().code()
+            ),
+            () -> assertEquals("/" + fieldName, rejected.issues().getFirst().path()),
+            () -> assertEquals(
+                "VDA3-SHARED-009",
+                rejected.issues().getFirst().requirementId()
+            )
+        );
+    }
+
     @Test
     @DisplayName("[VDA3-CONNECTION-001] 独立 Jackson Module 注册 Connection 线路表示")
     void registersConnectionWithAnExplicitCallerObjectMapper() throws Exception {
@@ -209,6 +243,13 @@ final class ConnectionCodecTest {
         return Stream.of(
             Arguments.of("headerId", TEST_MAPPER.getNodeFactory().textNode("zero")),
             Arguments.of("connectionState", TEST_MAPPER.getNodeFactory().numberNode(1))
+        );
+    }
+
+    private static Stream<Arguments> invalidProtocolScalarValues() {
+        return Stream.of(
+            Arguments.of("version", "not-a-version"),
+            Arguments.of("timestamp", "2026-08-07T08:00:00Z")
         );
     }
 
