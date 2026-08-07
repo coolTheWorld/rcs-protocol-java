@@ -26,7 +26,7 @@ Maven 制品版本与协议版本独立演进。只有达到项目规范定义�
 
 `Vda5050JsonCodec.createDefault()` 提供默认的安全 UTF-8 编解码边界。入站解码先执行 payload、深度、字符串、字段名、数值、数组、对象和 Token 资源上限，再创建完整协议对象；普通输入错误以 `DecodingResult<T>` 的拒绝分支返回。解码成功只表示完成语法与基础类型处理，仍须经过 Schema 和协议语义校验才能获得 `ValidatedMessage<T>`。
 
-需要复用应用现有 Jackson `ObjectMapper` 时，可以显式注册 `Vda5050JacksonModule`。该 Module 只注册协议值类型的线路表示，不修改调用方的 null、未知字段、资源限制或多态配置。
+需要复用应用现有 Jackson `ObjectMapper` 时，可以显式注册 `Vda5050JacksonModule`。该 Module 注册协议值类型以及已建模消息（目前包括 `Connection`）的线路表示，不修改调用方的 null、未知字段、资源限制或多态配置。
 
 ## Schema Validator
 
