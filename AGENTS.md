@@ -36,7 +36,7 @@
 
 ## 目录与模块
 
-- 仓库根目录：Maven 多模块父项目。父制品为 `io.github.cooltheworld:rcs-protocol-parent`。
+- 仓库根目录：Maven 多模块父项目。父制品为 `io.github.cooltheworld:rcs-protocol-java`。
 - `rcs-protocol-vda5050/`：VDA 5050 独立核心 jar，坐标为 `io.github.cooltheworld:rcs-protocol-vda5050:0.1.0-SNAPSHOT`。
 - 外部参考仓库 `coolTheWorld/VDA5050`：VDA 5050 v3.0.0 规范正文、Schema 与图示，不因本仓库实现而修改。
 - 外部规格仓库 `coolTheWorld/rcs-protocol-spec`：中文实现规格、领域词汇、一致性清单、ADR，以及位于 `tasks/vda5050-java/` 的实施计划、任务清单和项目进度。
