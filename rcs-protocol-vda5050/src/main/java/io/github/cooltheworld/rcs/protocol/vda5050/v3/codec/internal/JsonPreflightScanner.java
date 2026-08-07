@@ -12,6 +12,7 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /** 在创建完整协议对象前，不构造 JSON 树地遍历 Token。 */
@@ -94,6 +95,11 @@ final class JsonPreflightScanner {
     }
 
     private Map<String, JavaType> inspectProperties(JavaType type) {
+        Optional<Map<String, JavaType>> explicitProperties =
+            ProtocolJsonTypeRegistry.findProperties(mapper, type);
+        if (explicitProperties.isPresent()) {
+            return explicitProperties.get();
+        }
         Map<String, JavaType> properties = new HashMap<>();
         for (BeanPropertyDefinition property : mapper
             .getDeserializationConfig()

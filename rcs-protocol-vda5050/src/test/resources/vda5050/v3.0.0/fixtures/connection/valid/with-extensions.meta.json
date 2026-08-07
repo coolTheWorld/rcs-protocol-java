@@ -1,0 +1,11 @@
+{
+  "caseId": "connection-extensions-valid",
+  "requirementIds": [
+    "VDA3-CONNECTION-001",
+    "VDA3-SHARED-006",
+    "VDA3-SHARED-007",
+    "VDA3-SHARED-010"
+  ],
+  "description": "Connection 消息透明保留未知嵌套字段与显式 null",
+  "expectedIssueCodes": []
+}

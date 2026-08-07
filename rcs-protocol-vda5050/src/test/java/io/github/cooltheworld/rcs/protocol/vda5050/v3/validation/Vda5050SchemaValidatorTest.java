@@ -19,13 +19,17 @@ final class Vda5050SchemaValidatorTest {
 
     @Test
     @DisplayName("[VDA3-CONNECTION-001] 有效 Connection Fixture 通过 Schema")
-    void acceptsValidConnectionFixture() {
-        List<ValidationIssue> issues = validator.validate(
-            TopicName.CONNECTION,
-            fixture("connection/valid/minimal.json")
+    void acceptsValidConnectionFixtures() {
+        assertAll(
+            () -> assertTrue(validator.validate(
+                TopicName.CONNECTION,
+                fixture("connection/valid/minimal.json")
+            ).isEmpty()),
+            () -> assertTrue(validator.validate(
+                TopicName.CONNECTION,
+                fixture("connection/valid/with-extensions.json")
+            ).isEmpty())
         );
-
-        assertTrue(issues.isEmpty());
     }
 
     @Test

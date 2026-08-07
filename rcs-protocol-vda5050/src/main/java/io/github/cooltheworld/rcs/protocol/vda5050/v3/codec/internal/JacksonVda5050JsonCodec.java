@@ -152,6 +152,7 @@ public final class JacksonVda5050JsonCodec implements Vda5050JsonCodec {
             .disable(MapperFeature.ALLOW_COERCION_OF_SCALARS)
             .disable(DeserializationFeature.ACCEPT_FLOAT_AS_INT)
             .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            .enable(DeserializationFeature.FAIL_ON_NUMBERS_FOR_ENUMS)
             .enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS)
             .deactivateDefaultTyping()
             .build();
