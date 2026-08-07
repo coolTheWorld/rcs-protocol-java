@@ -1,0 +1,6 @@
+{
+  "caseId": "connection-minimal-valid",
+  "requirementIds": ["VDA3-CONNECTION-001", "VDA3-SHARED-001"],
+  "description": "最小 Connection 消息满足 Draft 2020-12 Schema",
+  "expectedIssueCodes": []
+}

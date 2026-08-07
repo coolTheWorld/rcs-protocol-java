@@ -1,0 +1,6 @@
+{
+  "caseId": "connection-missing-state",
+  "requirementIds": ["VDA3-CONNECTION-001"],
+  "description": "缺失必填 connectionState 时返回稳定 Schema Issue",
+  "expectedIssueCodes": ["SCHEMA_REQUIRED"]
+}
