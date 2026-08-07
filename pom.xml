@@ -260,7 +260,10 @@
                         <breakBuildOnSourceIncompatibleModifications>true</breakBuildOnSourceIncompatibleModifications>
                         <breakBuildIfCausedByExclusion>false</breakBuildIfCausedByExclusion>
                         <excludes>
+                            <exclude>io.github.cooltheworld.rcs.protocol.vda5050.v3.codec.internal</exclude>
+                            <exclude>io.github.cooltheworld.rcs.protocol.vda5050.v3.extension.internal</exclude>
                             <exclude>io.github.cooltheworld.rcs.protocol.vda5050.v3.internal</exclude>
+                            <exclude>io.github.cooltheworld.rcs.protocol.vda5050.v3.validation.internal</exclude>
                         </excludes>
                         <ignoreMissingClasses>false</ignoreMissingClasses>
                         <ignoreMissingOldVersion>true</ignoreMissingOldVersion>
