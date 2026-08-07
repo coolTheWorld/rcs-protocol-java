@@ -18,7 +18,12 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
-/** 加载、检查并缓存八份可信 classpath Schema。 */
+/**
+ * 加载、检查并缓存八份可信 classpath Schema。
+ *
+ * @see <a href="https://github.com/networknt/json-schema-validator#usage">
+ *     NetworkNT JSON Schema Validator usage</a>
+ */
 final class Vda5050SchemaRegistry {
     private static final String RESOURCE_ROOT = "vda5050/v3.0.0/";
     private static final Map<TopicName, String> RESOURCE_NAMES = Map.of(

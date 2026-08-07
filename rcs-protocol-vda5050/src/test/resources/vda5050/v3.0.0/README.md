@@ -1,6 +1,6 @@
 # VDA 5050 v3.0.0 测试资源约定
 
-本目录保存 VDA 5050 v3.0.0 的一致性清单和后续 JSON Fixture。生产代码不得读取这里的测试资源；运行时 Schema 位于 `src/main/resources/vda5050/v3.0.0/`。
+本目录保存 VDA 5050 v3.0.0 的一致性清单和 JSON Fixture。生产代码不得读取这里的测试资源；运行时 Schema 位于 `src/main/resources/vda5050/v3.0.0/`。
 
 ## 一致性清单
 

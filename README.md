@@ -28,6 +28,12 @@ Maven 制品版本与协议版本独立演进。只有达到项目规范定义�
 
 需要复用应用现有 Jackson `ObjectMapper` 时，可以显式注册 `Vda5050JacksonModule`。该 Module 只注册协议值类型的线路表示，不修改调用方的 null、未知字段、资源限制或多态配置。
 
+## Schema Validator
+
+`Vda5050SchemaValidator.createDefault()` 提供八个 Topic 的 Draft 2020-12 Schema 校验。它会在 NetworkNT 解析前执行与默认 Codec 相同的 JSON 资源硬上限，关闭远程 Schema 获取，并为 `date-time` 启用 Format Assertion。语法、资源和 Schema 失败统一返回不可变 `ValidationIssue` 列表；说明文本不复制不可信输入值。
+
+Validator 在创建时检查并缓存八份 classpath Schema，设计为线程安全复用。`uint32` 范围不依赖上游自定义 Schema Format，仍由后续强类型 `Long` 语义 Validator 检查闭区间 `[0, 4294967295]`。
+
 ## 项目文档
 
 - [VDA 5050 Java 实现规格](https://github.com/coolTheWorld/rcs-protocol-spec/blob/main/vda5050-java-implementation.md)
