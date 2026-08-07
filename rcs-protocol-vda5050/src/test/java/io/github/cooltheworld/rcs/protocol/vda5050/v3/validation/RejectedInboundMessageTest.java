@@ -50,6 +50,7 @@ final class RejectedInboundMessageTest {
         RejectedInboundMessage<String> rejected = (RejectedInboundMessage<String>) result;
         assertAll(
             () -> assertFalse(result.isAccepted()),
+            () -> assertFalse(rejected.isDecoded()),
             () -> assertEquals(TopicName.CONNECTION, rejected.topic()),
             () -> assertEquals(identity, rejected.robotIdentity()),
             () -> assertEquals(42L, rejected.headerId()),

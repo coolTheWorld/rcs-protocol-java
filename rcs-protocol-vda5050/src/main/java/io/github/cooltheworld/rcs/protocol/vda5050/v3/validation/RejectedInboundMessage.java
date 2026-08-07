@@ -16,7 +16,8 @@ import java.util.Objects;
  *
  * @param <T> 期望的强类型协议消息类型；拒绝分支不携带该类型的实例
  */
-public final class RejectedInboundMessage<T> implements ValidationResult<T> {
+public final class RejectedInboundMessage<T>
+    implements ValidationResult<T>, DecodingResult<T> {
     private final TopicName topic;
     private final RobotIdentity robotIdentity;
     private final Long headerId;
@@ -80,6 +81,11 @@ public final class RejectedInboundMessage<T> implements ValidationResult<T> {
 
     @Override
     public boolean isAccepted() {
+        return false;
+    }
+
+    @Override
+    public boolean isDecoded() {
         return false;
     }
 

@@ -7,6 +7,8 @@ VDA3-SHARED-005	SHARED	VDA5050_EN.md §7.2；ADR 0007	headerId 逐 Topic 从 0 �
 VDA3-SHARED-006	SHARED	VDA5050_EN.md §7.2	公共协议消息头强类型组合五个必填字段且不改变线路平铺结构	NONE	-	N/A:C02 消息头值模型不执行角色转换	N/A:C02 聚焦模型测试使用内联字段样本	ProtocolHeaderTest#buildsCommonProtocolHeader [VDA3-SHARED-006]	PARTIAL
 VDA3-SHARED-007	SHARED	VDA5050_EN.md §4；实现规格第 6、7、29 项；ADR 0005	未知扩展字段及显式 JSON null 必须不透明保留且不能覆盖标准字段	NONE	N/A:C03 透明保留与冲突保护属于 Codec 边界职责	-	N/A:C03 聚焦测试使用内联嵌套与显式 null 样本	ExtensionFieldsJacksonSupportTest#roundTripsNestedUnknownFieldsAndExplicitNull [VDA3-SHARED-007]	PARTIAL
 VDA3-SHARED-008	SHARED	实现规格第 15、53 项	前三层校验使用封闭结果，成功凭证不可由公共 API 构造，拒绝结果只含安全强类型上下文	NONE	N/A:C04 建立 Validator 的结果与凭证边界	-	N/A:C04 聚焦 API 测试使用内联消息与问题样本	ValidatedMessageTest#exposesNoPublicMintingEntryPoint [VDA3-SHARED-008]	PARTIAL
+VDA3-SHARED-009	SHARED	实现规格第 32、33 项；ADR 0011	完整对象绑定前执行八类 JSON 资源硬上限并禁用任意类名多态	NONE	JsonPreflightScanner#scan (VDA3-SHARED-009)	N/A:C05 资源预检先于角色转换	N/A:C05 聚焦测试使用内联资源边界样本	Vda5050JsonCodecLimitsTest#JSON Codec 绑定前资源上限 [VDA3-SHARED-009]	VERIFIED
+VDA3-SHARED-010	SHARED	实现规格第 47 项	输出省略可选 null，输入标准字段显式 null 结构化报告，未知扩展 null 不误拒绝	NONE	JsonPreflightScanner#rejectStandardNull (VDA3-SHARED-010)	N/A:C05 null 语义先于角色转换	N/A:C05 聚焦测试使用内联缺失、显式与扩展 null 样本	Vda5050JsonCodecTest#标准字段 null 语义 [VDA3-SHARED-010]	VERIFIED
 VDA3-CONNECTION-001	CONNECTION	VDA5050_EN.md §6.5、§7.7	connection 消息必须满足结构校验、语义校验和角色连接流程	NONE	-	-	-	-	PLANNED
 VDA3-FACTSHEET-001	FACTSHEET	VDA5050_EN.md §6.10、§7.10	factsheet 消息必须满足结构校验、语义校验和能力交换流程	NONE	-	-	-	-	PLANNED
 VDA3-INSTANT_ACTIONS-001	INSTANT_ACTIONS	VDA5050_EN.md §6.2.1、§7.4	instantActions 消息必须满足结构校验、语义校验和角色动作流程	NONE	-	-	-	-	PLANNED
