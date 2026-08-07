@@ -99,6 +99,23 @@ final class ConnectionCodecTest {
         );
     }
 
+    @Test
+    @DisplayName("[VDA3-SHARED-002] Connection Codec 保留超出 uint32 的 Long 值供语义校验")
+    void preservesOutOfRangeHeaderIdForSemanticValidation() throws Exception {
+        ObjectNode payload = (ObjectNode) TEST_MAPPER.readTree(
+            fixture("connection/valid/minimal.json")
+        );
+        payload.put("headerId", 4_294_967_296L);
+
+        Connection connection = decoded(CODEC.decode(
+            TopicName.CONNECTION,
+            TEST_MAPPER.writeValueAsBytes(payload),
+            Connection.class
+        )).message();
+
+        assertEquals(4_294_967_296L, connection.header().headerId());
+    }
+
     @ParameterizedTest(name = "[VDA3-CONNECTION-001] connectionState={0}")
     @EnumSource(ConnectionState.class)
     void decodesEveryNormativeConnectionState(ConnectionState connectionState)
