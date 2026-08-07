@@ -69,8 +69,10 @@ final class ConformanceManifestTest {
         ));
         RequirementRow timestampRule = rowsById.get("VDA3-SHARED-001");
         RequirementRow unsigned32Rule = rowsById.get("VDA3-SHARED-002");
+        RequirementRow versionProfileRule = rowsById.get("VDA3-SHARED-003");
         assertNotNull(timestampRule, "Missing strict timestamp rule");
         assertNotNull(unsigned32Rule, "Missing uint32 range rule");
+        assertNotNull(versionProfileRule, "Missing explicit version profile rule");
         assertEquals(
             "SCHEMA_WEAKER",
             timestampRule.schemaGap(),
@@ -80,6 +82,11 @@ final class ConformanceManifestTest {
             "SCHEMA_MISSING",
             unsigned32Rule.schemaGap(),
             "uint32 range gap must remain explicit"
+        );
+        assertEquals(
+            "NONE",
+            versionProfileRule.schemaGap(),
+            "Version profile support is not a Schema gap"
         );
     }
 
