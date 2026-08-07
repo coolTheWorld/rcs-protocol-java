@@ -1,0 +1,11 @@
+id	topic	source	requirement	schemaGap	validator	transition	fixture	test	status
+VDA3-SHARED-001	SHARED	VDA5050_EN.md §7.2	协议 timestamp 必须使用 UTC、三位毫秒和 Z 后缀的 YYYY-MM-DDTHH:mm:ss.SSSZ 格式	SCHEMA_WEAKER	-	-	-	-	PLANNED
+VDA3-SHARED-002	SHARED	VDA5050_EN.md §7.1.4、§7.2	所有 uint32 字段必须位于闭区间 [0, 4294967295]	SCHEMA_MISSING	-	-	-	-	PLANNED
+VDA3-CONNECTION-001	CONNECTION	VDA5050_EN.md §6.5、§7.7	connection 消息必须满足结构校验、语义校验和角色连接流程	NONE	-	-	-	-	PLANNED
+VDA3-FACTSHEET-001	FACTSHEET	VDA5050_EN.md §6.10、§7.10	factsheet 消息必须满足结构校验、语义校验和能力交换流程	NONE	-	-	-	-	PLANNED
+VDA3-INSTANT_ACTIONS-001	INSTANT_ACTIONS	VDA5050_EN.md §6.2.1、§7.4	instantActions 消息必须满足结构校验、语义校验和角色动作流程	NONE	-	-	-	-	PLANNED
+VDA3-ORDER-001	ORDER	VDA5050_EN.md §6.1、§7.3	order 消息必须满足结构校验、语义校验和角色订单流程	NONE	-	-	-	-	PLANNED
+VDA3-RESPONSES-001	RESPONSES	VDA5050_EN.md §6.9、§7.5	responses 消息必须满足结构校验、语义校验和请求响应流程	NONE	-	-	-	-	PLANNED
+VDA3-STATE-001	STATE	VDA5050_EN.md §6.6、§7.8	state 消息必须满足结构校验、语义校验和角色状态流程	NONE	-	-	-	-	PLANNED
+VDA3-VISUALIZATION-001	VISUALIZATION	VDA5050_EN.md §6.7、§7.9	visualization 消息必须满足结构校验、语义校验和角色遥测流程	NONE	-	-	-	-	PLANNED
+VDA3-ZONE_SET-001	ZONE_SET	VDA5050_EN.md §6.4.2、§7.6	zoneSet 消息必须满足结构校验、语义校验和角色区域流程	NONE	-	-	-	-	PLANNED
