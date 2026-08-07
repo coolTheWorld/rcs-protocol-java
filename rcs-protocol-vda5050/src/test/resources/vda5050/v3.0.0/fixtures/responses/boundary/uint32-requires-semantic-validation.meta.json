@@ -1,0 +1,6 @@
+{
+  "caseId": "responses-uint32-needs-semantics",
+  "requirementIds": ["VDA3-SHARED-002", "VDA3-RESPONSES-001"],
+  "description": "Schema 层不依赖自定义 uint32 format 执行 Java Long 范围语义",
+  "expectedIssueCodes": []
+}

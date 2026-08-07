@@ -1,0 +1,6 @@
+{
+  "caseId": "connection-non-date-time",
+  "requirementIds": ["VDA3-SHARED-001"],
+  "description": "标准 date-time Format Assertion 拒绝非日期时间文本",
+  "expectedIssueCodes": ["SCHEMA_FORMAT"]
+}
