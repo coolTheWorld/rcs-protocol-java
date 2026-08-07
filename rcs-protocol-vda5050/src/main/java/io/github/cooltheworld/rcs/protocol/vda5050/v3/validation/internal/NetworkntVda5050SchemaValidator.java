@@ -62,7 +62,7 @@ public final class NetworkntVda5050SchemaValidator
             ValidationSeverity.ERROR,
             path,
             "JSON value does not satisfy the bundled schema constraint",
-            requirementOf(topic, error, path)
+            requirementOf(topic, error)
         );
     }
 
@@ -80,7 +80,7 @@ public final class NetworkntVda5050SchemaValidator
 
     private static String pathOf(Error error) {
         String path = error.getInstanceLocation().toString();
-        if ("required".equals(error.getKeyword()) && error.getProperty() != null) {
+        if ("required".equals(error.getKeyword())) {
             path += "/" + escapePointer(error.getProperty());
         }
         return path;
@@ -88,10 +88,9 @@ public final class NetworkntVda5050SchemaValidator
 
     private static String requirementOf(
         TopicName topic,
-        Error error,
-        String path
+        Error error
     ) {
-        if ("format".equals(error.getKeyword()) && "/timestamp".equals(path)) {
+        if ("format".equals(error.getKeyword())) {
             return TIMESTAMP_REQUIREMENT;
         }
         return TOPIC_REQUIREMENTS.get(topic);
