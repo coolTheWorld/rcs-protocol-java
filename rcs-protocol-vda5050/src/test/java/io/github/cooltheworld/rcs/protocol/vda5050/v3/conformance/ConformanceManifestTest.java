@@ -75,6 +75,7 @@ final class ConformanceManifestTest {
         RequirementRow protocolHeaderRule = rowsById.get("VDA3-SHARED-006");
         RequirementRow extensionFieldsRule = rowsById.get("VDA3-SHARED-007");
         RequirementRow topicMetadataRule = rowsById.get("VDA3-SHARED-011");
+        RequirementRow connectionRule = rowsById.get("VDA3-CONNECTION-001");
         assertNotNull(timestampRule, "Missing strict timestamp rule");
         assertNotNull(unsigned32Rule, "Missing uint32 range rule");
         assertNotNull(versionProfileRule, "Missing explicit version profile rule");
@@ -83,6 +84,7 @@ final class ConformanceManifestTest {
         assertNotNull(protocolHeaderRule, "Missing common protocol header rule");
         assertNotNull(extensionFieldsRule, "Missing extension fields rule");
         assertNotNull(topicMetadataRule, "Missing Topic metadata and layout rule");
+        assertNotNull(connectionRule, "Missing Connection rule");
         assertEquals(
             "SCHEMA_WEAKER",
             timestampRule.schemaGap(),
@@ -104,6 +106,11 @@ final class ConformanceManifestTest {
         assertEquals("NONE", extensionFieldsRule.schemaGap());
         assertEquals("NONE", topicMetadataRule.schemaGap());
         assertEquals("VERIFIED", topicMetadataRule.status());
+        assertEquals("PARTIAL", connectionRule.status());
+        assertTrue(
+            connectionRule.test().contains("ConnectionCodecTest"),
+            "Connection rule must retain C08 Codec evidence"
+        );
     }
 
     private static List<RequirementRow> readRows() throws IOException {
