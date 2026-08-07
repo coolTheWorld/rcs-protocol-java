@@ -6,9 +6,21 @@
 
 | Maven 制品 | Maven 版本 | 协议版本 | 状态 |
 |---|---|---|---|
-| `io.github.cooltheworld:rcs-protocol-vda5050` | `0.1.0-SNAPSHOT` | VDA 5050 `3.0.0` | 设计中，尚未发布 |
+| `io.github.cooltheworld:rcs-protocol-vda5050` | `0.1.0-SNAPSHOT` | VDA 5050 `3.0.0` | 实现中，尚未发布 |
 
 Maven 制品版本与协议版本独立演进。只有达到项目规范定义的一致性门槛后，制品才会发布首个稳定版本 `1.0.0`。新增或移除协议版本支持时，必须同步更新本表。
+
+## 构建
+
+项目要求 JDK 21，Maven Wrapper 固定使用 Maven 3.9.14。
+
+```powershell
+.\mvnw.cmd validate
+```
+
+```shell
+./mvnw validate
+```
 
 ## 项目文档
 
