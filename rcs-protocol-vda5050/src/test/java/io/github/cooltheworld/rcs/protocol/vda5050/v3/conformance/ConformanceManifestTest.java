@@ -70,9 +70,15 @@ final class ConformanceManifestTest {
         RequirementRow timestampRule = rowsById.get("VDA3-SHARED-001");
         RequirementRow unsigned32Rule = rowsById.get("VDA3-SHARED-002");
         RequirementRow versionProfileRule = rowsById.get("VDA3-SHARED-003");
+        RequirementRow robotIdentityRule = rowsById.get("VDA3-SHARED-004");
+        RequirementRow headerCounterRule = rowsById.get("VDA3-SHARED-005");
+        RequirementRow protocolHeaderRule = rowsById.get("VDA3-SHARED-006");
         assertNotNull(timestampRule, "Missing strict timestamp rule");
         assertNotNull(unsigned32Rule, "Missing uint32 range rule");
         assertNotNull(versionProfileRule, "Missing explicit version profile rule");
+        assertNotNull(robotIdentityRule, "Missing Robot Identity rule");
+        assertNotNull(headerCounterRule, "Missing headerId counter rule");
+        assertNotNull(protocolHeaderRule, "Missing common protocol header rule");
         assertEquals(
             "SCHEMA_WEAKER",
             timestampRule.schemaGap(),
@@ -88,6 +94,9 @@ final class ConformanceManifestTest {
             versionProfileRule.schemaGap(),
             "Version profile support is not a Schema gap"
         );
+        assertEquals("SCHEMA_MISSING", robotIdentityRule.schemaGap());
+        assertEquals("SCHEMA_MISSING", headerCounterRule.schemaGap());
+        assertEquals("NONE", protocolHeaderRule.schemaGap());
     }
 
     private static List<RequirementRow> readRows() throws IOException {
