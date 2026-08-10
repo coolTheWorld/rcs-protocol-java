@@ -218,6 +218,81 @@ final class ProtocolLimitsCodecTest {
         );
     }
 
+    @Test
+    @DisplayName("[VDA3-FACTSHEET-001] Protocol Limits 拒绝错误的标准标量类型")
+    void rejectsInvalidStandardScalarTypes() {
+        assertAll(
+            () -> assertEquals(
+                "INVALID_JSON_TYPE",
+                rejected(CODEC.decode(
+                    TopicName.FACTSHEET,
+                    bytes("""
+                        {
+                          "maximumStringLengths":{"maximumMessageLength":1.5},
+                          "maximumArrayLengths":{},
+                          "timing":{
+                            "minimumOrderInterval":0.25,
+                            "minimumStateInterval":0.5
+                          }
+                        }
+                        """),
+                    ProtocolLimits.class
+                )).issues().getFirst().code()
+            ),
+            () -> assertEquals(
+                "INVALID_JSON_TYPE",
+                rejected(CODEC.decode(
+                    TopicName.FACTSHEET,
+                    bytes("""
+                        {
+                          "maximumStringLengths":{"idNumericalOnly":"true"},
+                          "maximumArrayLengths":{},
+                          "timing":{
+                            "minimumOrderInterval":0.25,
+                            "minimumStateInterval":0.5
+                          }
+                        }
+                        """),
+                    ProtocolLimits.class
+                )).issues().getFirst().code()
+            ),
+            () -> assertEquals(
+                "INVALID_JSON_TYPE",
+                rejected(CODEC.decode(
+                    TopicName.FACTSHEET,
+                    bytes("""
+                        {
+                          "maximumStringLengths":{},
+                          "maximumArrayLengths":{"order.nodes":"6"},
+                          "timing":{
+                            "minimumOrderInterval":0.25,
+                            "minimumStateInterval":0.5
+                          }
+                        }
+                        """),
+                    ProtocolLimits.class
+                )).issues().getFirst().code()
+            ),
+            () -> assertEquals(
+                "INVALID_JSON_TYPE",
+                rejected(CODEC.decode(
+                    TopicName.FACTSHEET,
+                    bytes("""
+                        {
+                          "maximumStringLengths":{},
+                          "maximumArrayLengths":{},
+                          "timing":{
+                            "minimumOrderInterval":"0.25",
+                            "minimumStateInterval":0.5
+                          }
+                        }
+                        """),
+                    ProtocolLimits.class
+                )).issues().getFirst().code()
+            )
+        );
+    }
+
     private static <T> DecodedMessage<T> decoded(DecodingResult<T> result) {
         return (DecodedMessage<T>) assertInstanceOf(DecodedMessage.class, result);
     }

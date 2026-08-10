@@ -121,7 +121,14 @@ final class EffectiveProtocolLimitsTest {
                 .build()
         );
         ProtocolLimits zero = limits(
-            strings(0L),
+            MaximumStringLengths.builder()
+                .maximumMessageLength(0L)
+                .maximumTopicSerialLength(0L)
+                .maximumTopicElementLength(0L)
+                .maximumIdLength(0L)
+                .idNumericalOnly(false)
+                .maximumLoadIdLength(0L)
+                .build(),
             arrays(0L),
             ProtocolTiming.builder()
                 .minimumOrderInterval(0.0D)
@@ -209,6 +216,21 @@ final class EffectiveProtocolLimitsTest {
                             .build(),
                         MaximumArrayLengths.builder().build(),
                         timing()
+                    ),
+                    deployment
+                )
+            ),
+            () -> assertThrows(
+                IllegalArgumentException.class,
+                () -> EffectiveProtocolLimits.resolve(
+                    limits(
+                        MaximumStringLengths.builder().build(),
+                        MaximumArrayLengths.builder().build(),
+                        ProtocolTiming.builder()
+                            .minimumOrderInterval(0.0D)
+                            .minimumStateInterval(0.0D)
+                            .defaultStateInterval(-0.1D)
+                            .build()
                     ),
                     deployment
                 )

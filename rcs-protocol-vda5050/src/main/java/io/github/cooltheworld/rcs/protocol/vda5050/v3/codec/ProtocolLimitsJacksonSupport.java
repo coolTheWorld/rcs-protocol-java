@@ -1,17 +1,20 @@
 package io.github.cooltheworld.rcs.protocol.vda5050.v3.codec;
 
+import static io.github.cooltheworld.rcs.protocol.vda5050.v3.codec.FactsheetFragmentJacksonSupport.putOptional;
+import static io.github.cooltheworld.rcs.protocol.vda5050.v3.codec.FactsheetFragmentJacksonSupport.readObject;
+import static io.github.cooltheworld.rcs.protocol.vda5050.v3.codec.FactsheetFragmentJacksonSupport.readOptional;
+import static io.github.cooltheworld.rcs.protocol.vda5050.v3.codec.FactsheetFragmentJacksonSupport.readRequired;
+import static io.github.cooltheworld.rcs.protocol.vda5050.v3.codec.FactsheetFragmentJacksonSupport.requireObjectMapper;
+
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.extension.ExtensionFields;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.extension.internal.ExtensionFieldsJacksonSupport;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.MaximumArrayLengths;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.MaximumStringLengths;
@@ -117,7 +120,7 @@ final class ProtocolLimitsJacksonSupport {
                 mapper.valueToTree(value.maximumArrayLengths())
             );
             target.set("timing", mapper.valueToTree(value.timing()));
-            mergeExtensions(
+            ExtensionFieldsJacksonSupport.merge(
                 mapper,
                 target,
                 value.extensionFields(),
@@ -169,7 +172,7 @@ final class ProtocolLimitsJacksonSupport {
                         ProtocolLimits.class,
                         context
                     ))
-                    .extensionFields(captureExtensions(
+                    .extensionFields(ExtensionFieldsJacksonSupport.capture(
                         mapper,
                         object,
                         PROTOCOL_LIMITS_FIELDS
@@ -220,7 +223,7 @@ final class ProtocolLimitsJacksonSupport {
                 "maximumLoadIdLength",
                 value.maximumLoadIdLength()
             );
-            mergeExtensions(
+            ExtensionFieldsJacksonSupport.merge(
                 mapper,
                 target,
                 value.extensionFields(),
@@ -292,7 +295,7 @@ final class ProtocolLimitsJacksonSupport {
                     MaximumStringLengths.class,
                     context
                 ))
-                .extensionFields(captureExtensions(
+                .extensionFields(ExtensionFieldsJacksonSupport.capture(
                     mapper,
                     object,
                     STRING_FIELDS
@@ -362,7 +365,7 @@ final class ProtocolLimitsJacksonSupport {
                 "information.infoReferences",
                 value.informationInfoReferences()
             );
-            mergeExtensions(
+            ExtensionFieldsJacksonSupport.merge(
                 mapper,
                 target,
                 value.extensionFields(),
@@ -506,7 +509,7 @@ final class ProtocolLimitsJacksonSupport {
                     MaximumArrayLengths.class,
                     context
                 ))
-                .extensionFields(captureExtensions(
+                .extensionFields(ExtensionFieldsJacksonSupport.capture(
                     mapper,
                     object,
                     ARRAY_FIELDS
@@ -541,7 +544,7 @@ final class ProtocolLimitsJacksonSupport {
                 "visualizationInterval",
                 value.visualizationInterval()
             );
-            mergeExtensions(
+            ExtensionFieldsJacksonSupport.merge(
                 mapper,
                 target,
                 value.extensionFields(),
@@ -600,7 +603,7 @@ final class ProtocolLimitsJacksonSupport {
                         ProtocolTiming.class,
                         context
                     ))
-                    .extensionFields(captureExtensions(
+                    .extensionFields(ExtensionFieldsJacksonSupport.capture(
                         mapper,
                         object,
                         TIMING_FIELDS
@@ -622,94 +625,6 @@ final class ProtocolLimitsJacksonSupport {
         DeserializationContext context
     ) throws IOException {
         return readOptional(object, fieldName, Long.class, ownerType, context);
-    }
-
-    private static <T> T readRequired(
-        ObjectNode object,
-        String fieldName,
-        Class<T> fieldType,
-        Class<?> ownerType,
-        DeserializationContext context
-    ) throws IOException {
-        JsonNode value = object.get(fieldName);
-        if (value == null) {
-            return context.reportInputMismatch(
-                ownerType,
-                "Protocol object is missing a required field"
-            );
-        }
-        return readValue(value, fieldName, fieldType, ownerType, context);
-    }
-
-    private static <T> T readOptional(
-        ObjectNode object,
-        String fieldName,
-        Class<T> fieldType,
-        Class<?> ownerType,
-        DeserializationContext context
-    ) throws IOException {
-        JsonNode value = object.get(fieldName);
-        return value == null
-            ? null
-            : readValue(value, fieldName, fieldType, ownerType, context);
-    }
-
-    private static <T> T readValue(
-        JsonNode value,
-        String fieldName,
-        Class<T> fieldType,
-        Class<?> ownerType,
-        DeserializationContext context
-    ) throws IOException {
-        try {
-            return context.readTreeAsValue(value, fieldType);
-        } catch (JsonMappingException exception) {
-            exception.prependPath(ownerType, fieldName);
-            throw exception;
-        }
-    }
-
-    private static ObjectNode readObject(
-        ObjectMapper mapper,
-        JsonParser parser,
-        DeserializationContext context,
-        Class<?> targetType,
-        String displayName
-    ) throws IOException {
-        JsonNode tree = mapper.readTree(parser);
-        if (tree instanceof ObjectNode object) {
-            return object;
-        }
-        return context.reportInputMismatch(
-            targetType,
-            displayName + " must be a JSON object"
-        );
-    }
-
-    private static ExtensionFields captureExtensions(
-        ObjectMapper mapper,
-        ObjectNode object,
-        Set<String> standardFields
-    ) throws IOException {
-        return ExtensionFieldsJacksonSupport.capture(
-            mapper,
-            object,
-            standardFields
-        );
-    }
-
-    private static void mergeExtensions(
-        ObjectMapper mapper,
-        ObjectNode target,
-        ExtensionFields extensionFields,
-        Set<String> standardFields
-    ) {
-        ExtensionFieldsJacksonSupport.merge(
-            mapper,
-            target,
-            extensionFields,
-            standardFields
-        );
     }
 
     private static void putOptional(
@@ -742,19 +657,4 @@ final class ProtocolLimitsJacksonSupport {
         }
     }
 
-    private static ObjectMapper requireObjectMapper(JsonGenerator generator)
-        throws IOException {
-        if (generator.getCodec() instanceof ObjectMapper mapper) {
-            return mapper;
-        }
-        throw new IOException("VDA 5050 Module requires an ObjectMapper codec");
-    }
-
-    private static ObjectMapper requireObjectMapper(JsonParser parser)
-        throws IOException {
-        if (parser.getCodec() instanceof ObjectMapper mapper) {
-            return mapper;
-        }
-        throw new IOException("VDA 5050 Module requires an ObjectMapper codec");
-    }
 }

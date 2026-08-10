@@ -464,7 +464,7 @@ final class FactsheetFragmentJacksonSupport {
         values.forEach(value -> target.add(valueReader.apply(value)));
     }
 
-    private static void putOptional(
+    static void putOptional(
         ObjectNode target,
         String fieldName,
         String value
@@ -474,7 +474,7 @@ final class FactsheetFragmentJacksonSupport {
         }
     }
 
-    private static void putOptional(
+    static void putOptional(
         ObjectNode target,
         String fieldName,
         Double value
@@ -484,7 +484,7 @@ final class FactsheetFragmentJacksonSupport {
         }
     }
 
-    private static ObjectNode readObject(
+    static ObjectNode readObject(
         ObjectMapper mapper,
         JsonParser parser,
         DeserializationContext context,
@@ -501,7 +501,7 @@ final class FactsheetFragmentJacksonSupport {
         );
     }
 
-    private static <T> T readRequired(
+    static <T> T readRequired(
         ObjectNode object,
         String fieldName,
         Class<T> fieldType,
@@ -518,7 +518,7 @@ final class FactsheetFragmentJacksonSupport {
         return readValue(value, fieldName, fieldType, ownerType, context);
     }
 
-    private static <T> T readOptional(
+    static <T> T readOptional(
         ObjectNode object,
         String fieldName,
         Class<T> fieldType,
@@ -604,7 +604,7 @@ final class FactsheetFragmentJacksonSupport {
         return List.copyOf(result);
     }
 
-    private static ObjectMapper requireObjectMapper(JsonGenerator generator)
+    static ObjectMapper requireObjectMapper(JsonGenerator generator)
         throws IOException {
         if (generator.getCodec() instanceof ObjectMapper mapper) {
             return mapper;
@@ -612,7 +612,7 @@ final class FactsheetFragmentJacksonSupport {
         throw new IOException("VDA 5050 Module requires an ObjectMapper codec");
     }
 
-    private static ObjectMapper requireObjectMapper(JsonParser parser)
+    static ObjectMapper requireObjectMapper(JsonParser parser)
         throws IOException {
         if (parser.getCodec() instanceof ObjectMapper mapper) {
             return mapper;
