@@ -49,6 +49,7 @@ public final class Vda5050JacksonModule extends SimpleModule {
         addDeserializer(ProtocolTimestamp.class, new ProtocolTimestampDeserializer());
         addSerializer(Connection.class, new ConnectionSerializer());
         addDeserializer(Connection.class, new ConnectionDeserializer());
+        FactsheetFragmentJacksonSupport.register(this);
     }
 
     private static final class ProtocolVersionSerializer

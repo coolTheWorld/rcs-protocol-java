@@ -77,6 +77,7 @@ final class ConformanceManifestTest {
         RequirementRow validationBoundaryRule = rowsById.get("VDA3-SHARED-008");
         RequirementRow topicMetadataRule = rowsById.get("VDA3-SHARED-011");
         RequirementRow connectionRule = rowsById.get("VDA3-CONNECTION-001");
+        RequirementRow factsheetRule = rowsById.get("VDA3-FACTSHEET-001");
         assertNotNull(timestampRule, "Missing strict timestamp rule");
         assertNotNull(unsigned32Rule, "Missing uint32 range rule");
         assertNotNull(versionProfileRule, "Missing explicit version profile rule");
@@ -87,6 +88,7 @@ final class ConformanceManifestTest {
         assertNotNull(validationBoundaryRule, "Missing validation boundary rule");
         assertNotNull(topicMetadataRule, "Missing Topic metadata and layout rule");
         assertNotNull(connectionRule, "Missing Connection rule");
+        assertNotNull(factsheetRule, "Missing Factsheet rule");
         assertEquals(
             "SCHEMA_WEAKER",
             timestampRule.schemaGap(),
@@ -110,6 +112,7 @@ final class ConformanceManifestTest {
         assertEquals("NONE", topicMetadataRule.schemaGap());
         assertEquals("VERIFIED", topicMetadataRule.status());
         assertEquals("VERIFIED", connectionRule.status());
+        assertEquals("PARTIAL", factsheetRule.status());
         assertTrue(
             connectionRule.test().contains("ConnectionCodecTest"),
             "Connection rule must retain C08 Codec evidence"
@@ -190,6 +193,20 @@ final class ConformanceManifestTest {
             () -> assertTrue(
                 connectionRule.test().contains("ConnectionDialogueTest"),
                 "Connection rule must include C12 cross-role evidence"
+            ),
+            () -> assertTrue(
+                factsheetRule.validator().contains(
+                    "FactsheetFragmentJacksonSupport"
+                ),
+                "Factsheet rule must include FS01 fragment Codec evidence"
+            ),
+            () -> assertTrue(
+                factsheetRule.test().contains("TypeSpecificationTest")
+                    && factsheetRule.test().contains("PhysicalParametersTest")
+                    && factsheetRule.test().contains(
+                        "FactsheetFragmentCodecTest"
+                    ),
+                "Factsheet rule must include both FS01 models and Codec tests"
             )
         );
     }
