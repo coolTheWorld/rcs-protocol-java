@@ -546,7 +546,7 @@ final class FactsheetFragmentJacksonSupport {
         }
     }
 
-    private static <T> List<T> readRequiredList(
+    static <T> List<T> readRequiredList(
         ObjectNode object,
         String fieldName,
         Class<T> elementType,
@@ -563,7 +563,7 @@ final class FactsheetFragmentJacksonSupport {
         return readList(value, fieldName, elementType, ownerType, context);
     }
 
-    private static <T> List<T> readOptionalList(
+    static <T> List<T> readOptionalList(
         ObjectNode object,
         String fieldName,
         Class<T> elementType,

@@ -2,13 +2,21 @@ package io.github.cooltheworld.rcs.protocol.vda5050.v3.codec.internal;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ActionParameterDefinition;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ActionScope;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ActionValueDataType;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.BlockingType;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.Connection;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ConnectionState;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.LocalizationType;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.MaximumArrayLengths;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.MaximumStringLengths;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.MobileRobotAction;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.NavigationType;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.OptionalParameter;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.OptionalParameterSupport;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.PhysicalParameters;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ProtocolFeatures;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ProtocolLimits;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ProtocolTiming;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ProtocolTimestamp;
@@ -47,6 +55,18 @@ final class ProtocolJsonTypeRegistry {
         }
         if (type.hasRawClass(ProtocolTiming.class)) {
             return Optional.of(protocolTimingProperties(mapper));
+        }
+        if (type.hasRawClass(ProtocolFeatures.class)) {
+            return Optional.of(protocolFeaturesProperties(mapper));
+        }
+        if (type.hasRawClass(OptionalParameter.class)) {
+            return Optional.of(optionalParameterProperties(mapper));
+        }
+        if (type.hasRawClass(MobileRobotAction.class)) {
+            return Optional.of(mobileRobotActionProperties(mapper));
+        }
+        if (type.hasRawClass(ActionParameterDefinition.class)) {
+            return Optional.of(actionParameterDefinitionProperties(mapper));
         }
         return Optional.empty();
     }
@@ -167,6 +187,60 @@ final class ProtocolJsonTypeRegistry {
             "minimumStateInterval", numberType,
             "defaultStateInterval", numberType,
             "visualizationInterval", numberType
+        );
+    }
+
+    private static Map<String, JavaType> protocolFeaturesProperties(
+        ObjectMapper mapper
+    ) {
+        return Map.of(
+            "optionalParameters",
+            listType(mapper, OptionalParameter.class),
+            "mobileRobotActions",
+            listType(mapper, MobileRobotAction.class)
+        );
+    }
+
+    private static Map<String, JavaType> optionalParameterProperties(
+        ObjectMapper mapper
+    ) {
+        return Map.of(
+            "parameter", mapper.constructType(String.class),
+            "support", mapper.constructType(OptionalParameterSupport.class),
+            "description", mapper.constructType(String.class)
+        );
+    }
+
+    private static Map<String, JavaType> mobileRobotActionProperties(
+        ObjectMapper mapper
+    ) {
+        return Map.of(
+            "actionType", mapper.constructType(String.class),
+            "actionDescription", mapper.constructType(String.class),
+            "actionScopes", listType(mapper, ActionScope.class),
+            "actionParameters", listType(mapper, ActionParameterDefinition.class),
+            "actionResult", mapper.constructType(String.class),
+            "blockingTypes", listType(mapper, BlockingType.class),
+            "pauseAllowed", mapper.constructType(Boolean.class),
+            "cancelAllowed", mapper.constructType(Boolean.class)
+        );
+    }
+
+    private static Map<String, JavaType> actionParameterDefinitionProperties(
+        ObjectMapper mapper
+    ) {
+        return Map.of(
+            "key", mapper.constructType(String.class),
+            "valueDataType", mapper.constructType(ActionValueDataType.class),
+            "description", mapper.constructType(String.class),
+            "isOptional", mapper.constructType(Boolean.class)
+        );
+    }
+
+    private static JavaType listType(ObjectMapper mapper, Class<?> elementType) {
+        return mapper.getTypeFactory().constructCollectionType(
+            List.class,
+            elementType
         );
     }
 }
