@@ -8,10 +8,15 @@ import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ActionValueDataType;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.BlockingType;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.Connection;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ConnectionState;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.Envelope2d;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.Envelope2dVertex;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.Envelope3d;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.Envelope3dData;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.LocalizationType;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.MaximumArrayLengths;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.MaximumStringLengths;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.MobileRobotAction;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.MobileRobotGeometry;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.NavigationType;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.OptionalParameter;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.OptionalParameterSupport;
@@ -22,6 +27,9 @@ import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ProtocolTiming;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ProtocolTimestamp;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ProtocolVersion;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.TypeSpecification;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.WheelDefinition;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.WheelPosition;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.WheelType;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ZoneType;
 import java.util.List;
 import java.util.Map;
@@ -67,6 +75,24 @@ final class ProtocolJsonTypeRegistry {
         }
         if (type.hasRawClass(ActionParameterDefinition.class)) {
             return Optional.of(actionParameterDefinitionProperties(mapper));
+        }
+        if (type.hasRawClass(MobileRobotGeometry.class)) {
+            return Optional.of(mobileRobotGeometryProperties(mapper));
+        }
+        if (type.hasRawClass(WheelDefinition.class)) {
+            return Optional.of(wheelDefinitionProperties(mapper));
+        }
+        if (type.hasRawClass(WheelPosition.class)) {
+            return Optional.of(wheelPositionProperties(mapper));
+        }
+        if (type.hasRawClass(Envelope2d.class)) {
+            return Optional.of(envelope2dProperties(mapper));
+        }
+        if (type.hasRawClass(Envelope2dVertex.class)) {
+            return Optional.of(envelope2dVertexProperties(mapper));
+        }
+        if (type.hasRawClass(Envelope3d.class)) {
+            return Optional.of(envelope3dProperties(mapper));
         }
         return Optional.empty();
     }
@@ -234,6 +260,72 @@ final class ProtocolJsonTypeRegistry {
             "valueDataType", mapper.constructType(ActionValueDataType.class),
             "description", mapper.constructType(String.class),
             "isOptional", mapper.constructType(Boolean.class)
+        );
+    }
+
+    private static Map<String, JavaType> mobileRobotGeometryProperties(
+        ObjectMapper mapper
+    ) {
+        return Map.of(
+            "wheelDefinitions", listType(mapper, WheelDefinition.class),
+            "envelopes2d", listType(mapper, Envelope2d.class),
+            "envelopes3d", listType(mapper, Envelope3d.class)
+        );
+    }
+
+    private static Map<String, JavaType> wheelDefinitionProperties(
+        ObjectMapper mapper
+    ) {
+        JavaType numberType = mapper.constructType(Double.class);
+        return Map.of(
+            "type", mapper.constructType(WheelType.class),
+            "isActiveDriven", mapper.constructType(Boolean.class),
+            "isActiveSteered", mapper.constructType(Boolean.class),
+            "position", mapper.constructType(WheelPosition.class),
+            "diameter", numberType,
+            "width", numberType,
+            "centerDisplacement", numberType,
+            "constraints", mapper.constructType(String.class)
+        );
+    }
+
+    private static Map<String, JavaType> wheelPositionProperties(
+        ObjectMapper mapper
+    ) {
+        JavaType numberType = mapper.constructType(Double.class);
+        return Map.of(
+            "x", numberType,
+            "y", numberType,
+            "theta", numberType
+        );
+    }
+
+    private static Map<String, JavaType> envelope2dProperties(
+        ObjectMapper mapper
+    ) {
+        return Map.of(
+            "envelope2dId", mapper.constructType(String.class),
+            "vertices", listType(mapper, Envelope2dVertex.class),
+            "description", mapper.constructType(String.class)
+        );
+    }
+
+    private static Map<String, JavaType> envelope2dVertexProperties(
+        ObjectMapper mapper
+    ) {
+        JavaType numberType = mapper.constructType(Double.class);
+        return Map.of("x", numberType, "y", numberType);
+    }
+
+    private static Map<String, JavaType> envelope3dProperties(
+        ObjectMapper mapper
+    ) {
+        return Map.of(
+            "envelope3dId", mapper.constructType(String.class),
+            "format", mapper.constructType(String.class),
+            "data", mapper.constructType(Envelope3dData.class),
+            "url", mapper.constructType(String.class),
+            "description", mapper.constructType(String.class)
         );
     }
 
