@@ -5,8 +5,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.Connection;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ConnectionState;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.LocalizationType;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.MaximumArrayLengths;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.MaximumStringLengths;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.NavigationType;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.PhysicalParameters;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ProtocolLimits;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ProtocolTiming;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ProtocolTimestamp;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ProtocolVersion;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.TypeSpecification;
@@ -31,6 +35,18 @@ final class ProtocolJsonTypeRegistry {
         }
         if (type.hasRawClass(PhysicalParameters.class)) {
             return Optional.of(physicalParametersProperties(mapper));
+        }
+        if (type.hasRawClass(ProtocolLimits.class)) {
+            return Optional.of(protocolLimitsProperties(mapper));
+        }
+        if (type.hasRawClass(MaximumStringLengths.class)) {
+            return Optional.of(maximumStringLengthsProperties(mapper));
+        }
+        if (type.hasRawClass(MaximumArrayLengths.class)) {
+            return Optional.of(maximumArrayLengthsProperties(mapper));
+        }
+        if (type.hasRawClass(ProtocolTiming.class)) {
+            return Optional.of(protocolTimingProperties(mapper));
         }
         return Optional.empty();
     }
@@ -85,6 +101,72 @@ final class ProtocolJsonTypeRegistry {
             "maximumHeight", numberType,
             "width", numberType,
             "length", numberType
+        );
+    }
+
+    private static Map<String, JavaType> protocolLimitsProperties(
+        ObjectMapper mapper
+    ) {
+        return Map.of(
+            "maximumStringLengths",
+            mapper.constructType(MaximumStringLengths.class),
+            "maximumArrayLengths",
+            mapper.constructType(MaximumArrayLengths.class),
+            "timing",
+            mapper.constructType(ProtocolTiming.class)
+        );
+    }
+
+    private static Map<String, JavaType> maximumStringLengthsProperties(
+        ObjectMapper mapper
+    ) {
+        JavaType integerType = mapper.constructType(Long.class);
+        return Map.of(
+            "maximumMessageLength", integerType,
+            "maximumTopicSerialLength", integerType,
+            "maximumTopicElementLength", integerType,
+            "maximumIdLength", integerType,
+            "idNumericalOnly", mapper.constructType(Boolean.class),
+            "maximumLoadIdLength", integerType
+        );
+    }
+
+    private static Map<String, JavaType> maximumArrayLengthsProperties(
+        ObjectMapper mapper
+    ) {
+        JavaType integerType = mapper.constructType(Long.class);
+        return Map.ofEntries(
+            Map.entry("order.nodes", integerType),
+            Map.entry("order.edges", integerType),
+            Map.entry("node.actions", integerType),
+            Map.entry("edge.actions", integerType),
+            Map.entry("actions.actionsParameters", integerType),
+            Map.entry("instantActions", integerType),
+            Map.entry("trajectory.knotVector", integerType),
+            Map.entry("trajectory.controlPoints", integerType),
+            Map.entry("zoneSet.zones", integerType),
+            Map.entry("state.nodeStates", integerType),
+            Map.entry("state.edgeStates", integerType),
+            Map.entry("state.loads", integerType),
+            Map.entry("state.actionStates", integerType),
+            Map.entry("state.instantActionStates", integerType),
+            Map.entry("state.zoneActionStates", integerType),
+            Map.entry("state.errors", integerType),
+            Map.entry("state.information", integerType),
+            Map.entry("error.errorReferences", integerType),
+            Map.entry("information.infoReferences", integerType)
+        );
+    }
+
+    private static Map<String, JavaType> protocolTimingProperties(
+        ObjectMapper mapper
+    ) {
+        JavaType numberType = mapper.constructType(Double.class);
+        return Map.of(
+            "minimumOrderInterval", numberType,
+            "minimumStateInterval", numberType,
+            "defaultStateInterval", numberType,
+            "visualizationInterval", numberType
         );
     }
 }
