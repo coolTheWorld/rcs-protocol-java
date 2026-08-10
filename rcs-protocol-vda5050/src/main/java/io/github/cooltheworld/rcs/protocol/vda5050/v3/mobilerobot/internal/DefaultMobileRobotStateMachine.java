@@ -10,6 +10,8 @@ import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.Connection;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ConnectionState;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ProtocolHeader;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ProtocolTimestamp;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.validation.ValidationIssue;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.validation.ValidationSeverity;
 import java.util.List;
 import java.util.Objects;
 import org.slf4j.Logger;
@@ -37,8 +39,19 @@ public final class DefaultMobileRobotStateMachine
     ) {
         Objects.requireNonNull(state, "state");
         Objects.requireNonNull(event, "event");
-        MobileRobotEvent.ConnectionOpeningRequested opening =
-            (MobileRobotEvent.ConnectionOpeningRequested) event;
+        if (event instanceof MobileRobotEvent.ConnectionOpeningRequested opening) {
+            return transitionOpening(state, opening);
+        }
+        return transitionPublication(
+            state,
+            (MobileRobotEvent.ConnectionStatePublicationRequested) event
+        );
+    }
+
+    private MobileRobotTransition transitionOpening(
+        MobileRobotState state,
+        MobileRobotEvent.ConnectionOpeningRequested opening
+    ) {
         ProtocolTimestamp timestamp = ProtocolTimestamp.from(opening.occurredAt());
         Long lastWillHeaderId = state.nextConnectionHeaderId();
         Long onlineHeaderId = Unsigned32.next(lastWillHeaderId);
@@ -75,6 +88,65 @@ public final class DefaultMobileRobotStateMachine
             ),
             List.of()
         );
+    }
+
+    private MobileRobotTransition transitionPublication(
+        MobileRobotState state,
+        MobileRobotEvent.ConnectionStatePublicationRequested publication
+    ) {
+        if (!isConnectionSessionActive(state)) {
+            ValidationIssue issue = new ValidationIssue(
+                "CONNECTION_SESSION_NOT_ACTIVE",
+                ValidationSeverity.ERROR,
+                "",
+                "主动发布 Connection 前必须完成上线序列",
+                "VDA3-CONNECTION-001"
+            );
+            LOGGER.warn(
+                "event=mobile_robot_connection_publication_rejected "
+                    + "manufacturer={} serialNumber={} requestedState={} "
+                    + "issueCode={}",
+                state.robotIdentity().manufacturer(),
+                state.robotIdentity().serialNumber(),
+                publication.connectionState(),
+                issue.code()
+            );
+            return new MobileRobotTransition(
+                state,
+                List.of(),
+                List.of(issue)
+            );
+        }
+        Long headerId = state.nextConnectionHeaderId();
+        Connection connection = connection(
+            state,
+            headerId,
+            ProtocolTimestamp.from(publication.occurredAt()),
+            publication.connectionState()
+        );
+        MobileRobotState nextState = state.toBuilder()
+            .nextConnectionHeaderId(Unsigned32.next(headerId))
+            .lastConnection(connection)
+            .build();
+        LOGGER.info(
+            "event=mobile_robot_connection_published manufacturer={} "
+                + "serialNumber={} connectionState={} headerId={}",
+            state.robotIdentity().manufacturer(),
+            state.robotIdentity().serialNumber(),
+            connection.connectionState(),
+            headerId
+        );
+        return new MobileRobotTransition(
+            nextState,
+            List.of(new MobileRobotEffect.PublishConnection(connection)),
+            List.of()
+        );
+    }
+
+    private static boolean isConnectionSessionActive(MobileRobotState state) {
+        return state.connectionLastWill() != null
+            && state.lastConnection() != null
+            && state.lastConnection().connectionState() != ConnectionState.OFFLINE;
     }
 
     private static Connection connection(

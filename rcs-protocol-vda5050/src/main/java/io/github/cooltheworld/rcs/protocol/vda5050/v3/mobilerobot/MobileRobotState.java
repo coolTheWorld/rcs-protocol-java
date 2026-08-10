@@ -104,6 +104,7 @@ public final class MobileRobotState {
     }
 
     private Long requireHeaderId(Long headerId) {
+        Objects.requireNonNull(headerId, "nextConnectionHeaderId");
         if (!Unsigned32.isValid(headerId)) {
             throw new IllegalArgumentException(
                 "Next Connection headerId is outside the uint32 range"
