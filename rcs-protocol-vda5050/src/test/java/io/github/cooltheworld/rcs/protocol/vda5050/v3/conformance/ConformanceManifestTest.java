@@ -74,6 +74,7 @@ final class ConformanceManifestTest {
         RequirementRow headerCounterRule = rowsById.get("VDA3-SHARED-005");
         RequirementRow protocolHeaderRule = rowsById.get("VDA3-SHARED-006");
         RequirementRow extensionFieldsRule = rowsById.get("VDA3-SHARED-007");
+        RequirementRow validationBoundaryRule = rowsById.get("VDA3-SHARED-008");
         RequirementRow topicMetadataRule = rowsById.get("VDA3-SHARED-011");
         RequirementRow connectionRule = rowsById.get("VDA3-CONNECTION-001");
         assertNotNull(timestampRule, "Missing strict timestamp rule");
@@ -83,6 +84,7 @@ final class ConformanceManifestTest {
         assertNotNull(headerCounterRule, "Missing headerId counter rule");
         assertNotNull(protocolHeaderRule, "Missing common protocol header rule");
         assertNotNull(extensionFieldsRule, "Missing extension fields rule");
+        assertNotNull(validationBoundaryRule, "Missing validation boundary rule");
         assertNotNull(topicMetadataRule, "Missing Topic metadata and layout rule");
         assertNotNull(connectionRule, "Missing Connection rule");
         assertEquals(
@@ -104,12 +106,39 @@ final class ConformanceManifestTest {
         assertEquals("SCHEMA_MISSING", headerCounterRule.schemaGap());
         assertEquals("NONE", protocolHeaderRule.schemaGap());
         assertEquals("NONE", extensionFieldsRule.schemaGap());
+        assertEquals("NONE", validationBoundaryRule.schemaGap());
         assertEquals("NONE", topicMetadataRule.schemaGap());
         assertEquals("VERIFIED", topicMetadataRule.status());
         assertEquals("PARTIAL", connectionRule.status());
         assertTrue(
             connectionRule.test().contains("ConnectionCodecTest"),
             "Connection rule must retain C08 Codec evidence"
+        );
+        assertAll(
+            () -> assertTrue(
+                robotIdentityRule.transition().contains(
+                    "DefaultFleetControlStateMachine"
+                ),
+                "Robot identity rule must include C10 session evidence"
+            ),
+            () -> assertTrue(
+                extensionFieldsRule.transition().contains(
+                    "DefaultFleetControlStateMachine"
+                ),
+                "Extension rule must include C10 diagnostic evidence"
+            ),
+            () -> assertTrue(
+                validationBoundaryRule.transition().contains(
+                    "DefaultFleetControlStateMachine"
+                ),
+                "Validation boundary must include C10 rejection evidence"
+            ),
+            () -> assertTrue(
+                connectionRule.transition().contains(
+                    "DefaultFleetControlStateMachine"
+                ),
+                "Connection rule must include C10 transition evidence"
+            )
         );
     }
 

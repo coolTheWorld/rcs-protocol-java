@@ -40,6 +40,12 @@ Validator 在创建时检查并缓存八份 classpath Schema，设计为线程�
 
 普通非法输入返回 `RejectedInboundMessage<Connection>`，不会抛出协议异常或保留原始 payload。需要收紧部署资源上限时使用 `ConnectionValidator.create(JsonCodecLimits)`；同一组限制会同时用于 Schema 前置解析和强类型 Codec。裸 `Connection` 不能通过公共 API 包装为成功凭证。
 
+## Fleet Control Connection 状态机
+
+`FleetControlStateMachine.createDefault()` 提供按 Robot Identity 聚合的 Fleet Control 纯状态机。正常事件只接受 `ValidatedMessage<Connection>`，拒绝事件接受 `RejectedInboundMessage<Connection>`；事件时间由调用方显式传入，状态机不访问系统时钟或外部 I/O。
+
+状态机观察 `ONLINE`、`OFFLINE`、`HIBERNATING` 与 `CONNECTION_BROKEN`。相同连接状态的 retained 或重复消息会更新最近消息但不重复产生状态变化 Effect；Last Will 即使携带陈旧的 `headerId` 和 `timestamp`，仍会被观察为 `CONNECTION_BROKEN`。前三层拒绝和会话身份误投保持 State 不变，并返回结构化 Issue 与不含 payload/扩展值的诊断 Effect。状态机内部仅通过 SLF4J API 输出旁路安全日志，日志不参与 Transition 计算。
+
 ## 项目文档
 
 - [VDA 5050 Java 实现规格](https://github.com/coolTheWorld/rcs-protocol-spec/blob/main/vda5050-java-implementation.md)
