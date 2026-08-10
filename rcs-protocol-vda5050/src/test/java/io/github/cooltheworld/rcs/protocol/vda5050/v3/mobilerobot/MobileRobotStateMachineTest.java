@@ -8,11 +8,13 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.Connection;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ConnectionState;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ProtocolTimestamp;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ProtocolVersionProfile;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.RobotIdentity;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.mobilerobot.effect.MobileRobotEffect;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.mobilerobot.event.MobileRobotEvent;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.connection.Connection;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.connection.ConnectionState;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.common.ProtocolTimestamp;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.common.ProtocolVersionProfile;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.common.RobotIdentity;
 import java.time.Instant;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

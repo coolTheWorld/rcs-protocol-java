@@ -1,9 +1,9 @@
 package io.github.cooltheworld.rcs.protocol.vda5050.v3.validation;
 
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.internal.Unsigned32;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ProtocolTimestamp;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ProtocolVersion;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.RobotIdentity;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.common.ProtocolTimestamp;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.common.ProtocolVersion;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.common.RobotIdentity;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.topic.TopicName;
 import java.util.List;
 import java.util.Objects;

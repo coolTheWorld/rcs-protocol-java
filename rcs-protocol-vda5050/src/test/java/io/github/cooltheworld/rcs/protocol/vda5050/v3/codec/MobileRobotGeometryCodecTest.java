@@ -9,8 +9,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.MobileRobotGeometry;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.WheelType;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.MobileRobotGeometry;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.WheelType;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.topic.TopicName;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.validation.DecodedMessage;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.validation.DecodingResult;

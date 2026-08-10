@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ProtocolVersionProfile;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.common.ProtocolVersionProfile;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.List;

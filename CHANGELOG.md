@@ -13,6 +13,11 @@
 - 提供 Factsheet `TypeSpecification`、`PhysicalParameters`、`ProtocolLimits`、`ProtocolFeatures` 与 `MobileRobotGeometry` 模型片段和确定性 JSON 往返。
 - 提供结构化校验问题、拒绝消息安全上下文和显式协议版本配置。
 
+### Changed（变更）
+
+- 在首个发布前把公共模型迁入 `model.common`、`model.action`、`model.connection` 与 `model.factsheet`，并把双角色 Event/Effect 迁入各自子包；旧扁平包不保留兼容类型。
+- 从公共模型移除 Jackson 注解与节点类型，不透明 JSON 只在显式 `Vda5050JacksonModule` 集成中转换。
+
 ### Security（安全）
 
 - 在完整对象绑定前限制 payload、嵌套深度、字符串、字段名、数值文本、数组、对象属性和 Token 数量。

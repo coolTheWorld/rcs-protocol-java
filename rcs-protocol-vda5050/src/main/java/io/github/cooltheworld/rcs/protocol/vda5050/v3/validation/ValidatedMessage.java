@@ -1,6 +1,6 @@
 package io.github.cooltheworld.rcs.protocol.vda5050.v3.validation;
 
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ProtocolVersionProfile;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.common.ProtocolVersionProfile;
 import java.util.List;
 import java.util.Objects;
 

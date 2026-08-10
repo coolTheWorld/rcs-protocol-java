@@ -12,6 +12,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -19,16 +20,17 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdScalarSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.codec.internal.OpaqueJsonJacksonAccess;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.extension.ExtensionFields;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.extension.internal.ExtensionFieldsJacksonSupport;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.Envelope2d;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.Envelope2dVertex;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.Envelope3d;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.Envelope3dData;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.MobileRobotGeometry;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.WheelDefinition;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.WheelPosition;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.WheelType;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.Envelope2d;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.Envelope2dVertex;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.Envelope3d;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.Envelope3dData;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.MobileRobotGeometry;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.WheelDefinition;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.WheelPosition;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.WheelType;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
@@ -101,6 +103,14 @@ final class MobileRobotGeometryJacksonSupport {
         );
         module.addSerializer(Envelope3d.class, new Envelope3dSerializer());
         module.addDeserializer(Envelope3d.class, new Envelope3dDeserializer());
+        module.addSerializer(
+            Envelope3dData.class,
+            new Envelope3dDataSerializer()
+        );
+        module.addDeserializer(
+            Envelope3dData.class,
+            new Envelope3dDataDeserializer()
+        );
     }
 
     private static final class WheelTypeSerializer
@@ -544,6 +554,48 @@ final class MobileRobotGeometryJacksonSupport {
             putOptional(target, "description", value.description());
             merge(mapper, target, value.extensionFields(), ENVELOPE_3D_FIELDS);
             generator.writeTree(target);
+        }
+    }
+
+    private static final class Envelope3dDataSerializer
+        extends StdSerializer<Envelope3dData> {
+        private Envelope3dDataSerializer() {
+            super(Envelope3dData.class);
+        }
+
+        @Override
+        public void serialize(
+            Envelope3dData value,
+            JsonGenerator generator,
+            SerializerProvider provider
+        ) throws IOException {
+            generator.writeTree(OpaqueJsonJacksonAccess.object(
+                requireObjectMapper(generator),
+                value
+            ));
+        }
+    }
+
+    private static final class Envelope3dDataDeserializer
+        extends StdDeserializer<Envelope3dData> {
+        private Envelope3dDataDeserializer() {
+            super(Envelope3dData.class);
+        }
+
+        @Override
+        public Envelope3dData deserialize(
+            JsonParser parser,
+            DeserializationContext context
+        ) throws IOException {
+            ObjectMapper mapper = requireObjectMapper(parser);
+            JsonNode value = mapper.readTree(parser);
+            if (!(value instanceof ObjectNode object)) {
+                return context.reportInputMismatch(
+                    Envelope3dData.class,
+                    "3D envelope data must be a JSON object"
+                );
+            }
+            return OpaqueJsonJacksonAccess.envelope3dData(mapper, object);
         }
     }
 

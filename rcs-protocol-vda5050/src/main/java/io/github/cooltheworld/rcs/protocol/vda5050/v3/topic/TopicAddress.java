@@ -1,6 +1,6 @@
 package io.github.cooltheworld.rcs.protocol.vda5050.v3.topic;
 
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.RobotIdentity;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.common.RobotIdentity;
 import java.util.Objects;
 
 /** 由 Robot Identity 与标准 Topic 名称组成的路径语义地址。 */

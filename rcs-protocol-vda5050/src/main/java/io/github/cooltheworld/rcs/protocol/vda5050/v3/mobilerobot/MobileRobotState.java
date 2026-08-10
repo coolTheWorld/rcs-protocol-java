@@ -1,10 +1,10 @@
 package io.github.cooltheworld.rcs.protocol.vda5050.v3.mobilerobot;
 
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.internal.Unsigned32;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.Connection;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ConnectionState;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ProtocolVersionProfile;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.RobotIdentity;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.connection.Connection;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.connection.ConnectionState;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.common.ProtocolVersionProfile;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.common.RobotIdentity;
 import java.util.Objects;
 
 /** Mobile Robot 按 Robot Identity 聚合的不可变协议会话状态。 */

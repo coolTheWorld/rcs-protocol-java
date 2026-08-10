@@ -1,12 +1,12 @@
 package io.github.cooltheworld.rcs.protocol.vda5050.v3.validation;
 
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.Envelope2d;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.Envelope2dVertex;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.Envelope3d;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.MobileRobotGeometry;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.WheelDefinition;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.WheelPosition;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.WheelType;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.Envelope2d;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.Envelope2dVertex;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.Envelope3d;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.MobileRobotGeometry;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.WheelDefinition;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.WheelPosition;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.WheelType;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;

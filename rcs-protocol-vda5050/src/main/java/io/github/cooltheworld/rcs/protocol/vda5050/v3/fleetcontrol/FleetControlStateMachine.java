@@ -1,5 +1,6 @@
 package io.github.cooltheworld.rcs.protocol.vda5050.v3.fleetcontrol;
 
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.fleetcontrol.event.FleetControlEvent;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.fleetcontrol.internal.DefaultFleetControlStateMachine;
 
 /** Fleet Control 角色专属的纯状态机接口。 */

@@ -7,9 +7,9 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ProtocolTimestamp;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ProtocolVersion;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.RobotIdentity;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.common.ProtocolTimestamp;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.common.ProtocolVersion;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.common.RobotIdentity;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.topic.TopicName;
 import java.lang.reflect.Field;
 import java.time.Instant;

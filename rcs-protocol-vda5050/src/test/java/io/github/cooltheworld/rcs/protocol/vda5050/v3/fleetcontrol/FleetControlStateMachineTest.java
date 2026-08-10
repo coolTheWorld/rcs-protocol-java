@@ -8,10 +8,12 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.Connection;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ConnectionState;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ProtocolVersionProfile;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.RobotIdentity;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.fleetcontrol.effect.FleetControlEffect;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.fleetcontrol.event.FleetControlEvent;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.connection.Connection;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.connection.ConnectionState;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.common.ProtocolVersionProfile;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.common.RobotIdentity;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.topic.DefaultTopicLayout;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.topic.TopicAddress;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.topic.TopicLayout;

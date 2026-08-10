@@ -26,7 +26,7 @@
 `ConnectionValidator` 是 `connection` 入站消息获得成功凭证的公共入口。普通非法输入返回 `RejectedInboundMessage`，不通过异常表达协议错误。
 
 ```java
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.Connection;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.connection.Connection;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.topic.DefaultTopicLayout;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.validation.ConnectionValidator;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.validation.RejectedInboundMessage;
@@ -57,12 +57,12 @@ if (result instanceof ValidatedMessage<Connection> accepted) {
 以下代码接续上节 `accepted` 成功分支。缺失历史快照时必须从 `recovering` 状态开始；事件时间由外部显式传入，状态机不读取系统时钟。
 
 ```java
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.fleetcontrol.FleetControlEvent;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.fleetcontrol.event.FleetControlEvent;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.fleetcontrol.FleetControlState;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.fleetcontrol.FleetControlStateMachine;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.fleetcontrol.FleetControlTransition;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ProtocolVersionProfile;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.RobotIdentity;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.common.ProtocolVersionProfile;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.common.RobotIdentity;
 import java.time.Instant;
 
 RobotIdentity robot = new RobotIdentity("acme", "robot-001");
@@ -88,7 +88,7 @@ FleetControlState nextState = transition.state();
 默认 Topic 路径为 `vda5050/v3/{manufacturer}/{serialNumber}/{topic}`：
 
 ```java
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.RobotIdentity;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.common.RobotIdentity;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.topic.DefaultTopicLayout;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.topic.TopicAddress;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.topic.TopicName;
@@ -108,6 +108,7 @@ String path = DefaultTopicLayout.standard().format(
 - `Vda5050JsonCodec.createDefault()` 适合直接处理不可信 UTF-8 payload。
 - 复用应用 `ObjectMapper` 时可以注册 `Vda5050JacksonModule`，但调用方仍须自行设置资源约束和完整校验流程。
 - 未知字段只由不可变 `ExtensionFields` 透明保存；公共 API 不提供动态业务读取。
+- 协议模型不引用 Jackson 类型；`ExtensionFields` 与三维包络内联数据只在显式注册的 `Vda5050JacksonModule` 内转换线路 JSON。
 - 不启用 Jackson Default Typing，不把原始 payload、扩展值、动作参数、下载链接或凭据写入日志。
 
 ## 并发与持久化责任

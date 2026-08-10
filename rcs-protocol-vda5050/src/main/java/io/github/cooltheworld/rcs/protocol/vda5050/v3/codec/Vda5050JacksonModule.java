@@ -15,12 +15,12 @@ import com.fasterxml.jackson.databind.ser.std.StdScalarSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.extension.ExtensionFields;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.extension.internal.ExtensionFieldsJacksonSupport;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.Connection;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ConnectionState;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ProtocolHeader;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ProtocolTimestamp;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ProtocolVersion;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.RobotIdentity;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.connection.Connection;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.connection.ConnectionState;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.common.ProtocolHeader;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.common.ProtocolTimestamp;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.common.ProtocolVersion;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.common.RobotIdentity;
 import java.io.IOException;
 import java.util.Set;
 
@@ -49,6 +49,7 @@ public final class Vda5050JacksonModule extends SimpleModule {
         addDeserializer(ProtocolTimestamp.class, new ProtocolTimestampDeserializer());
         addSerializer(Connection.class, new ConnectionSerializer());
         addDeserializer(Connection.class, new ConnectionDeserializer());
+        ExtensionFieldsJacksonSupport.register(this);
         FactsheetFragmentJacksonSupport.register(this);
         ProtocolLimitsJacksonSupport.register(this);
         ProtocolFeaturesJacksonSupport.register(this);

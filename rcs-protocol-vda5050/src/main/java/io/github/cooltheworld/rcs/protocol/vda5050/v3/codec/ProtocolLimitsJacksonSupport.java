@@ -16,10 +16,10 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.extension.internal.ExtensionFieldsJacksonSupport;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.MaximumArrayLengths;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.MaximumStringLengths;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ProtocolLimits;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ProtocolTiming;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.MaximumArrayLengths;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.MaximumStringLengths;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.ProtocolLimits;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.ProtocolTiming;
 import java.io.IOException;
 import java.util.Set;
 

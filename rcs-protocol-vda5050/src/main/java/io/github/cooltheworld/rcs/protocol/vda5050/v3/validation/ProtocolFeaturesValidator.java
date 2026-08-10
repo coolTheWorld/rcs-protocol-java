@@ -1,11 +1,11 @@
 package io.github.cooltheworld.rcs.protocol.vda5050.v3.validation;
 
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ActionParameterDefinition;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ActionScope;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.BlockingType;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.MobileRobotAction;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.OptionalParameter;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ProtocolFeatures;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.action.ActionParameterDefinition;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.action.ActionScope;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.action.BlockingType;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.action.MobileRobotAction;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.OptionalParameter;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.ProtocolFeatures;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;

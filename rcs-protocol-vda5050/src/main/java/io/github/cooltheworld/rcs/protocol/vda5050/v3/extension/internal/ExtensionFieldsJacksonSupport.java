@@ -1,10 +1,19 @@
 package io.github.cooltheworld.rcs.protocol.vda5050.v3.extension.internal;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.codec.internal.OpaqueJsonJacksonAccess;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.extension.ExtensionFields;
+import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -12,6 +21,13 @@ import java.util.Set;
 /** Jackson Codec 用于捕获和安全回写不透明扩展字段的内部支持。 */
 public final class ExtensionFieldsJacksonSupport {
     private ExtensionFieldsJacksonSupport() {}
+
+    /** 把不透明扩展值的线路表示注册到协议 Jackson Module。 */
+    public static void register(SimpleModule module) {
+        Objects.requireNonNull(module, "module");
+        module.addSerializer(ExtensionFields.class, new Serializer());
+        module.addDeserializer(ExtensionFields.class, new Deserializer());
+    }
 
     /**
      * 从消息对象捕获不属于标准字段集合的属性，不修改输入树。
@@ -38,7 +54,7 @@ public final class ExtensionFieldsJacksonSupport {
                 captured.set(property.getKey(), property.getValue().deepCopy());
             }
         }
-        return mapper.treeToValue(captured, ExtensionFields.class);
+        return OpaqueJsonJacksonAccess.extensionFields(mapper, captured);
     }
 
     /**
@@ -61,7 +77,10 @@ public final class ExtensionFieldsJacksonSupport {
         Set<String> standardNames = Set.copyOf(
             Objects.requireNonNull(standardFieldNames, "standardFieldNames")
         );
-        ObjectNode extensionObject = mapper.valueToTree(extensionFields);
+        ObjectNode extensionObject = OpaqueJsonJacksonAccess.object(
+            mapper,
+            extensionFields
+        );
 
         for (Map.Entry<String, JsonNode> property : extensionObject.properties()) {
             if (standardNames.contains(property.getKey()) || target.has(property.getKey())) {
@@ -73,5 +92,63 @@ public final class ExtensionFieldsJacksonSupport {
         for (Map.Entry<String, JsonNode> property : extensionObject.properties()) {
             target.set(property.getKey(), property.getValue().deepCopy());
         }
+    }
+
+    private static final class Serializer
+        extends StdSerializer<ExtensionFields> {
+        private Serializer() {
+            super(ExtensionFields.class);
+        }
+
+        @Override
+        public void serialize(
+            ExtensionFields value,
+            JsonGenerator generator,
+            SerializerProvider provider
+        ) throws IOException {
+            generator.writeTree(OpaqueJsonJacksonAccess.object(
+                requireObjectMapper(generator),
+                value
+            ));
+        }
+    }
+
+    private static final class Deserializer
+        extends StdDeserializer<ExtensionFields> {
+        private Deserializer() {
+            super(ExtensionFields.class);
+        }
+
+        @Override
+        public ExtensionFields deserialize(
+            JsonParser parser,
+            DeserializationContext context
+        ) throws IOException {
+            ObjectMapper mapper = requireObjectMapper(parser);
+            JsonNode value = mapper.readTree(parser);
+            if (!(value instanceof ObjectNode object)) {
+                return context.reportInputMismatch(
+                    ExtensionFields.class,
+                    "Extension fields must be a JSON object"
+                );
+            }
+            return OpaqueJsonJacksonAccess.extensionFields(mapper, object);
+        }
+    }
+
+    private static ObjectMapper requireObjectMapper(JsonGenerator generator)
+        throws IOException {
+        if (generator.getCodec() instanceof ObjectMapper mapper) {
+            return mapper;
+        }
+        throw new IOException("VDA 5050 Module requires an ObjectMapper codec");
+    }
+
+    private static ObjectMapper requireObjectMapper(JsonParser parser)
+        throws IOException {
+        if (parser.getCodec() instanceof ObjectMapper mapper) {
+            return mapper;
+        }
+        throw new IOException("VDA 5050 Module requires an ObjectMapper codec");
     }
 }

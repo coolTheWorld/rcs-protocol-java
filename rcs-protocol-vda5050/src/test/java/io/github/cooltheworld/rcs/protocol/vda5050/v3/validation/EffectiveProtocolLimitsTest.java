@@ -8,10 +8,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.codec.JsonCodecLimits;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.MaximumArrayLengths;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.MaximumStringLengths;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ProtocolLimits;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ProtocolTiming;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.MaximumArrayLengths;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.MaximumStringLengths;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.ProtocolLimits;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.ProtocolTiming;
 import java.util.List;
 import java.util.Random;
 import org.junit.jupiter.api.DisplayName;

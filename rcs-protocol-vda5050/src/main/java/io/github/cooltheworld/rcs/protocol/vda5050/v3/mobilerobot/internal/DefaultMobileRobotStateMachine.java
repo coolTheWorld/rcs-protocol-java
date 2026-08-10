@@ -1,15 +1,15 @@
 package io.github.cooltheworld.rcs.protocol.vda5050.v3.mobilerobot.internal;
 
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.internal.Unsigned32;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.mobilerobot.MobileRobotEffect;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.mobilerobot.MobileRobotEvent;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.mobilerobot.effect.MobileRobotEffect;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.mobilerobot.event.MobileRobotEvent;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.mobilerobot.MobileRobotState;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.mobilerobot.MobileRobotStateMachine;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.mobilerobot.MobileRobotTransition;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.Connection;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ConnectionState;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ProtocolHeader;
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ProtocolTimestamp;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.connection.Connection;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.connection.ConnectionState;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.common.ProtocolHeader;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.common.ProtocolTimestamp;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.validation.ValidationIssue;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.validation.ValidationSeverity;
 import java.util.List;

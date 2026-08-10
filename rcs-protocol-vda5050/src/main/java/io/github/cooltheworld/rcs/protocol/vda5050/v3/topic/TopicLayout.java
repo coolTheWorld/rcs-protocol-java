@@ -1,6 +1,6 @@
 package io.github.cooltheworld.rcs.protocol.vda5050.v3.topic;
 
-import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.RobotIdentity;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.common.RobotIdentity;
 import java.util.Objects;
 
 /**

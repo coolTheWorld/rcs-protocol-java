@@ -1,5 +1,6 @@
 package io.github.cooltheworld.rcs.protocol.vda5050.v3.mobilerobot;
 
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.mobilerobot.event.MobileRobotEvent;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.mobilerobot.internal.DefaultMobileRobotStateMachine;
 
 /** Mobile Robot 角色专属的纯状态机接口。 */

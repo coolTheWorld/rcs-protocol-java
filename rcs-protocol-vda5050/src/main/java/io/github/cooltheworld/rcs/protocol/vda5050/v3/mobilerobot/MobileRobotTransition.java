@@ -1,5 +1,6 @@
 package io.github.cooltheworld.rcs.protocol.vda5050.v3.mobilerobot;
 
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.mobilerobot.effect.MobileRobotEffect;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.validation.ValidationIssue;
 import java.util.List;
 import java.util.Objects;
