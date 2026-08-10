@@ -46,6 +46,12 @@ Validator 在创建时检查并缓存八份 classpath Schema，设计为线程�
 
 状态机观察 `ONLINE`、`OFFLINE`、`HIBERNATING` 与 `CONNECTION_BROKEN`。相同连接状态的 retained 或重复消息会更新最近消息但不重复产生状态变化 Effect；Last Will 即使携带陈旧的 `headerId` 和 `timestamp`，仍会被观察为 `CONNECTION_BROKEN`。前三层拒绝和会话身份误投保持 State 不变，并返回结构化 Issue 与不含 payload/扩展值的诊断 Effect。状态机内部仅通过 SLF4J API 输出旁路安全日志，日志不参与 Transition 计算。
 
+## Mobile Robot Connection 状态机
+
+`MobileRobotStateMachine.createDefault()` 提供按 Robot Identity 聚合的 Mobile Robot 纯状态机。上线请求使用调用方显式传入的时间，先产生携带 `CONNECTION_BROKEN` 完整消息的 `ConfigureConnectionLastWill`，再产生 `PublishConnection` 发布 `ONLINE`；两条消息使用相邻且可回绕的 Connection Topic `headerId`。
+
+已建立连接会话后可主动发布 `ONLINE`、`OFFLINE` 或 `HIBERNATING`，不能主动发布 `CONNECTION_BROKEN`。初始状态和发布 `OFFLINE` 后必须重新执行上线序列，否则 Transition 保持 State 并返回结构化 Issue。Effect 保存完整不可变 Connection，Outbox 重试应重交付同一持久化 Effect，从而复用消息头与时间。核心只描述协议 Effect，不引用 MQTT 客户端；连接、保留发布、确认和重试调度由外部 Adapter 负责。
+
 ## 项目文档
 
 - [VDA 5050 Java 实现规格](https://github.com/coolTheWorld/rcs-protocol-spec/blob/main/vda5050-java-implementation.md)

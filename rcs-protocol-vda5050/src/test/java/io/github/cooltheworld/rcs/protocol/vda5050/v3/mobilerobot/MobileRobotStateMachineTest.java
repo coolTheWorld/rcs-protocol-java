@@ -66,9 +66,19 @@ final class MobileRobotStateMachineTest {
             () -> assertEquals(ConnectionState.CONNECTION_BROKEN, lastWill.connectionState()),
             () -> assertEquals(0L, lastWill.header().headerId()),
             () -> assertEquals(expectedTimestamp, lastWill.header().timestamp()),
+            () -> assertEquals(ROBOT, lastWill.header().robotIdentity()),
+            () -> assertEquals(
+                ProtocolVersionProfile.V3_0_0.version(),
+                lastWill.header().version()
+            ),
             () -> assertEquals(ConnectionState.ONLINE, online.connectionState()),
             () -> assertEquals(1L, online.header().headerId()),
             () -> assertEquals(expectedTimestamp, online.header().timestamp()),
+            () -> assertEquals(ROBOT, online.header().robotIdentity()),
+            () -> assertEquals(
+                ProtocolVersionProfile.V3_0_0.version(),
+                online.header().version()
+            ),
             () -> assertEquals(2L, transition.state().nextConnectionHeaderId()),
             () -> assertSame(lastWill, transition.state().connectionLastWill()),
             () -> assertSame(online, transition.state().lastConnection()),

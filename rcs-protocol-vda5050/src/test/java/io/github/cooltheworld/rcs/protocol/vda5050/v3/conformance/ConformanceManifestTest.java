@@ -116,10 +116,28 @@ final class ConformanceManifestTest {
         );
         assertAll(
             () -> assertTrue(
+                timestampRule.transition().contains(
+                    "DefaultMobileRobotStateMachine"
+                ),
+                "Timestamp rule must include C11 publication evidence"
+            ),
+            () -> assertTrue(
+                versionProfileRule.transition().contains(
+                    "DefaultMobileRobotStateMachine"
+                ),
+                "Version profile rule must include C11 publication evidence"
+            ),
+            () -> assertTrue(
                 robotIdentityRule.transition().contains(
                     "DefaultFleetControlStateMachine"
                 ),
                 "Robot identity rule must include C10 session evidence"
+            ),
+            () -> assertTrue(
+                robotIdentityRule.transition().contains(
+                    "DefaultMobileRobotStateMachine"
+                ),
+                "Robot identity rule must include C11 publication evidence"
             ),
             () -> assertTrue(
                 extensionFieldsRule.transition().contains(
@@ -134,10 +152,34 @@ final class ConformanceManifestTest {
                 "Validation boundary must include C10 rejection evidence"
             ),
             () -> assertTrue(
+                headerCounterRule.transition().contains(
+                    "DefaultMobileRobotStateMachine"
+                ),
+                "Header counter rule must include C11 publication evidence"
+            ),
+            () -> assertTrue(
+                protocolHeaderRule.transition().contains(
+                    "DefaultMobileRobotStateMachine"
+                ),
+                "Protocol header rule must include C11 publication evidence"
+            ),
+            () -> assertTrue(
+                topicMetadataRule.transition().contains(
+                    "DefaultMobileRobotStateMachine"
+                ),
+                "Topic metadata rule must include C11 Last Will evidence"
+            ),
+            () -> assertTrue(
                 connectionRule.transition().contains(
                     "DefaultFleetControlStateMachine"
                 ),
                 "Connection rule must include C10 transition evidence"
+            ),
+            () -> assertTrue(
+                connectionRule.transition().contains(
+                    "DefaultMobileRobotStateMachine"
+                ),
+                "Connection rule must include C11 transition evidence"
             )
         );
     }
