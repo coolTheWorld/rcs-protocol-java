@@ -52,6 +52,12 @@ Validator 在创建时检查并缓存八份 classpath Schema，设计为线程�
 
 已建立连接会话后可主动发布 `ONLINE`、`OFFLINE` 或 `HIBERNATING`，不能主动发布 `CONNECTION_BROKEN`。初始状态和发布 `OFFLINE` 后必须重新执行上线序列，否则 Transition 保持 State 并返回结构化 Issue。Effect 保存完整不可变 Connection，Outbox 重试应重交付同一持久化 Effect，从而复用消息头与时间。核心只描述协议 Effect，不引用 MQTT 客户端；连接、保留发布、确认和重试调度由外部 Adapter 负责。
 
+## Connection 跨角色对话
+
+核心边界可以在同一进程中直接组合：Mobile Robot 的 `PublishConnection` 或 Last Will 消息经 `Vda5050JsonCodec` 编码，使用 `TopicLayout` 形成路径，由 `ConnectionValidator` 铸造 `ValidatedMessage<Connection>`，再作为 `FleetControlEvent.ConnectionReceived` 进入 Fleet Control 状态机。该路径覆盖上线、正常下线、意外断线以及重复/重试交付，编码前后的完整 Connection 保持相等。
+
+核心不提供额外的 Broker 模拟器或跨角色编排器，也不依赖 Spring、MQTT 客户端或 Redis；真实传输、retained 发布和交付确认继续属于 Adapter。仓库中的 `ConnectionDialogueTest` 使用真实核心实现验证上述边界。
+
 ## 项目文档
 
 - [VDA 5050 Java 实现规格](https://github.com/coolTheWorld/rcs-protocol-spec/blob/main/vda5050-java-implementation.md)

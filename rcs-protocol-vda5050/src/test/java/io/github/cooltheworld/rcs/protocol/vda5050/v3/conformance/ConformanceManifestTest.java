@@ -109,7 +109,7 @@ final class ConformanceManifestTest {
         assertEquals("NONE", validationBoundaryRule.schemaGap());
         assertEquals("NONE", topicMetadataRule.schemaGap());
         assertEquals("VERIFIED", topicMetadataRule.status());
-        assertEquals("PARTIAL", connectionRule.status());
+        assertEquals("VERIFIED", connectionRule.status());
         assertTrue(
             connectionRule.test().contains("ConnectionCodecTest"),
             "Connection rule must retain C08 Codec evidence"
@@ -180,6 +180,16 @@ final class ConformanceManifestTest {
                     "DefaultMobileRobotStateMachine"
                 ),
                 "Connection rule must include C11 transition evidence"
+            ),
+            () -> assertTrue(
+                connectionRule.fixture().contains(
+                    "fixtures/connection/dialogue/"
+                ),
+                "Connection rule must include C12 dialogue fixtures"
+            ),
+            () -> assertTrue(
+                connectionRule.test().contains("ConnectionDialogueTest"),
+                "Connection rule must include C12 cross-role evidence"
             )
         );
     }
