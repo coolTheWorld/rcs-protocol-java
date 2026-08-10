@@ -270,6 +270,7 @@
                             <exclude>io.github.cooltheworld.rcs.protocol.vda5050.v3.extension.internal</exclude>
                             <exclude>io.github.cooltheworld.rcs.protocol.vda5050.v3.fleetcontrol.internal</exclude>
                             <exclude>io.github.cooltheworld.rcs.protocol.vda5050.v3.internal</exclude>
+                            <exclude>io.github.cooltheworld.rcs.protocol.vda5050.v3.mobilerobot.internal</exclude>
                             <exclude>io.github.cooltheworld.rcs.protocol.vda5050.v3.validation.internal</exclude>
                         </excludes>
                         <ignoreMissingClasses>false</ignoreMissingClasses>
