@@ -2,6 +2,27 @@
 
 移动机器人调度协议的 Java 实现，规划支持 VDA 5050 和 GB/T 47864。项目使用 JDK 21 与 Maven，并按协议发布独立 jar。
 
+## 快速开始
+
+当前制品尚未发布，需要 JDK 21 并先在本地构建：
+
+```powershell
+.\mvnw.cmd verify
+.\mvnw.cmd install
+```
+
+本地安装后引入独立 VDA 5050 制品：
+
+```xml
+<dependency>
+  <groupId>io.github.cooltheworld</groupId>
+  <artifactId>rcs-protocol-vda5050</artifactId>
+  <version>0.1.0-SNAPSHOT</version>
+</dependency>
+```
+
+从 MQTT Topic 与不可信 payload 进入核心校验、状态机和 Effect 的完整示例见[使用说明](./docs/usage.md)。
+
 ## 版本兼容性
 
 | Maven 制品 | Maven 版本 | 协议版本 | 状态 |
@@ -10,23 +31,36 @@
 
 Maven 制品版本与协议版本独立演进。只有达到项目规范定义的一致性门槛后，制品才会发布首个稳定版本 `1.0.0`。新增或移除协议版本支持时，必须同步更新本表。
 
-## 构建
+## 常用命令
 
 项目要求 JDK 21，Maven Wrapper 固定使用 Maven 3.9.14。
 
-```powershell
-.\mvnw.cmd validate
-```
+| 目标 | Windows 命令 |
+|---|---|
+| 校验父项目 | `.\mvnw.cmd validate` |
+| 完整质量门禁 | `.\mvnw.cmd verify` |
+| 核心模块测试 | `.\mvnw.cmd -pl rcs-protocol-vda5050 test` |
+| 聚焦测试 | `.\mvnw.cmd -pl rcs-protocol-vda5050 -Dtest=<测试类> test` |
+| 构建核心 jar | `.\mvnw.cmd -pl rcs-protocol-vda5050 package` |
+| 检查依赖边界 | `.\mvnw.cmd -pl rcs-protocol-vda5050 dependency:tree` |
+
+Unix-like 环境使用对应的 `./mvnw` 命令，例如：
 
 ```shell
-./mvnw validate
+./mvnw verify
 ```
+
+## 架构边界
+
+父项目只聚合独立协议模块；当前唯一模块 `rcs-protocol-vda5050` 负责 VDA 5050 v3.0.0 强类型模型、安全 Codec、Schema 与语义校验、Topic 元数据以及双角色纯状态机。后续协议使用新的独立 jar，不把不同协议模型合并进一个制品。
+
+核心库不连接 Spring、MQTT、Redis、数据库或机器人设备。外部 Adapter 接收字节和 Topic、调度并发、原子持久化 State 与 Effect，并执行实际 I/O；核心只执行确定性的 `state + event -> state + effects + issues`。Fleet Control 与 Mobile Robot 的公共边界彼此独立，一个运行时实例只能选择一个角色。
 
 ## JSON Codec
 
 `Vda5050JsonCodec.createDefault()` 提供默认的安全 UTF-8 编解码边界。入站解码先执行 payload、深度、字符串、字段名、数值、数组、对象和 Token 资源上限，再创建完整协议对象；普通输入错误以 `DecodingResult<T>` 的拒绝分支返回。解码成功只表示完成语法与基础类型处理，仍须经过 Schema 和协议语义校验才能获得 `ValidatedMessage<T>`。
 
-需要复用应用现有 Jackson `ObjectMapper` 时，可以显式注册 `Vda5050JacksonModule`。该 Module 注册协议值类型以及已建模消息和子对象（目前包括 `Connection`、`TypeSpecification`、`PhysicalParameters` 与 Protocol Limits 子对象）的线路表示，不修改调用方的 null、未知字段、资源限制或多态配置。
+需要复用应用现有 Jackson `ObjectMapper` 时，可以显式注册 `Vda5050JacksonModule`。该 Module 注册协议值类型以及已建模消息和子对象（目前包括 `Connection`、`TypeSpecification`、`PhysicalParameters`、`ProtocolLimits`、`ProtocolFeatures` 与 `MobileRobotGeometry`）的线路表示，不修改调用方的 null、未知字段、资源限制或多态配置。
 
 ## Factsheet 类型与物理参数
 
@@ -39,6 +73,18 @@ Maven 制品版本与协议版本独立演进。只有达到项目规范定义�
 `ProtocolLimits` 以 `MaximumStringLengths`、`MaximumArrayLengths` 和 `ProtocolTiming` 强类型表达正式字段；数组字段使用 `orderNodes`、`trajectoryControlPoints` 等 Java accessor，Codec 仍精确使用 `order.nodes`、`trajectory.controlPoints` 等线路名。原始模型保留字段缺失与显式零值的区别，两者在有效计算中都表示未声明能力上限。
 
 `EffectiveProtocolLimits.resolve(...)` 把 `maximumMessageLength` 与部署 `maxPayloadBytes` 取交集，特定字符串与 `maxStringCharacters` 取交集，特定数组与 `maxArrayElements` 取交集，保证 Factsheet 只能收紧部署硬上限。Timing 不是 JSON 资源上限，因此只将零归一为未声明，不与 `JsonCodecLimits` 取最小值。负数、超过 `uint32` 的长度和非有限 timing 会 fail closed。
+
+## Factsheet 协议能力
+
+`ProtocolFeatures` 强类型表达可选参数和 Mobile Robot Action 能力。`OptionalParameter` 保留参数名、支持说明和可选描述；`MobileRobotAction` 表达 Action 类型、描述、作用域、参数定义与 Blocking Type。集合进行防御性复制，未知字段由 `ExtensionFields` 不透明保存。
+
+`ProtocolFeaturesValidator` 按输入顺序报告重复或冲突的参数、Action、Scope、参数定义和 Blocking Type，不修改或静默去重原始声明。默认 Codec 与 `Vda5050JacksonModule` 支持确定性 JSON 片段往返。
+
+## Factsheet 移动机器人几何
+
+`MobileRobotGeometry` 强类型表达轮定义、二维包络与三维包络；可选集合继续区分缺失与空数组。轮位置、尺寸和二维顶点使用 `Double`，三维包络可以携带内联数据或绝对 URL，未知字段同样透明保存。
+
+`MobileRobotGeometryValidator` 检查有限数值、固定轮必需的朝向，以及三维包络内容来源和 URL 形式。它只返回结构化 `ValidationIssue`，不会下载或打开外部几何资源。
 
 ## Schema Validator
 
@@ -72,7 +118,19 @@ Validator 在创建时检查并缓存八份 classpath Schema，设计为线程�
 
 ## 项目文档
 
+- [核心库使用说明](./docs/usage.md)
+- [贡献指南](./CONTRIBUTING.md)
+- [变更日志](./CHANGELOG.md)
 - [VDA 5050 Java 实现规格](https://github.com/coolTheWorld/rcs-protocol-spec/blob/main/vda5050-java-implementation.md)
+- [开发规范与完成定义](https://github.com/coolTheWorld/rcs-protocol-spec/blob/main/DEVELOPMENT.md)
 - [实施计划](https://github.com/coolTheWorld/rcs-protocol-spec/blob/main/tasks/vda5050-java/plan.md)
 - [任务清单](https://github.com/coolTheWorld/rcs-protocol-spec/blob/main/tasks/vda5050-java/todo.md)
 - [当前进度](https://github.com/coolTheWorld/rcs-protocol-spec/blob/main/tasks/vda5050-java/progress.md)
+
+## 贡献
+
+行为变更先在 Spec 仓库确认需求和追踪条目，再按测试驱动方式实现。提交或 Pull Request 前请阅读[贡献指南](./CONTRIBUTING.md)，并运行与改动范围相称的测试；阶段检查点必须通过完整 `verify`。
+
+## 许可证状态
+
+项目根许可证尚未由维护者确认，当前不得推断或宣称某个开源许可证。`rcs-protocol-vda5050` 中随上游 Schema 打包的许可证只覆盖相应上游材料，不等同于本仓库整体许可；正式发布前必须补齐项目许可证和 Maven 发布元数据。

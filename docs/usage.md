@@ -1,0 +1,123 @@
+# VDA 5050 核心库使用说明
+
+本文说明当前 `0.1.0-SNAPSHOT` 的公共入口和集成边界。该制品尚未正式发布；示例应在本地构建后使用，并以当前源码和 Javadoc 为准。
+
+## 本地构建与依赖
+
+```powershell
+.\mvnw.cmd verify
+.\mvnw.cmd install
+```
+
+本地安装后，应用可以声明 VDA 5050 独立制品：
+
+```xml
+<dependency>
+  <groupId>io.github.cooltheworld</groupId>
+  <artifactId>rcs-protocol-vda5050</artifactId>
+  <version>0.1.0-SNAPSHOT</version>
+</dependency>
+```
+
+核心库不建立 MQTT、Spring、Redis、数据库或设备连接。Adapter 负责接收字节与 Topic 路径，核心负责有界解码、校验和纯状态转换，调用方再持久化 State 与 Effect 并执行外部 I/O。
+
+## 入站 Connection 校验
+
+`ConnectionValidator` 是 `connection` 入站消息获得成功凭证的公共入口。普通非法输入返回 `RejectedInboundMessage`，不通过异常表达协议错误。
+
+```java
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.Connection;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.topic.DefaultTopicLayout;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.validation.ConnectionValidator;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.validation.RejectedInboundMessage;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.validation.ValidatedMessage;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.validation.ValidationResult;
+
+ConnectionValidator validator = ConnectionValidator.createDefault();
+ValidationResult<Connection> result = validator.validate(
+    DefaultTopicLayout.standard(),
+    mqttTopicPath,
+    payloadBytes
+);
+
+if (result instanceof ValidatedMessage<Connection> accepted) {
+    Connection connection = accepted.message();
+    // 交给对应 Robot Identity 和版本的角色状态机。
+} else {
+    RejectedInboundMessage<Connection> rejected =
+        (RejectedInboundMessage<Connection>) result;
+    // 处理 rejected.issues()；不要记录原始 payload。
+}
+```
+
+校验顺序包括 JSON 资源限制、Draft 2020-12 Schema、强类型绑定、`uint32`、版本配置、Topic 类型和 Topic/Header 身份一致性。`Vda5050JsonCodec.decode(...)` 单独使用时只完成语法与基础类型解码，不能代替 `ValidatedMessage<T>`。
+
+## Fleet Control 状态转换
+
+以下代码接续上节 `accepted` 成功分支。缺失历史快照时必须从 `recovering` 状态开始；事件时间由外部显式传入，状态机不读取系统时钟。
+
+```java
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.fleetcontrol.FleetControlEvent;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.fleetcontrol.FleetControlState;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.fleetcontrol.FleetControlStateMachine;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.fleetcontrol.FleetControlTransition;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.ProtocolVersionProfile;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.RobotIdentity;
+import java.time.Instant;
+
+RobotIdentity robot = new RobotIdentity("acme", "robot-001");
+FleetControlState state = FleetControlState.recovering(
+    robot,
+    ProtocolVersionProfile.V3_0_0
+);
+
+FleetControlTransition transition = FleetControlStateMachine.createDefault()
+    .transition(
+        state,
+        new FleetControlEvent.ConnectionReceived(accepted, Instant.now())
+    );
+
+FleetControlState nextState = transition.state();
+// 以一个原子提交保存 nextState 与 transition.effects()。
+```
+
+示例中的 `Instant.now()` 位于应用 Adapter，不在状态机内部。生产集成应使用事件实际采集时间，并按相同角色、Robot Identity 和协议版本串行处理。
+
+## Topic 与身份
+
+默认 Topic 路径为 `vda5050/v3/{manufacturer}/{serialNumber}/{topic}`：
+
+```java
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.RobotIdentity;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.topic.DefaultTopicLayout;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.topic.TopicAddress;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.topic.TopicName;
+
+String path = DefaultTopicLayout.standard().format(
+    new TopicAddress(
+        new RobotIdentity("acme", "robot-001"),
+        TopicName.CONNECTION
+    )
+);
+```
+
+部署可以提供自定义 `TopicLayout`，但不能改变八个标准 Topic 的含义，也不能弱化 Robot Identity 和 MQTT 层级安全约束。发布/订阅角色、QoS、retained 与 Last Will 元数据通过 Topic Descriptor API 查询，不应在 Adapter 中重复硬编码。
+
+## JSON 与扩展字段
+
+- `Vda5050JsonCodec.createDefault()` 适合直接处理不可信 UTF-8 payload。
+- 复用应用 `ObjectMapper` 时可以注册 `Vda5050JacksonModule`，但调用方仍须自行设置资源约束和完整校验流程。
+- 未知字段只由不可变 `ExtensionFields` 透明保存；公共 API 不提供动态业务读取。
+- 不启用 Jackson Default Typing，不把原始 payload、扩展值、动作参数、下载链接或凭据写入日志。
+
+## 并发与持久化责任
+
+默认 Codec、Schema Validator、Connection Validator、Topic 布局和无状态状态机可缓存复用。调用方必须：
+
+- 对同一角色、Robot Identity 和协议版本串行执行 Transition；
+- 将新 State 与全部 Effect 原子提交；
+- 使用持久化 Outbox 至少一次交付 Effect，并按确定性 Effect ID 幂等；
+- 在快照缺失时进入 `RECOVERING`，不假定机器人空闲；
+- 由 Adapter 实现 MQTT retained、Last Will、确认、重试和设备 I/O。
+
+完整边界、测试策略和发布条件见 Spec 仓库的[开发规范](https://github.com/coolTheWorld/rcs-protocol-spec/blob/main/DEVELOPMENT.md)与[完成定义](https://github.com/coolTheWorld/rcs-protocol-spec/blob/main/DEFINITION-OF-DONE.md)。
