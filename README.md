@@ -34,6 +34,12 @@ Maven 制品版本与协议版本独立演进。只有达到项目规范定义�
 
 Validator 在创建时检查并缓存八份 classpath Schema，设计为线程安全复用。`uint32` 范围不依赖上游自定义 Schema Format，仍由后续强类型 `Long` 语义 Validator 检查闭区间 `[0, 4294967295]`。
 
+## Connection Validator
+
+`ConnectionValidator.createDefault()` 是 `connection` 入站消息获得 `ValidatedMessage<Connection>` 的公共入口。调用方传入部署使用的 `TopicLayout`、实际 MQTT Topic 路径和原始 UTF-8 payload；Validator 依次执行有界 JSON 与 Schema 校验、强类型解码，以及 `headerId`、显式协议版本、Topic 类型和 Topic/Header 身份一致性检查。
+
+普通非法输入返回 `RejectedInboundMessage<Connection>`，不会抛出协议异常或保留原始 payload。需要收紧部署资源上限时使用 `ConnectionValidator.create(JsonCodecLimits)`；同一组限制会同时用于 Schema 前置解析和强类型 Codec。裸 `Connection` 不能通过公共 API 包装为成功凭证。
+
 ## 项目文档
 
 - [VDA 5050 Java 实现规格](https://github.com/coolTheWorld/rcs-protocol-spec/blob/main/vda5050-java-implementation.md)
