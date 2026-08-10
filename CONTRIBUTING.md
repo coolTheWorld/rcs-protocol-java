@@ -40,6 +40,7 @@ git status --short
 - 核心模块不连接 Spring、MQTT、Redis、数据库或设备 I/O。
 - 不通过删除、禁用或跳过失败测试使构建通过。
 - 新增强制协议分支时，同时补充一致性追踪和测试证据。
+- 新增或修改的生产类以 100% 分支覆盖率为目标；确实无法覆盖的分支按 Spec 的[分支覆盖率目标与例外登记](https://github.com/coolTheWorld/rcs-protocol-spec/blob/main/docs/branch-coverage.md)逐项说明并由进度引用。
 
 更完整的编码、安全、文档和操作边界见 Spec 仓库的[开发规范](https://github.com/coolTheWorld/rcs-protocol-spec/blob/main/DEVELOPMENT.md)。
 
