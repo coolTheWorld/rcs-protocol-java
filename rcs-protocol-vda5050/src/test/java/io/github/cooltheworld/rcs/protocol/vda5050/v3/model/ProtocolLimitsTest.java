@@ -137,8 +137,8 @@ final class ProtocolLimitsTest {
     }
 
     @Test
-    @DisplayName("[VDA3-FACTSHEET-001] 值语义包含每类限制和独立子对象")
-    void valueSemanticsIncludeIndependentLimitGroups() {
+    @DisplayName("[VDA3-FACTSHEET-001] 值语义包含每个标准限制字段")
+    void valueSemanticsIncludeEveryStandardLimit() {
         ProtocolLimits limits = ProtocolLimits.builder()
             .maximumStringLengths(fullStrings().build())
             .maximumArrayLengths(fullArrays().build())
@@ -157,8 +157,132 @@ final class ProtocolLimitsTest {
                     .build()
             ),
             () -> assertNotEquals(
+                limits,
+                ProtocolLimits.builder()
+                    .maximumStringLengths(fullStrings().build())
+                    .maximumArrayLengths(fullArrays().orderNodes(99L).build())
+                    .timing(fullTiming().build())
+                    .build()
+            ),
+            () -> assertNotEquals(
+                limits,
+                ProtocolLimits.builder()
+                    .maximumStringLengths(fullStrings().build())
+                    .maximumArrayLengths(fullArrays().build())
+                    .timing(fullTiming().minimumOrderInterval(9.0D).build())
+                    .build()
+            ),
+            () -> assertNotEquals(
+                fullStrings().build(),
+                fullStrings().maximumMessageLength(99L).build()
+            ),
+            () -> assertNotEquals(
+                fullStrings().build(),
+                fullStrings().maximumTopicSerialLength(99L).build()
+            ),
+            () -> assertNotEquals(
+                fullStrings().build(),
+                fullStrings().maximumTopicElementLength(99L).build()
+            ),
+            () -> assertNotEquals(
+                fullStrings().build(),
+                fullStrings().maximumIdLength(99L).build()
+            ),
+            () -> assertNotEquals(
+                fullStrings().build(),
+                fullStrings().idNumericalOnly(false).build()
+            ),
+            () -> assertNotEquals(
+                fullStrings().build(),
+                fullStrings().maximumLoadIdLength(99L).build()
+            ),
+            () -> assertNotEquals(
+                fullArrays().build(),
+                fullArrays().orderNodes(99L).build()
+            ),
+            () -> assertNotEquals(
+                fullArrays().build(),
+                fullArrays().orderEdges(99L).build()
+            ),
+            () -> assertNotEquals(
+                fullArrays().build(),
+                fullArrays().nodeActions(99L).build()
+            ),
+            () -> assertNotEquals(
+                fullArrays().build(),
+                fullArrays().edgeActions(99L).build()
+            ),
+            () -> assertNotEquals(
+                fullArrays().build(),
+                fullArrays().actionParameters(99L).build()
+            ),
+            () -> assertNotEquals(
+                fullArrays().build(),
+                fullArrays().instantActions(99L).build()
+            ),
+            () -> assertNotEquals(
+                fullArrays().build(),
+                fullArrays().trajectoryKnotVector(99L).build()
+            ),
+            () -> assertNotEquals(
+                fullArrays().build(),
+                fullArrays().trajectoryControlPoints(99L).build()
+            ),
+            () -> assertNotEquals(
+                fullArrays().build(),
+                fullArrays().zoneSetZones(99L).build()
+            ),
+            () -> assertNotEquals(
+                fullArrays().build(),
+                fullArrays().stateNodeStates(99L).build()
+            ),
+            () -> assertNotEquals(
+                fullArrays().build(),
+                fullArrays().stateEdgeStates(99L).build()
+            ),
+            () -> assertNotEquals(
+                fullArrays().build(),
+                fullArrays().stateLoads(99L).build()
+            ),
+            () -> assertNotEquals(
+                fullArrays().build(),
+                fullArrays().stateActionStates(99L).build()
+            ),
+            () -> assertNotEquals(
+                fullArrays().build(),
+                fullArrays().stateInstantActionStates(99L).build()
+            ),
+            () -> assertNotEquals(
+                fullArrays().build(),
+                fullArrays().stateZoneActionStates(99L).build()
+            ),
+            () -> assertNotEquals(
                 fullArrays().build(),
                 fullArrays().stateErrors(99L).build()
+            ),
+            () -> assertNotEquals(
+                fullArrays().build(),
+                fullArrays().stateInformation(99L).build()
+            ),
+            () -> assertNotEquals(
+                fullArrays().build(),
+                fullArrays().errorErrorReferences(99L).build()
+            ),
+            () -> assertNotEquals(
+                fullArrays().build(),
+                fullArrays().informationInfoReferences(99L).build()
+            ),
+            () -> assertNotEquals(
+                fullTiming().build(),
+                fullTiming().minimumOrderInterval(9.0D).build()
+            ),
+            () -> assertNotEquals(
+                fullTiming().build(),
+                fullTiming().minimumStateInterval(9.0D).build()
+            ),
+            () -> assertNotEquals(
+                fullTiming().build(),
+                fullTiming().defaultStateInterval(9.0D).build()
             ),
             () -> assertNotEquals(
                 fullTiming().build(),

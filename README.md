@@ -26,13 +26,19 @@ Maven 制品版本与协议版本独立演进。只有达到项目规范定义�
 
 `Vda5050JsonCodec.createDefault()` 提供默认的安全 UTF-8 编解码边界。入站解码先执行 payload、深度、字符串、字段名、数值、数组、对象和 Token 资源上限，再创建完整协议对象；普通输入错误以 `DecodingResult<T>` 的拒绝分支返回。解码成功只表示完成语法与基础类型处理，仍须经过 Schema 和协议语义校验才能获得 `ValidatedMessage<T>`。
 
-需要复用应用现有 Jackson `ObjectMapper` 时，可以显式注册 `Vda5050JacksonModule`。该 Module 注册协议值类型以及已建模消息和子对象（目前包括 `Connection`、`TypeSpecification` 与 `PhysicalParameters`）的线路表示，不修改调用方的 null、未知字段、资源限制或多态配置。
+需要复用应用现有 Jackson `ObjectMapper` 时，可以显式注册 `Vda5050JacksonModule`。该 Module 注册协议值类型以及已建模消息和子对象（目前包括 `Connection`、`TypeSpecification`、`PhysicalParameters` 与 Protocol Limits 子对象）的线路表示，不修改调用方的 null、未知字段、资源限制或多态配置。
 
 ## Factsheet 类型与物理参数
 
 `TypeSpecification` 以独立值类型区分运动学、机器人类别、定位与导航能力。四类可扩展枚举提供 VDA 5050 v3.0.0 标准常量，同时保留未知字符串值；封闭的 `supportedZones` 使用 `ZoneType`。必填能力列表和可选 Zone 列表均执行防御性复制，可选列表继续区分缺失与空数组。
 
 `PhysicalParameters` 的速度、角速度、加速度、减速度及尺寸字段全部使用 `Double`，可选角速度以 `null` 表示缺失。两个对象都使用不可变 Builder，并以 `ExtensionFields` 不透明保存未知字段；默认 Codec 支持确定性片段往返。非负范围、有限数值及最小值/最大值关系将在 Factsheet 组合 Validator 中统一报告。
+
+## Factsheet Protocol Limits
+
+`ProtocolLimits` 以 `MaximumStringLengths`、`MaximumArrayLengths` 和 `ProtocolTiming` 强类型表达正式字段；数组字段使用 `orderNodes`、`trajectoryControlPoints` 等 Java accessor，Codec 仍精确使用 `order.nodes`、`trajectory.controlPoints` 等线路名。原始模型保留字段缺失与显式零值的区别，两者在有效计算中都表示未声明能力上限。
+
+`EffectiveProtocolLimits.resolve(...)` 把 `maximumMessageLength` 与部署 `maxPayloadBytes` 取交集，特定字符串与 `maxStringCharacters` 取交集，特定数组与 `maxArrayElements` 取交集，保证 Factsheet 只能收紧部署硬上限。Timing 不是 JSON 资源上限，因此只将零归一为未声明，不与 `JsonCodecLimits` 取最小值。负数、超过 `uint32` 的长度和非有限 timing 会 fail closed。
 
 ## Schema Validator
 
