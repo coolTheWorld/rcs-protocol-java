@@ -86,6 +86,8 @@ class PublicApiArchitectureTest {
             "Envelope3d",
             "Envelope3dData",
             "LocalizationType",
+            "LoadDimensions",
+            "LoadSpecification",
             "MaximumArrayLengths",
             "MaximumStringLengths",
             "MobileRobotClass",

@@ -11,6 +11,7 @@
 - 提供 VDA 5050 Topic 元数据、默认 Topic 布局和可替换布局契约。
 - 提供 `Connection` 模型、前三层入站 Validator、Fleet Control 与 Mobile Robot 角色专属连接状态机及跨角色对话测试。
 - 提供 Factsheet `TypeSpecification`、`PhysicalParameters`、`ProtocolLimits`、`ProtocolFeatures` 与 `MobileRobotGeometry` 模型片段和确定性 JSON 往返。
+- 提供 Factsheet `LoadSpecification` 载荷位置集合与 `LoadDimensions` 尺寸模型基础，保留位置集合的缺失/空列表和未知扩展语义；完整载荷集合、Codec 与 Validator 仍按后续增量交付。
 - 提供结构化校验问题、拒绝消息安全上下文和显式协议版本配置。
 
 ### Changed（变更）
