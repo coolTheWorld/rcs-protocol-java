@@ -37,6 +37,7 @@ final class ConformanceManifestTest {
     );
     private static final Set<String> ALLOWED_SCHEMA_GAPS = Set.of(
         "NONE",
+        "SCHEMA_INCORRECT",
         "SCHEMA_MISSING",
         "SCHEMA_WEAKER"
     );
@@ -78,6 +79,9 @@ final class ConformanceManifestTest {
         RequirementRow topicMetadataRule = rowsById.get("VDA3-SHARED-011");
         RequirementRow connectionRule = rowsById.get("VDA3-CONNECTION-001");
         RequirementRow factsheetRule = rowsById.get("VDA3-FACTSHEET-001");
+        RequirementRow factsheetSpeedUnitRule = rowsById.get(
+            "VDA3-FACTSHEET-002"
+        );
         assertNotNull(timestampRule, "Missing strict timestamp rule");
         assertNotNull(unsigned32Rule, "Missing uint32 range rule");
         assertNotNull(versionProfileRule, "Missing explicit version profile rule");
@@ -89,6 +93,10 @@ final class ConformanceManifestTest {
         assertNotNull(topicMetadataRule, "Missing Topic metadata and layout rule");
         assertNotNull(connectionRule, "Missing Connection rule");
         assertNotNull(factsheetRule, "Missing Factsheet rule");
+        assertNotNull(
+            factsheetSpeedUnitRule,
+            "Missing Factsheet load-set speed unit rule"
+        );
         assertEquals(
             "SCHEMA_WEAKER",
             timestampRule.schemaGap(),
@@ -113,6 +121,8 @@ final class ConformanceManifestTest {
         assertEquals("VERIFIED", topicMetadataRule.status());
         assertEquals("VERIFIED", connectionRule.status());
         assertEquals("PARTIAL", factsheetRule.status());
+        assertEquals("SCHEMA_INCORRECT", factsheetSpeedUnitRule.schemaGap());
+        assertEquals("PARTIAL", factsheetSpeedUnitRule.status());
         assertTrue(
             connectionRule.test().contains("ConnectionCodecTest"),
             "Connection rule must retain C08 Codec evidence"
@@ -225,6 +235,14 @@ final class ConformanceManifestTest {
                         "ProtocolFeaturesValidatorTest"
                     ),
                 "Factsheet rule must include FS03 model, Codec and semantic tests"
+            ),
+            () -> assertTrue(
+                factsheetRule.test().contains("LoadSetTest"),
+                "Factsheet rule must include FS05b load-set model evidence"
+            ),
+            () -> assertTrue(
+                factsheetSpeedUnitRule.test().contains("LoadSetTest"),
+                "Load-set speed unit rule must include FS05b model evidence"
             )
         );
     }

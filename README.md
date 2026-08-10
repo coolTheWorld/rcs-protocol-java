@@ -88,6 +88,12 @@ Unix-like 环境使用对应的 `./mvnw` 命令，例如：
 
 `MobileRobotGeometryValidator` 检查有限数值、固定轮必需的朝向，以及三维包络内容来源和 URL 形式。它只返回结构化 `ValidationIssue`，不会下载或打开外部几何资源。
 
+## Factsheet 载荷说明
+
+`LoadSpecification` 强类型表达载荷处理位置和可处理的 `LoadSet` 集合。`LoadSet` 使用必填 `setName`、`loadType` 引用载荷集合，并可携带适用位置、`BoundingBoxReference`、`LoadDimensions`、质量、处理高度/深度/倾角、速度、加减速度、取放时间和描述。全部协议数值使用 `Double`，可选集合保持缺失与空数组的不同线路语义并执行防御性复制。
+
+模型只强制正文与 Schema 明确声明的必填字段，不在 Builder 中执行有限值、范围或字段关系校验。载荷 Codec、Fixture 和语义 Validator 将由后续 FS05c-FS05d 增量提供；上游 Schema 把 `LoadSet.maximumSpeed` 的单位元数据误写为 `m/s²`，公共模型按正文使用 `m/s`，差异由 `VDA3-FACTSHEET-002` 跟踪。
+
 ## Schema Validator
 
 `Vda5050SchemaValidator.createDefault()` 提供八个 Topic 的 Draft 2020-12 Schema 校验。它会在 NetworkNT 解析前执行与默认 Codec 相同的 JSON 资源硬上限，关闭远程 Schema 获取，并为 `date-time` 启用 Format Assertion。语法、资源和 Schema 失败统一返回不可变 `ValidationIssue` 列表；说明文本不复制不可信输入值。

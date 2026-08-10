@@ -81,12 +81,14 @@ class PublicApiArchitectureTest {
             "ConnectionState"
         ));
         packages.put(ROOT + ".model.factsheet", List.of(
+            "BoundingBoxReference",
             "Envelope2d",
             "Envelope2dVertex",
             "Envelope3d",
             "Envelope3dData",
             "LocalizationType",
             "LoadDimensions",
+            "LoadSet",
             "LoadSpecification",
             "MaximumArrayLengths",
             "MaximumStringLengths",
