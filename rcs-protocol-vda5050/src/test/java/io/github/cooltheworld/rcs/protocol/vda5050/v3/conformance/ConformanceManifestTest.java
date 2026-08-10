@@ -201,12 +201,30 @@ final class ConformanceManifestTest {
                 "Factsheet rule must include FS01 fragment Codec evidence"
             ),
             () -> assertTrue(
+                factsheetRule.validator().contains(
+                    "ProtocolFeaturesJacksonSupport"
+                ) && factsheetRule.validator().contains(
+                    "ProtocolFeaturesValidator"
+                ),
+                "Factsheet rule must include FS03 Codec and semantic evidence"
+            ),
+            () -> assertTrue(
                 factsheetRule.test().contains("TypeSpecificationTest")
                     && factsheetRule.test().contains("PhysicalParametersTest")
                     && factsheetRule.test().contains(
                         "FactsheetFragmentCodecTest"
-                    ),
+                ),
                 "Factsheet rule must include both FS01 models and Codec tests"
+            ),
+            () -> assertTrue(
+                factsheetRule.test().contains("ProtocolFeaturesTest")
+                    && factsheetRule.test().contains(
+                        "ProtocolFeaturesCodecTest"
+                    )
+                    && factsheetRule.test().contains(
+                        "ProtocolFeaturesValidatorTest"
+                    ),
+                "Factsheet rule must include FS03 model, Codec and semantic tests"
             )
         );
     }
