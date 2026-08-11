@@ -167,6 +167,29 @@ final class Vda5050JsonCodecTest {
     }
 
     @Test
+    void reportsArrayElementTypeMismatchWithIndexedPath() {
+        DecodingResult<IndexedProbe> result = codec.decode(
+            TopicName.STATE,
+            """
+                {"items":[{"count":"seven"}]}
+                """.getBytes(StandardCharsets.UTF_8),
+            IndexedProbe.class
+        );
+
+        RejectedInboundMessage<IndexedProbe> rejected = assertInstanceOf(
+            RejectedInboundMessage.class,
+            result
+        );
+        assertAll(
+            () -> assertEquals(
+                "INVALID_JSON_TYPE",
+                rejected.issues().getFirst().code()
+            ),
+            () -> assertEquals("/items/0/count", rejected.issues().getFirst().path())
+        );
+    }
+
+    @Test
     @DisplayName("[VDA3-SHARED-009] 默认 Codec 不启用任意类名多态")
     void keepsDefaultTypingDisabled() {
         DecodingResult<DynamicProbe> result = codec.decode(
@@ -221,6 +244,10 @@ final class Vda5050JsonCodecTest {
     private record NestedProbe(String name) {}
 
     private record DynamicProbe(Object value) {}
+
+    private record IndexedProbe(List<IndexedValueProbe> items) {}
+
+    private record IndexedValueProbe(Long count) {}
 
     @SuppressWarnings("unchecked")
     private static <T> DecodedMessage<T> decoded(DecodingResult<T> result) {
