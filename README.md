@@ -100,6 +100,10 @@ Unix-like 环境使用对应的 `./mvnw` 命令，例如：
 
 `BatteryCharging` 使用三个可选 `Double` 保存临界低电量、最小期望电量和最大期望电量百分比；`minimumChargingTime` 按规范正文的 `uint32` 语义使用 `Long`。`MobileRobotConfiguration` 聚合可选版本列表、网络元数据和充电参数，保持缺失与空版本列表的不同语义。模型不在 Builder 中丢弃非法原始边界；`MobileRobotConfigurationValidator` 以不可变 Issue 列表报告非有限值、百分比越界、倒置期望区间和超出 `uint32` 的充电时间，不修改输入，也不解析网络字符串。运行期网络信息不变规则需要历史状态，由 Factsheet 角色流程执行。
 
+## Factsheet 根模型
+
+`Factsheet` 强类型组合公共 `ProtocolHeader`、头部无关的 `FactsheetContent` 和根级 `ExtensionFields`。`FactsheetContent` 聚合类型说明、物理参数、协议限制、协议能力、机器人几何、载荷说明和可选机器人配置，供角色 Event 在不伪造 Header 的情况下提交能力内容。它不是额外 JSON 层级；完整 Codec 将在 Factsheet 根对象中平铺这些内容字段。
+
 ## Schema Validator
 
 `Vda5050SchemaValidator.createDefault()` 提供八个 Topic 的 Draft 2020-12 Schema 校验。它会在 NetworkNT 解析前执行与默认 Codec 相同的 JSON 资源硬上限，关闭远程 Schema 获取，并为 `date-time` 启用 Format Assertion。语法、资源和 Schema 失败统一返回不可变 `ValidationIssue` 列表；说明文本不复制不可信输入值。

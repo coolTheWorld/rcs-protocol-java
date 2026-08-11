@@ -87,6 +87,8 @@ class PublicApiArchitectureTest {
             "Envelope2dVertex",
             "Envelope3d",
             "Envelope3dData",
+            "Factsheet",
+            "FactsheetContent",
             "LocalizationType",
             "LoadDimensions",
             "LoadSet",
