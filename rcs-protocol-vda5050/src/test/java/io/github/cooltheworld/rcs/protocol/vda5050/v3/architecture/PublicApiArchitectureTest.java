@@ -97,6 +97,7 @@ class PublicApiArchitectureTest {
         ));
         packages.put(ROOT + ".model.order", List.of(
             "AllowedDeviationXY",
+            "Node",
             "NodePosition"
         ));
         packages.put(ROOT + ".model.factsheet", List.of(

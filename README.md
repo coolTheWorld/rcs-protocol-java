@@ -100,6 +100,8 @@ Unix-like 环境使用对应的 `./mvnw` 命令，例如：
 
 Builder 只保证必填引用和值语义，会无损保留 NaN、Infinity、负半轴或越界角度等程序化输入，供后续 `NodeValidator` 统一产生结构化 Issue；构造成功不表示位置数值已通过协议语义校验。
 
+`Node` 使用必填原文 `nodeId`、`Long sequenceId`、`Boolean released` 与 `List<Action> actions`，并可携带 descriptor 和 `NodePosition`。actions 字段必须提供但允许空列表，构造时防御性复制并拒绝 `null` 元素；Action 顺序、可选字段和扩展都属于 Node 值语义。
+
 ## Factsheet 移动机器人几何
 
 `MobileRobotGeometry` 强类型表达轮定义、二维包络与三维包络；可选集合继续区分缺失与空数组。轮位置、尺寸和二维顶点使用 `Double`，三维包络可以携带内联数据或绝对 URL，未知字段同样透明保存。

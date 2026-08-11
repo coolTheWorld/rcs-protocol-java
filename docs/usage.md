@@ -133,6 +133,8 @@ String path = DefaultTopicLayout.standard().format(
 
 通过程序化 API 构造的位置仍须交给后续 `NodeValidator` 检查有限数和闭区间。连续 sequenceId、Node/Edge 连接及 Base/Horizon 不是单个位置对象的职责。
 
+使用 `Node.builder()` 提供 nodeId、sequenceId、released 和 actions。没有节点动作时仍须显式传入 `List.of()`；不要用 `null` 表示空列表。可选 nodeDescriptor 与 nodePosition 缺失时保持 `null`，Node 会冻结 actions 顺序但不会判断 Action 是否已注册或可以执行。
+
 ## 并发与持久化责任
 
 默认 Codec、Schema Validator、Connection Validator、Topic 布局和无状态状态机可缓存复用。调用方必须：
