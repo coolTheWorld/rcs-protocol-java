@@ -82,6 +82,9 @@ final class ConformanceManifestTest {
         RequirementRow factsheetSpeedUnitRule = rowsById.get(
             "VDA3-FACTSHEET-002"
         );
+        RequirementRow factsheetLoadSemanticsRule = rowsById.get(
+            "VDA3-FACTSHEET-003"
+        );
         assertNotNull(timestampRule, "Missing strict timestamp rule");
         assertNotNull(unsigned32Rule, "Missing uint32 range rule");
         assertNotNull(versionProfileRule, "Missing explicit version profile rule");
@@ -96,6 +99,10 @@ final class ConformanceManifestTest {
         assertNotNull(
             factsheetSpeedUnitRule,
             "Missing Factsheet load-set speed unit rule"
+        );
+        assertNotNull(
+            factsheetLoadSemanticsRule,
+            "Missing Factsheet load semantics rule"
         );
         assertEquals(
             "SCHEMA_WEAKER",
@@ -122,7 +129,15 @@ final class ConformanceManifestTest {
         assertEquals("VERIFIED", connectionRule.status());
         assertEquals("PARTIAL", factsheetRule.status());
         assertEquals("SCHEMA_INCORRECT", factsheetSpeedUnitRule.schemaGap());
-        assertEquals("PARTIAL", factsheetSpeedUnitRule.status());
+        assertEquals("VERIFIED", factsheetSpeedUnitRule.status());
+        assertEquals("SCHEMA_MISSING", factsheetLoadSemanticsRule.schemaGap());
+        assertEquals("VERIFIED", factsheetLoadSemanticsRule.status());
+        assertTrue(
+            factsheetLoadSemanticsRule.validator().contains(
+                "LoadSpecificationValidator"
+            ),
+            "Load semantics rule must retain FS05d Validator evidence"
+        );
         assertTrue(
             connectionRule.test().contains("ConnectionCodecTest"),
             "Connection rule must retain C08 Codec evidence"

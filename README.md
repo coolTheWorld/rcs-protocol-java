@@ -62,7 +62,7 @@ Unix-like 环境使用对应的 `./mvnw` 命令，例如：
 
 `Vda5050JsonCodec.createDefault()` 提供默认的安全 UTF-8 编解码边界。入站解码先执行 payload、深度、字符串、字段名、数值、数组、对象和 Token 资源上限，再创建完整协议对象；普通输入错误以 `DecodingResult<T>` 的拒绝分支返回。解码成功只表示完成语法与基础类型处理，仍须经过 Schema 和协议语义校验才能获得 `ValidatedMessage<T>`。
 
-需要复用应用现有 Jackson `ObjectMapper` 时，可以显式注册 `Vda5050JacksonModule`。该 Module 注册协议值类型、不透明 JSON 值以及已建模消息和子对象（目前包括 `Connection`、`TypeSpecification`、`PhysicalParameters`、`ProtocolLimits`、`ProtocolFeatures` 与 `MobileRobotGeometry`）的线路表示，不修改调用方的 null、未知字段、资源限制或多态配置。
+需要复用应用现有 Jackson `ObjectMapper` 时，可以显式注册 `Vda5050JacksonModule`。该 Module 注册协议值类型、不透明 JSON 值以及已建模消息和子对象（目前包括 `Connection`、`TypeSpecification`、`PhysicalParameters`、`ProtocolLimits`、`ProtocolFeatures`、`MobileRobotGeometry` 与 `LoadSpecification` 对象图）的线路表示，不修改调用方的 null、未知字段、资源限制或多态配置。
 
 ## Factsheet 类型与物理参数
 
@@ -92,7 +92,7 @@ Unix-like 环境使用对应的 `./mvnw` 命令，例如：
 
 `LoadSpecification` 强类型表达载荷处理位置和可处理的 `LoadSet` 集合。`LoadSet` 使用必填 `setName`、`loadType` 引用载荷集合，并可携带适用位置、`BoundingBoxReference`、`LoadDimensions`、质量、处理高度/深度/倾角、速度、加减速度、取放时间和描述。全部协议数值使用 `Double`，可选集合保持缺失与空数组的不同线路语义并执行防御性复制。
 
-模型只强制正文与 Schema 明确声明的必填字段，不在 Builder 中执行有限值、范围或字段关系校验。载荷 Codec、Fixture 和语义 Validator 将由后续 FS05c-FS05d 增量提供；上游 Schema 把 `LoadSet.maximumSpeed` 的单位元数据误写为 `m/s²`，公共模型按正文使用 `m/s`，差异由 `VDA3-FACTSHEET-002` 跟踪。
+模型只强制正文与 Schema 明确声明的必填字段，不在 Builder 中执行有限值、范围或字段关系校验。默认 Codec 和独立 Jackson Module 可确定性往返完整载荷对象图；`LoadSpecificationValidator` 以不可变 Issue 列表报告非有限数、违反 Schema 非负下限的数值、倒置边界、重复 `setName` 和未知位置引用，不修改输入。`maximumDeceleration` 在正文与 Schema 中没有非负下限，因此保留有限负值。上游 Schema 把 `LoadSet.maximumSpeed` 的单位元数据误写为 `m/s²`，公共模型按正文使用 `m/s`，差异由 `VDA3-FACTSHEET-002` 跟踪。
 
 ## Schema Validator
 
