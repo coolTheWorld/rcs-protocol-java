@@ -65,9 +65,7 @@ final class Vda5050SchemaRegistry {
             topic,
             loadSchema(registry, metaSchema, resourceName)
         ));
-        if (schemas.size() != TopicName.values().length) {
-            throw new IllegalStateException("Not all VDA 5050 schemas are registered");
-        }
+        requireComplete(schemas);
         return new Vda5050SchemaRegistry(schemas);
     }
 
@@ -90,11 +88,7 @@ final class Vda5050SchemaRegistry {
             schemaData,
             InputFormat.JSON
         );
-        if (!schemaErrors.isEmpty()) {
-            throw new IllegalStateException(
-                "Bundled schema is not valid Draft 2020-12: " + resourceName
-            );
-        }
+        requireValidSchema(schemaErrors, resourceName);
         return registry.getSchema(
             SchemaLocation.of("classpath:" + resourcePath),
             schemaData,
@@ -102,7 +96,21 @@ final class Vda5050SchemaRegistry {
         );
     }
 
-    private static String readResource(String resourcePath) {
+    static void requireComplete(Map<TopicName, Schema> schemas) {
+        if (schemas.size() != TopicName.values().length) {
+            throw new IllegalStateException("Not all VDA 5050 schemas are registered");
+        }
+    }
+
+    static void requireValidSchema(List<Error> schemaErrors, String resourceName) {
+        if (!schemaErrors.isEmpty()) {
+            throw new IllegalStateException(
+                "Bundled schema is not valid Draft 2020-12: " + resourceName
+            );
+        }
+    }
+
+    static String readResource(String resourcePath) {
         ClassLoader classLoader = Vda5050SchemaRegistry.class.getClassLoader();
         try (InputStream input = classLoader.getResourceAsStream(resourcePath)) {
             if (input == null) {

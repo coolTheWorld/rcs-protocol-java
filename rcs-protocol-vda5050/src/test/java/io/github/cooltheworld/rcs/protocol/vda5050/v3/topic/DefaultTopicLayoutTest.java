@@ -150,6 +150,17 @@ final class DefaultTopicLayoutTest {
                 return new TopicAddress(identity, TopicName.ORDER);
             }
         };
+        TopicLayout nonCanonicalOnParse = new TopicLayout() {
+            @Override
+            public String format(TopicAddress address) {
+                return "tenant/ACME/state/SN-01";
+            }
+
+            @Override
+            public TopicAddress parse(String topicPath) {
+                return stateAddress;
+            }
+        };
 
         assertThrows(
             IllegalArgumentException.class,
@@ -158,6 +169,14 @@ final class DefaultTopicLayoutTest {
         assertThrows(
             IllegalArgumentException.class,
             () -> TopicLayout.format(nonRoundTripping, stateAddress)
+        );
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> TopicLayout.parseForRobot(
+                nonCanonicalOnParse,
+                "tenant/ACME/state-alias/SN-01",
+                identity
+            )
         );
     }
 }

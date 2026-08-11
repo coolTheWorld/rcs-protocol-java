@@ -66,7 +66,7 @@ public final class NetworkntVda5050SchemaValidator
         );
     }
 
-    private static String codeOf(Error error) {
+    static String codeOf(Error error) {
         String keyword = error.getKeyword();
         if (keyword == null || keyword.isBlank()) {
             return "SCHEMA_VIOLATION";

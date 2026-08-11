@@ -122,7 +122,7 @@ public final class MobileRobotGeometryValidator {
     private static boolean isAbsoluteUri(String value) {
         try {
             URI uri = new URI(value);
-            return uri.isAbsolute() && uri.getScheme() != null;
+            return uri.isAbsolute();
         } catch (URISyntaxException exception) {
             return false;
         }
