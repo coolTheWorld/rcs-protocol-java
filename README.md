@@ -82,7 +82,7 @@ Unix-like 环境使用对应的 `./mvnw` 命令，例如：
 
 `ProtocolFeaturesValidator` 按输入顺序报告重复或冲突的参数、Action、Scope、参数定义和 Blocking Type，不修改或静默去重原始声明。默认 Codec 与 `Vda5050JacksonModule` 支持确定性 JSON 片段往返。
 
-`ActionParameter` 以大小写敏感的原文键和封闭 `ActionParameterValue` 保存动作参数线路值；BOOL、NUMBER、INTEGER、STRING、OBJECT 与 ARRAY 分别使用强类型变体，递归对象成员和数组进行防御性复制，不向公共 API 暴露通用 JSON 节点或 `Map<String, Object>`。`ActionDefinition<P>` 组合参数 Class、允许的 Scope/Blocking Type 与封闭结果 Adapter；不可变 `ActionRegistry` 拒绝重复覆盖，并且只按原文 `actionType + Class<P>` 返回类型安全定义。角色准入由后续独立服务承担。
+`ActionParameter` 以大小写敏感的原文键和封闭 `ActionParameterValue` 保存动作参数线路值；BOOL、NUMBER、INTEGER、STRING、OBJECT 与 ARRAY 分别使用强类型变体，递归对象成员和数组进行防御性复制，不向公共 API 暴露通用 JSON 节点或 `Map<String, Object>`。`ActionDefinition<P>` 组合参数 Class、允许的 Scope/Blocking Type 与封闭结果 Adapter；不可变 `ActionRegistry` 拒绝重复覆盖，并且只按原文 `actionType + Class<P>` 返回类型安全定义。纯 `ActionAdmission` 依次检查注册、Class、Scope、Blocking 与 Adapter，只返回强类型成功或安全结构化拒绝，不执行设备动作。
 
 ## Factsheet 移动机器人几何
 
