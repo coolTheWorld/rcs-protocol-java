@@ -125,6 +125,8 @@ String path = DefaultTopicLayout.standard().format(
 
 `Action` 只表示命令对象。调用 `ActionAdmission` 时仍须单独提供 `ActionScope`；Action 的执行状态由后续状态消息模型表达。Builder 不证明 Action 已在目录注册，也不替代 Topic 的 Schema、语义或角色准入。
 
+Action 片段可以直接交给默认 `Vda5050JsonCodec`，也可以由显式注册 `Vda5050JacksonModule` 的调用方 `ObjectMapper` 读写。Codec 保留六类递归参数值、对象成员/数组顺序、可选字段缺失与空数组差异以及不透明扩展；它不会按 Action Definition 猜测参数类型，也不会调用 Registry/Adapter。标准字段显式 `null`、超出 `Long`/有限 `Double` 表达范围的 JSON number 或程序化重复对象成员名会封闭拒绝，不能依赖后写成员覆盖前值。
+
 需要表达状态消息中的动作阶段时，复用独立 `ActionStatus` 七值词汇；不要向 `Action` 添加 Scope 或 Status 字段。
 
 ## 构造 Node Position

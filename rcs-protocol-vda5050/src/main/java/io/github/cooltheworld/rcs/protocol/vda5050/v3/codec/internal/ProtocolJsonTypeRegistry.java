@@ -2,7 +2,10 @@ package io.github.cooltheworld.rcs.protocol.vda5050.v3.codec.internal;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.action.Action;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.action.ActionParameter;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.action.ActionParameterDefinition;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.action.ActionParameterValue;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.action.ActionScope;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.action.ActionValueDataType;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.action.BlockingType;
@@ -54,6 +57,12 @@ final class ProtocolJsonTypeRegistry {
     ) {
         if (type.hasRawClass(Connection.class)) {
             return Optional.of(connectionProperties(mapper));
+        }
+        if (type.hasRawClass(Action.class)) {
+            return Optional.of(actionProperties(mapper));
+        }
+        if (type.hasRawClass(ActionParameter.class)) {
+            return Optional.of(actionParameterProperties(mapper));
         }
         if (type.hasRawClass(Factsheet.class)) {
             return Optional.of(factsheetProperties(mapper));
@@ -141,6 +150,26 @@ final class ProtocolJsonTypeRegistry {
             "manufacturer", mapper.constructType(String.class),
             "serialNumber", mapper.constructType(String.class),
             "connectionState", mapper.constructType(ConnectionState.class)
+        );
+    }
+
+    private static Map<String, JavaType> actionProperties(ObjectMapper mapper) {
+        return Map.of(
+            "actionType", mapper.constructType(String.class),
+            "actionId", mapper.constructType(String.class),
+            "actionDescriptor", mapper.constructType(String.class),
+            "blockingType", mapper.constructType(BlockingType.class),
+            "actionParameters", listType(mapper, ActionParameter.class),
+            "retriable", mapper.constructType(Boolean.class)
+        );
+    }
+
+    private static Map<String, JavaType> actionParameterProperties(
+        ObjectMapper mapper
+    ) {
+        return Map.of(
+            "key", mapper.constructType(String.class),
+            "value", mapper.constructType(ActionParameterValue.class)
         );
     }
 

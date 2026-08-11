@@ -90,6 +90,8 @@ Unix-like 环境使用对应的 `./mvnw` 命令，例如：
 
 `Action` 不可变聚合精确保存必填 `actionType`、`actionId`、`blockingType`，以及可选 `actionDescriptor`、`List<ActionParameter>`、`Boolean retriable` 和未知扩展。可选参数列表区分缺失与空数组，存在时执行防御性复制；可重试标志同样区分缺失与显式 `false`。模型不裁剪字符串，也不在 Builder 中提前执行 Action 目录、作用域、Instant Action Blocking 或状态机语义。
 
+默认 Codec 与显式 `Vda5050JacksonModule` 已注册 Action 对象图：六类参数值、递归对象/数组顺序和根/参数扩展可确定往返，整数与非整数 number 保持不同强类型变体；标准字段显式 `null`、超出 `Long`/有限 `Double` 表达范围的数值及非法 shape 封闭拒绝。程序化重复对象成员名也会失败，避免 Tree 转换静默覆盖线路值；线路 Adapter 不调用 Action Registry 或执行参数。
+
 `ActionScope` 是准入上下文而不是 Action JSON 字段；执行状态也由后续 `ActionState` 模型承载。Order 与 Instant Actions 的根 Codec、Schema 和上下文语义仍由后续 Topic 增量完成。
 
 共享 `ActionStatus` 精确提供 `WAITING`、`INITIALIZING`、`RUNNING`、`PAUSED`、`RETRIABLE`、`FINISHED` 与 `FAILED` 七个规范值，供后续状态消息模型复用；它不会进入 `Action` 命令对象。
