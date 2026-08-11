@@ -218,11 +218,29 @@ final class ConformanceManifestTest {
             orderEdgeRule.test().contains("CorridorTest"),
             "O03a must project its Corridor model tests"
         );
+        assertTrue(
+            orderEdgeRule.validator().contains("Edge"),
+            "O03b must project its typed Edge evidence"
+        );
+        assertTrue(
+            orderEdgeRule.test().contains("EdgeTest"),
+            "O03b must project its Edge model tests"
+        );
         assertEquals(
             "SCHEMA_INCORRECT",
             orderRotationSpeedRule.schemaGap()
         );
-        assertEquals("PLANNED", orderRotationSpeedRule.status());
+        assertEquals("PARTIAL", orderRotationSpeedRule.status());
+        assertTrue(
+            orderRotationSpeedRule.validator().contains(
+                "Edge#maximumRotationSpeed"
+            ),
+            "O03b must use the normative rotation-speed field name"
+        );
+        assertTrue(
+            orderRotationSpeedRule.test().contains("EdgeTest"),
+            "O03b must project the field-ownership tests"
+        );
         assertEquals("VERIFIED", connectionRule.status());
         assertEquals("VERIFIED", factsheetRule.status());
         assertTrue(

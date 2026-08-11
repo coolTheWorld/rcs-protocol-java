@@ -106,6 +106,8 @@ Builder 只保证必填引用和值语义，会无损保留 NaN、Infinity、负
 
 `Corridor` 使用必填 `Double leftWidth/rightWidth` 表达 Edge 轨迹左右的允许偏离边界，并可携带车体参考点、是否需要 Fleet Control 授权、授权丢失行为和不透明扩展。`CorridorReferencePoint` 精确封闭 `KINEMATIC_CENTER/CONTOUR`，`CorridorReleaseLossBehavior` 精确封闭 `STOP/RETURN`。可选字段缺失时保持 `null`，不在模型层物化正文默认值；有限数、非负和非双零语义由后续 Edge Validator 执行。
 
+`Edge` 使用必填原文 `edgeId`、`Long sequenceId`、`Boolean released` 与 `List<Action> actions`，并强类型保存正文定义的全部可选非 Trajectory 字段。`EdgeOrientationType` 封闭 `GLOBAL/TANGENTIAL`，最大旋转速度按正文命名为 `maximumRotationSpeed`；上游 Schema 误写的 `maxRotationSpeed` 不是标准模型字段。Edge 没有起终节点 ID，连接由 Order Sequence 图确定；可选强类型 `Trajectory` 将在 NURBS 模型完成后由 O04 回接。
+
 ## Factsheet 移动机器人几何
 
 `MobileRobotGeometry` 强类型表达轮定义、二维包络与三维包络；可选集合继续区分缺失与空数组。轮位置、尺寸和二维顶点使用 `Double`，三维包络可以携带内联数据或绝对 URL，未知字段同样透明保存。

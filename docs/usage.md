@@ -143,6 +143,10 @@ String path = DefaultTopicLayout.standard().format(
 
 Builder 只保证两个宽度引用存在，会保留负数、非有限数或双零值供后续 `EdgeValidator` 产生结构化 Issue。Corridor 要求的预定义轨迹可以来自 Order 内联 Trajectory，也可以是 Mobile Robot 已知轨迹；不能仅因 Corridor 对象本身没有 Trajectory 而判断无效。
 
+使用 `Edge.builder()` 提供 edgeId、sequenceId、released 和 actions。actions 必须显式提供，没有边动作时传入 `List.of()`；列表会在构造时冻结并拒绝 `null` 元素。可选标量、方向、Corridor 和不透明扩展保持精确值，Builder 不执行数值语义。
+
+请使用 `maximumRotationSpeed(...)` 和同名 accessor。`maxRotationSpeed` 是上游 Schema 与正文不一致的拼写，不属于标准 Edge API。Edge 也不接受 `startNodeId/endNodeId`：请通过 Order 中 Node/Edge 的 Sequence 交替表达连接。当前 Edge 的强类型 Trajectory 入口由后续 O04 NURBS 增量提供。
+
 ## 并发与持久化责任
 
 默认 Codec、Schema Validator、Connection Validator、Topic 布局和无状态状态机可缓存复用。调用方必须：

@@ -100,6 +100,8 @@ class PublicApiArchitectureTest {
             "Corridor",
             "CorridorReferencePoint",
             "CorridorReleaseLossBehavior",
+            "Edge",
+            "EdgeOrientationType",
             "Node",
             "NodePosition"
         ));
