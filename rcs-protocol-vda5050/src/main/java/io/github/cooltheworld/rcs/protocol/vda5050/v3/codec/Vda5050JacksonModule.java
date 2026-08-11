@@ -54,6 +54,7 @@ public final class Vda5050JacksonModule extends SimpleModule {
         ProtocolLimitsJacksonSupport.register(this);
         ProtocolFeaturesJacksonSupport.register(this);
         MobileRobotGeometryJacksonSupport.register(this);
+        LoadSpecificationJacksonSupport.register(this);
     }
 
     private static final class ProtocolVersionSerializer

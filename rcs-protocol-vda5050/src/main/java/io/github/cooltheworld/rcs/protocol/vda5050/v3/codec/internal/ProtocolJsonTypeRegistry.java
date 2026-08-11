@@ -8,10 +8,14 @@ import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.action.ActionValueDa
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.action.BlockingType;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.connection.Connection;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.connection.ConnectionState;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.BoundingBoxReference;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.Envelope2d;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.Envelope2dVertex;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.Envelope3d;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.Envelope3dData;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.LoadDimensions;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.LoadSet;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.LoadSpecification;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.LocalizationType;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.MaximumArrayLengths;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.MaximumStringLengths;
@@ -51,6 +55,18 @@ final class ProtocolJsonTypeRegistry {
         }
         if (type.hasRawClass(PhysicalParameters.class)) {
             return Optional.of(physicalParametersProperties(mapper));
+        }
+        if (type.hasRawClass(LoadSpecification.class)) {
+            return Optional.of(loadSpecificationProperties(mapper));
+        }
+        if (type.hasRawClass(LoadSet.class)) {
+            return Optional.of(loadSetProperties(mapper));
+        }
+        if (type.hasRawClass(BoundingBoxReference.class)) {
+            return Optional.of(boundingBoxReferenceProperties(mapper));
+        }
+        if (type.hasRawClass(LoadDimensions.class)) {
+            return Optional.of(loadDimensionsProperties(mapper));
         }
         if (type.hasRawClass(ProtocolLimits.class)) {
             return Optional.of(protocolLimitsProperties(mapper));
@@ -147,6 +163,70 @@ final class ProtocolJsonTypeRegistry {
             "maximumHeight", numberType,
             "width", numberType,
             "length", numberType
+        );
+    }
+
+    private static Map<String, JavaType> loadSpecificationProperties(
+        ObjectMapper mapper
+    ) {
+        return Map.of(
+            "loadPositions",
+            listType(mapper, String.class),
+            "loadSets",
+            listType(mapper, LoadSet.class)
+        );
+    }
+
+    private static Map<String, JavaType> loadSetProperties(ObjectMapper mapper) {
+        JavaType numberType = mapper.constructType(Double.class);
+        return Map.ofEntries(
+            Map.entry("setName", mapper.constructType(String.class)),
+            Map.entry("loadType", mapper.constructType(String.class)),
+            Map.entry("loadPositions", listType(mapper, String.class)),
+            Map.entry(
+                "boundingBoxReference",
+                mapper.constructType(BoundingBoxReference.class)
+            ),
+            Map.entry(
+                "loadDimensions",
+                mapper.constructType(LoadDimensions.class)
+            ),
+            Map.entry("maximumWeight", numberType),
+            Map.entry("minimumLoadhandlingHeight", numberType),
+            Map.entry("maximumLoadhandlingHeight", numberType),
+            Map.entry("minimumLoadhandlingDepth", numberType),
+            Map.entry("maximumLoadhandlingDepth", numberType),
+            Map.entry("minimumLoadhandlingTilt", numberType),
+            Map.entry("maximumLoadhandlingTilt", numberType),
+            Map.entry("maximumSpeed", numberType),
+            Map.entry("maximumAcceleration", numberType),
+            Map.entry("maximumDeceleration", numberType),
+            Map.entry("pickTime", numberType),
+            Map.entry("dropTime", numberType),
+            Map.entry("description", mapper.constructType(String.class))
+        );
+    }
+
+    private static Map<String, JavaType> boundingBoxReferenceProperties(
+        ObjectMapper mapper
+    ) {
+        JavaType numberType = mapper.constructType(Double.class);
+        return Map.of(
+            "x", numberType,
+            "y", numberType,
+            "z", numberType,
+            "theta", numberType
+        );
+    }
+
+    private static Map<String, JavaType> loadDimensionsProperties(
+        ObjectMapper mapper
+    ) {
+        JavaType numberType = mapper.constructType(Double.class);
+        return Map.of(
+            "length", numberType,
+            "width", numberType,
+            "height", numberType
         );
     }
 
