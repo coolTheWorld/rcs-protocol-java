@@ -187,12 +187,13 @@ public final class Vda5050JacksonModule extends SimpleModule {
         ) throws IOException {
             ObjectMapper mapper = requireObjectMapper(parser);
             JsonNode tree = mapper.readTree(parser);
-            if (!(tree instanceof ObjectNode object)) {
+            if (!tree.isObject()) {
                 return context.reportInputMismatch(
                     Connection.class,
                     "Connection message must be a JSON object"
                 );
             }
+            ObjectNode object = (ObjectNode) tree;
 
             Long headerId = readRequired(object, "headerId", Long.class, context);
             ProtocolTimestamp timestamp = readRequired(

@@ -492,13 +492,13 @@ final class FactsheetFragmentJacksonSupport {
         String displayName
     ) throws IOException {
         JsonNode tree = mapper.readTree(parser);
-        if (tree instanceof ObjectNode object) {
-            return object;
+        if (!tree.isObject()) {
+            return context.reportInputMismatch(
+                targetType,
+                displayName + " must be a JSON object"
+            );
         }
-        return context.reportInputMismatch(
-            targetType,
-            displayName + " must be a JSON object"
-        );
+        return (ObjectNode) tree;
     }
 
     static <T> T readRequired(

@@ -126,12 +126,13 @@ public final class ExtensionFieldsJacksonSupport {
         ) throws IOException {
             ObjectMapper mapper = requireObjectMapper(parser);
             JsonNode value = mapper.readTree(parser);
-            if (!(value instanceof ObjectNode object)) {
+            if (!value.isObject()) {
                 return context.reportInputMismatch(
                     ExtensionFields.class,
                     "Extension fields must be a JSON object"
                 );
             }
+            ObjectNode object = (ObjectNode) value;
             return OpaqueJsonJacksonAccess.extensionFields(mapper, object);
         }
     }

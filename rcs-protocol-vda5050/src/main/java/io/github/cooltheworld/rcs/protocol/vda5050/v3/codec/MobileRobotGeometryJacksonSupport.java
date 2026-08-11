@@ -589,12 +589,13 @@ final class MobileRobotGeometryJacksonSupport {
         ) throws IOException {
             ObjectMapper mapper = requireObjectMapper(parser);
             JsonNode value = mapper.readTree(parser);
-            if (!(value instanceof ObjectNode object)) {
+            if (!value.isObject()) {
                 return context.reportInputMismatch(
                     Envelope3dData.class,
                     "3D envelope data must be a JSON object"
                 );
             }
+            ObjectNode object = (ObjectNode) value;
             return OpaqueJsonJacksonAccess.envelope3dData(mapper, object);
         }
     }
