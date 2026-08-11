@@ -100,7 +100,7 @@ Unix-like 环境使用对应的 `./mvnw` 命令，例如：
 
 `BatteryCharging` 使用三个可选 `Double` 保存临界低电量、最小期望电量和最大期望电量百分比；`minimumChargingTime` 按规范正文的 `uint32` 语义使用 `Long`。`MobileRobotConfiguration` 聚合可选版本列表、网络元数据和充电参数，保持缺失与空版本列表的不同语义。默认 Codec 与独立 Jackson Module 可确定性往返完整配置对象图，并在绑定前识别全部嵌套标准字段，使标准显式 `null` 与非法形状结构化拒绝、未知扩展及扩展 `null` 透明保存。
 
-模型不在 Builder 中丢弃非法原始边界；`MobileRobotConfigurationValidator` 以不可变 Issue 列表报告非有限值、百分比越界、倒置期望区间和超出 `uint32` 的充电时间，不修改输入，也不解析网络字符串。运行期网络信息不变规则需要历史状态，由 Factsheet 角色流程执行。
+模型不在 Builder 中丢弃非法原始边界；`MobileRobotConfigurationValidator` 以不可变 Issue 列表报告非有限值、百分比越界、倒置期望区间和超出 `uint32` 的充电时间，不修改输入，也不解析网络字符串。运行期网络信息不变规则由 Fleet Control 的 Factsheet 历史状态执行：首次非空网络建立会话基线，后续缺失或变化均 fail closed，Connection `OFFLINE` 不清除基线。
 
 ## Factsheet 根模型
 
@@ -112,7 +112,7 @@ Unix-like 环境使用对应的 `./mvnw` 命令，例如：
 
 Mobile Robot 的 Factsheet 发布边界由强类型角色契约表达：`FactsheetPublicationRequested` 只携带 `FactsheetContent` 与显式发生时间，不允许调用方提供 Header；`MobileRobotState` 为 Factsheet Topic 独立保存下一个 `uint32` Header ID 和最近生成的完整消息；`PublishFactsheet` Effect 只携带强类型 `Factsheet`。默认状态机仅在 Connection 上线且未主动 `OFFLINE` 时，使用事件时间、状态身份/版本和独立循环计数器确定性生成消息；QoS 0 与 retained 语义继续由不可变 `TopicDescriptor` 提供给外部 Adapter。
 
-Fleet Control 通过 `FactsheetReceived` 和 `FactsheetRejected` 明确区分前三层成功凭证与拒绝结果；`FleetControlState` 保存身份和版本一致的最近 Factsheet。`FactsheetChanged` 描述标准能力变化，既有 `InboundMessageRejected` 和 `UnknownExtensionObserved` 按 `TopicName.FACTSHEET` 复用，其中未知扩展观察只暴露 Topic 与安全 Header 上下文，不暴露扩展键和值。能力保存、重复判断和网络基线门禁由后续状态转换负责。
+Fleet Control 通过 `FactsheetReceived` 和 `FactsheetRejected` 明确区分前三层成功凭证与拒绝结果；默认状态机只保存身份和版本匹配会话的 Factsheet，完整重复不会再次产生 `FactsheetChanged`。首次非空 `NetworkConfiguration` 可以建立基线；已有非空基线后，网络缺失或任何强类型值变化都会保持 State 并产生固定安全拒绝。Connection `OFFLINE` 不清除该基线。`UnknownExtensionObserved` 会遍历根级和全部强类型子对象，但只暴露 Topic 与安全 Header 上下文，不暴露扩展键和值。
 
 ## Schema Validator
 

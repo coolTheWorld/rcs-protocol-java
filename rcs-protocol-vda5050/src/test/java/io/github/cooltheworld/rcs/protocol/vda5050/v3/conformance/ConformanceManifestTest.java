@@ -223,6 +223,18 @@ final class ConformanceManifestTest {
             factsheetRule.test().contains("FleetControlStateTest"),
             "Factsheet rule must retain FS07j Fleet Control contract tests"
         );
+        assertTrue(
+            factsheetRule.transition().contains(
+                "DefaultFleetControlStateMachine#transition"
+            ),
+            "Factsheet rule must retain FS07k Fleet Control transition evidence"
+        );
+        assertTrue(
+            factsheetRule.test().contains(
+                "FleetControlFactsheetStateMachineTest"
+            ),
+            "Factsheet rule must retain FS07k Fleet Control transition tests"
+        );
         assertEquals("SCHEMA_INCORRECT", factsheetSpeedUnitRule.schemaGap());
         assertEquals("VERIFIED", factsheetSpeedUnitRule.status());
         assertEquals("SCHEMA_MISSING", factsheetLoadSemanticsRule.schemaGap());
@@ -248,6 +260,18 @@ final class ConformanceManifestTest {
                 "MobileRobotConfigurationTest"
             ),
             "Network rule must retain FS06 immutable model evidence"
+        );
+        assertTrue(
+            factsheetNetworkRule.transition().contains(
+                "DefaultFleetControlStateMachine#transition"
+            ),
+            "Network rule must retain FS07k transition evidence"
+        );
+        assertTrue(
+            factsheetNetworkRule.test().contains(
+                "FleetControlFactsheetStateMachineTest"
+            ),
+            "Network rule must retain FS07k scenario evidence"
         );
         assertEquals("NONE", factsheetTypeRule.schemaGap());
         assertEquals("VERIFIED", factsheetTypeRule.status());
