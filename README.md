@@ -108,6 +108,8 @@ Unix-like 环境使用对应的 `./mvnw` 命令，例如：
 
 完整与边界 Fixture 同时通过确定性往返和 Draft 2020-12 Schema 校验，覆盖 `headerId` 的 `uint32` 两个端点、缺失可选配置、根与嵌套扩展。绑定前字段元数据覆盖全部根字段，标准显式 `null`、缺失必填和非法对象形状均通过封闭解码结果拒绝。
 
+`FactsheetValidator` 接收部署 `TopicLayout`、实际 Topic 路径和不可信 UTF-8 payload，以同一组资源上限依次执行 JSON 预检、Draft 2020-12 Schema、强类型绑定、Header/版本/Topic 身份和全部片段语义校验。片段相对路径在组合时提升为 Factsheet 根 JSON Pointer；只有错误列表为空时才能得到不可由公共 API 伪造的 `ValidatedMessage<Factsheet>`，拒绝结果不携带 payload、扩展值或动态 JSON。
+
 ## Schema Validator
 
 `Vda5050SchemaValidator.createDefault()` 提供八个 Topic 的 Draft 2020-12 Schema 校验。它会在 NetworkNT 解析前执行与默认 Codec 相同的 JSON 资源硬上限，关闭远程 Schema 获取，并为 `date-time` 启用 Format Assertion。语法、资源和 Schema 失败统一返回不可变 `ValidationIssue` 列表；说明文本不复制不可信输入值。

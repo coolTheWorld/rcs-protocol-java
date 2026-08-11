@@ -174,6 +174,10 @@ final class ConformanceManifestTest {
             "Factsheet rule must retain FS07c root Codec evidence"
         );
         assertTrue(
+            factsheetRule.validator().contains("FactsheetValidator"),
+            "Factsheet rule must retain FS07g root Validator evidence"
+        );
+        assertTrue(
             factsheetRule.fixture().contains(
                 "mobile-robot-configuration-cases.json"
             ),
@@ -192,6 +196,10 @@ final class ConformanceManifestTest {
         assertTrue(
             factsheetRule.test().contains("FactsheetCodecTest"),
             "Factsheet rule must retain FS07c root test evidence"
+        );
+        assertTrue(
+            factsheetRule.test().contains("FactsheetValidatorTest"),
+            "Factsheet rule must retain FS07g root Validator test evidence"
         );
         assertEquals("SCHEMA_INCORRECT", factsheetSpeedUnitRule.schemaGap());
         assertEquals("VERIFIED", factsheetSpeedUnitRule.status());
