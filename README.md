@@ -86,6 +86,12 @@ Unix-like 环境使用对应的 `./mvnw` 命令，例如：
 
 `ResidualExtensionAdmission` 对运行时接收角色使用显式入口：Mobile Robot 对 `order`、`instantActions`、`zoneSet` 与 `responses` 的非空未注册扩展返回固定 `UNSUPPORTED_PARAMETER`；Fleet Control 对 `state`、`connection`、`factsheet` 与 `visualization` 返回无内容的保留/观察标记。准入结果不携带扩展键和值，反向角色/Topic 组合视为集成编程错误。
 
+## 公共 Action 模型
+
+`Action` 不可变聚合精确保存必填 `actionType`、`actionId`、`blockingType`，以及可选 `actionDescriptor`、`List<ActionParameter>`、`Boolean retriable` 和未知扩展。可选参数列表区分缺失与空数组，存在时执行防御性复制；可重试标志同样区分缺失与显式 `false`。模型不裁剪字符串，也不在 Builder 中提前执行 Action 目录、作用域、Instant Action Blocking 或状态机语义。
+
+`ActionScope` 是准入上下文而不是 Action JSON 字段；执行状态也由后续 `ActionState` 模型承载。Order 与 Instant Actions 的根 Codec、Schema 和上下文语义仍由后续 Topic 增量完成。
+
 ## Factsheet 移动机器人几何
 
 `MobileRobotGeometry` 强类型表达轮定义、二维包络与三维包络；可选集合继续区分缺失与空数组。轮位置、尺寸和二维顶点使用 `Double`，三维包络可以携带内联数据或绝对 URL，未知字段同样透明保存。

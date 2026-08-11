@@ -81,6 +81,7 @@ class PublicApiArchitectureTest {
             "RobotIdentity"
         ));
         packages.put(ROOT + ".model.action", List.of(
+            "Action",
             "ActionParameter",
             "ActionParameterDefinition",
             "ActionParameterValue",

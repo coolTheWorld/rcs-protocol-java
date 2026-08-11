@@ -119,6 +119,12 @@ String path = DefaultTopicLayout.standard().format(
 - 已注册 Adapter 处理之后，将仍未识别的 `ExtensionFields` 交给 `ResidualExtensionAdmission` 的角色专属入口。Mobile Robot 控制输入的非空残余扩展 fail closed；Fleet Control 遥测输入只返回不携带扩展内容的观察标记，原强类型消息继续负责不透明保留。
 - 核心只执行准入，不执行设备动作，也不会从 payload 类名实例化调用方类型。
 
+## 构造公共 Action
+
+使用 `Action.builder()` 提供原文 `actionType`、`actionId` 和 `BlockingType`。`actionDescriptor`、`actionParameters` 与 `retriable` 均为可选字段；不要用空列表替代缺失参数，也不要用显式 `false` 替代缺失的 `retriable`，除非调用方确实要表达对应线路值。
+
+`Action` 只表示命令对象。调用 `ActionAdmission` 时仍须单独提供 `ActionScope`；Action 的执行状态由后续状态消息模型表达。Builder 不证明 Action 已在目录注册，也不替代 Topic 的 Schema、语义或角色准入。
+
 ## 并发与持久化责任
 
 默认 Codec、Schema Validator、Connection Validator、Topic 布局和无状态状态机可缓存复用。调用方必须：
