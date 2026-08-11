@@ -206,6 +206,12 @@ final class ConformanceManifestTest {
             "Factsheet rule must retain FS07h Mobile Robot contract evidence"
         );
         assertTrue(
+            factsheetRule.transition().contains(
+                "DefaultMobileRobotStateMachine#transition"
+            ),
+            "Factsheet rule must retain FS07i Mobile Robot transition evidence"
+        );
+        assertTrue(
             factsheetRule.test().contains("MobileRobotStateTest"),
             "Factsheet rule must retain FS07h Mobile Robot contract tests"
         );
@@ -305,6 +311,12 @@ final class ConformanceManifestTest {
                     "DefaultMobileRobotStateMachine"
                 ),
                 "Header counter rule must include C11 publication evidence"
+            ),
+            () -> assertTrue(
+                headerCounterRule.test().contains(
+                    "wrapsTheIndependentFactsheetHeaderId"
+                ),
+                "Header counter rule must include FS07i Factsheet evidence"
             ),
             () -> assertTrue(
                 protocolHeaderRule.transition().contains(

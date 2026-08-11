@@ -10,6 +10,7 @@ import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.connection.Connectio
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.connection.ConnectionState;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.common.ProtocolHeader;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.common.ProtocolTimestamp;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.Factsheet;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.validation.ValidationIssue;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.validation.ValidationSeverity;
 import java.util.List;
@@ -42,9 +43,13 @@ public final class DefaultMobileRobotStateMachine
         if (event instanceof MobileRobotEvent.ConnectionOpeningRequested opening) {
             return transitionOpening(state, opening);
         }
-        return transitionPublication(
+        if (event instanceof MobileRobotEvent.ConnectionStatePublicationRequested
+            publication) {
+            return transitionPublication(state, publication);
+        }
+        return transitionFactsheetPublication(
             state,
-            (MobileRobotEvent.ConnectionStatePublicationRequested) event
+            (MobileRobotEvent.FactsheetPublicationRequested) event
         );
     }
 
@@ -139,6 +144,60 @@ public final class DefaultMobileRobotStateMachine
         return new MobileRobotTransition(
             nextState,
             List.of(new MobileRobotEffect.PublishConnection(connection)),
+            List.of()
+        );
+    }
+
+    private MobileRobotTransition transitionFactsheetPublication(
+        MobileRobotState state,
+        MobileRobotEvent.FactsheetPublicationRequested publication
+    ) {
+        if (!isConnectionSessionActive(state)) {
+            ValidationIssue issue = new ValidationIssue(
+                "FACTSHEET_PUBLICATION_SESSION_NOT_ACTIVE",
+                ValidationSeverity.ERROR,
+                "",
+                "发布 Factsheet 前必须完成上线序列且尚未主动离线",
+                "VDA3-FACTSHEET-001"
+            );
+            LOGGER.warn(
+                "event=mobile_robot_factsheet_publication_rejected "
+                    + "manufacturer={} serialNumber={} issueCode={}",
+                state.robotIdentity().manufacturer(),
+                state.robotIdentity().serialNumber(),
+                issue.code()
+            );
+            return new MobileRobotTransition(
+                state,
+                List.of(),
+                List.of(issue)
+            );
+        }
+        Long headerId = state.nextFactsheetHeaderId();
+        ProtocolHeader header = ProtocolHeader.builder()
+            .headerId(headerId)
+            .timestamp(ProtocolTimestamp.from(publication.occurredAt()))
+            .version(state.versionProfile().version())
+            .robotIdentity(state.robotIdentity())
+            .build();
+        Factsheet factsheet = Factsheet.builder()
+            .header(header)
+            .content(publication.content())
+            .build();
+        MobileRobotState nextState = state.toBuilder()
+            .nextFactsheetHeaderId(Unsigned32.next(headerId))
+            .lastFactsheet(factsheet)
+            .build();
+        LOGGER.info(
+            "event=mobile_robot_factsheet_published manufacturer={} "
+                + "serialNumber={} headerId={}",
+            state.robotIdentity().manufacturer(),
+            state.robotIdentity().serialNumber(),
+            headerId
+        );
+        return new MobileRobotTransition(
+            nextState,
+            List.of(new MobileRobotEffect.PublishFactsheet(factsheet)),
             List.of()
         );
     }

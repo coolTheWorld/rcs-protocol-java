@@ -15,7 +15,23 @@ import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.connection.Connectio
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.common.ProtocolTimestamp;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.common.ProtocolVersionProfile;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.common.RobotIdentity;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.Factsheet;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.FactsheetContent;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.LoadSpecification;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.LocalizationType;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.MaximumArrayLengths;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.MaximumStringLengths;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.MobileRobotClass;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.MobileRobotGeometry;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.MobileRobotKinematics;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.NavigationType;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.PhysicalParameters;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.ProtocolFeatures;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.ProtocolLimits;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.ProtocolTiming;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.TypeSpecification;
 import java.time.Instant;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -269,6 +285,168 @@ final class MobileRobotStateMachineTest {
     }
 
     @Test
+    @DisplayName("[VDA3-FACTSHEET-001] 活跃会话确定性生成完整 Factsheet")
+    void publishesFactsheetFromStateIdentityVersionCounterAndEventTime() {
+        MobileRobotState initial = openedState();
+        FactsheetContent content = factsheetContent();
+
+        MobileRobotTransition transition = stateMachine.transition(
+            initial,
+            new MobileRobotEvent.FactsheetPublicationRequested(
+                content,
+                OCCURRED_AT
+            )
+        );
+
+        MobileRobotEffect.PublishFactsheet effect = assertInstanceOf(
+            MobileRobotEffect.PublishFactsheet.class,
+            transition.effects().getFirst()
+        );
+        Factsheet factsheet = effect.factsheet();
+        assertAll(
+            () -> assertEquals(1, transition.effects().size()),
+            () -> assertTrue(transition.issues().isEmpty()),
+            () -> assertEquals(0L, factsheet.header().headerId()),
+            () -> assertEquals(
+                ProtocolTimestamp.from(OCCURRED_AT),
+                factsheet.header().timestamp()
+            ),
+            () -> assertEquals(
+                ProtocolVersionProfile.V3_0_0.version(),
+                factsheet.header().version()
+            ),
+            () -> assertEquals(ROBOT, factsheet.header().robotIdentity()),
+            () -> assertSame(content, factsheet.content()),
+            () -> assertEquals(1L, transition.state().nextFactsheetHeaderId()),
+            () -> assertSame(factsheet, transition.state().lastFactsheet()),
+            () -> assertEquals(
+                initial.nextConnectionHeaderId(),
+                transition.state().nextConnectionHeaderId()
+            ),
+            () -> assertSame(
+                initial.lastConnection(),
+                transition.state().lastConnection()
+            ),
+            () -> assertSame(
+                initial.connectionLastWill(),
+                transition.state().connectionLastWill()
+            )
+        );
+    }
+
+    @Test
+    @DisplayName("[VDA3-SHARED-005] Factsheet 使用独立 uint32 循环计数器")
+    void wrapsTheIndependentFactsheetHeaderId() {
+        MobileRobotState initial = openedState().toBuilder()
+            .nextFactsheetHeaderId(4_294_967_295L)
+            .build();
+
+        MobileRobotTransition transition = stateMachine.transition(
+            initial,
+            factsheetPublication(OCCURRED_AT)
+        );
+
+        Factsheet factsheet = ((MobileRobotEffect.PublishFactsheet)
+            transition.effects().getFirst()).factsheet();
+        assertAll(
+            () -> assertEquals(4_294_967_295L, factsheet.header().headerId()),
+            () -> assertEquals(0L, transition.state().nextFactsheetHeaderId()),
+            () -> assertEquals(
+                initial.nextConnectionHeaderId(),
+                transition.state().nextConnectionHeaderId()
+            )
+        );
+    }
+
+    @Test
+    void permitsFactsheetPublicationWhileTheConnectionIsHibernating() {
+        MobileRobotState hibernating = stateMachine.transition(
+            openedState(),
+            new MobileRobotEvent.ConnectionStatePublicationRequested(
+                ConnectionState.HIBERNATING,
+                OCCURRED_AT.plusSeconds(1)
+            )
+        ).state();
+
+        MobileRobotTransition transition = stateMachine.transition(
+            hibernating,
+            factsheetPublication(OCCURRED_AT.plusSeconds(2))
+        );
+
+        assertAll(
+            () -> assertEquals(1, transition.effects().size()),
+            () -> assertInstanceOf(
+                MobileRobotEffect.PublishFactsheet.class,
+                transition.effects().getFirst()
+            ),
+            () -> assertTrue(transition.issues().isEmpty())
+        );
+    }
+
+    @Test
+    @DisplayName("[VDA3-FACTSHEET-001] 未上线或已 OFFLINE 时拒绝发布")
+    void rejectsFactsheetPublicationOutsideAnActiveConnectionSession() {
+        MobileRobotState unopened = recoveringState();
+        MobileRobotState offline = stateMachine.transition(
+            openedState(),
+            new MobileRobotEvent.ConnectionStatePublicationRequested(
+                ConnectionState.OFFLINE,
+                OCCURRED_AT.plusSeconds(1)
+            )
+        ).state();
+
+        MobileRobotTransition unopenedResult = stateMachine.transition(
+            unopened,
+            factsheetPublication(OCCURRED_AT)
+        );
+        MobileRobotTransition offlineResult = stateMachine.transition(
+            offline,
+            factsheetPublication(OCCURRED_AT.plusSeconds(2))
+        );
+
+        assertAll(
+            () -> assertSame(unopened, unopenedResult.state()),
+            () -> assertTrue(unopenedResult.effects().isEmpty()),
+            () -> assertEquals(
+                "FACTSHEET_PUBLICATION_SESSION_NOT_ACTIVE",
+                unopenedResult.issues().getFirst().code()
+            ),
+            () -> assertEquals(
+                "VDA3-FACTSHEET-001",
+                unopenedResult.issues().getFirst().requirementId()
+            ),
+            () -> assertSame(offline, offlineResult.state()),
+            () -> assertTrue(offlineResult.effects().isEmpty()),
+            () -> assertEquals(
+                unopenedResult.issues(),
+                offlineResult.issues()
+            )
+        );
+    }
+
+    @Test
+    @DisplayName("[VDA3-FACTSHEET-001] 相同 State/Event 重放得到相等结果")
+    void deterministicallyReplaysFactsheetPublication() {
+        MobileRobotState state = openedState().toBuilder()
+            .nextFactsheetHeaderId(17L)
+            .build();
+        MobileRobotEvent event = factsheetPublication(OCCURRED_AT);
+
+        MobileRobotTransition first = stateMachine.transition(state, event);
+        MobileRobotTransition replay = stateMachine.transition(state, event);
+        MobileRobotEffect.PublishFactsheet persistedEffect =
+            (MobileRobotEffect.PublishFactsheet) first.effects().getFirst();
+
+        assertAll(
+            () -> assertEquals(first, replay),
+            () -> assertSame(
+                persistedEffect.factsheet(),
+                deliver(persistedEffect)
+            )
+        );
+    }
+
+    @Test
     void rejectsBrokenActivePublicationAndMissingProgrammingArguments() {
         MobileRobotState opened = openedState();
         Connection online = opened.lastConnection();
@@ -347,5 +525,56 @@ final class MobileRobotStateMachineTest {
         MobileRobotEffect.PublishConnection effect
     ) {
         return effect.connection();
+    }
+
+    private static Factsheet deliver(
+        MobileRobotEffect.PublishFactsheet effect
+    ) {
+        return effect.factsheet();
+    }
+
+    private static MobileRobotEvent.FactsheetPublicationRequested
+        factsheetPublication(Instant occurredAt) {
+        return new MobileRobotEvent.FactsheetPublicationRequested(
+            factsheetContent(),
+            occurredAt
+        );
+    }
+
+    private static FactsheetContent factsheetContent() {
+        return FactsheetContent.builder()
+            .typeSpecification(TypeSpecification.builder()
+                .seriesName("SERIES")
+                .mobileRobotKinematics(MobileRobotKinematics.DIFFERENTIAL)
+                .mobileRobotClass(MobileRobotClass.CARRIER)
+                .maximumLoadMass(100.0D)
+                .localizationTypes(List.of(LocalizationType.NATURAL))
+                .navigationTypes(List.of(NavigationType.FREELY_NAVIGATING))
+                .build())
+            .physicalParameters(PhysicalParameters.builder()
+                .minimumSpeed(0.1D)
+                .maximumSpeed(2.0D)
+                .maximumAcceleration(1.0D)
+                .maximumDeceleration(1.0D)
+                .minimumHeight(0.2D)
+                .maximumHeight(1.0D)
+                .width(0.8D)
+                .length(1.2D)
+                .build())
+            .protocolLimits(ProtocolLimits.builder()
+                .maximumStringLengths(MaximumStringLengths.builder().build())
+                .maximumArrayLengths(MaximumArrayLengths.builder().build())
+                .timing(ProtocolTiming.builder()
+                    .minimumOrderInterval(0.0D)
+                    .minimumStateInterval(0.0D)
+                    .build())
+                .build())
+            .protocolFeatures(ProtocolFeatures.builder()
+                .optionalParameters(List.of())
+                .mobileRobotActions(List.of())
+                .build())
+            .mobileRobotGeometry(MobileRobotGeometry.builder().build())
+            .loadSpecification(LoadSpecification.builder().build())
+            .build();
     }
 }
