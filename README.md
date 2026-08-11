@@ -62,7 +62,7 @@ Unix-like 环境使用对应的 `./mvnw` 命令，例如：
 
 `Vda5050JsonCodec.createDefault()` 提供默认的安全 UTF-8 编解码边界。入站解码先执行 payload、深度、字符串、字段名、数值、数组、对象和 Token 资源上限，再创建完整协议对象；普通输入错误以 `DecodingResult<T>` 的拒绝分支返回。解码成功只表示完成语法与基础类型处理，仍须经过 Schema 和协议语义校验才能获得 `ValidatedMessage<T>`。
 
-需要复用应用现有 Jackson `ObjectMapper` 时，可以显式注册 `Vda5050JacksonModule`。该 Module 注册协议值类型、不透明 JSON 值以及已建模消息和子对象（目前包括 `Connection`、`TypeSpecification`、`PhysicalParameters`、`ProtocolLimits`、`ProtocolFeatures`、`MobileRobotGeometry` 与 `LoadSpecification` 对象图）的线路表示，不修改调用方的 null、未知字段、资源限制或多态配置。
+需要复用应用现有 Jackson `ObjectMapper` 时，可以显式注册 `Vda5050JacksonModule`。该 Module 注册协议值类型、不透明 JSON 值以及已建模消息和子对象（目前包括 `Connection`、`TypeSpecification`、`PhysicalParameters`、`ProtocolLimits`、`ProtocolFeatures`、`MobileRobotGeometry`、`LoadSpecification` 与 `MobileRobotConfiguration` 对象图）的线路表示，不修改调用方的 null、未知字段、资源限制或多态配置。
 
 ## Factsheet 类型与物理参数
 
@@ -98,7 +98,9 @@ Unix-like 环境使用对应的 `./mvnw` 命令，例如：
 
 `VersionInfo` 使用必填原始 `key`/`value` 表达软件或硬件版本。`NetworkConfiguration` 保存可选 DNS/NTP 服务器、本地地址、子网掩码和默认网关；服务器列表防御性复制，并保持字段缺失与空列表的不同线路语义。网络值只作为不透明配置数据存在，核心不会解析地址、查询 DNS、发起连接或把它们转换为 MQTT 客户端配置。
 
-`BatteryCharging` 使用三个可选 `Double` 保存临界低电量、最小期望电量和最大期望电量百分比；`minimumChargingTime` 按规范正文的 `uint32` 语义使用 `Long`。`MobileRobotConfiguration` 聚合可选版本列表、网络元数据和充电参数，保持缺失与空版本列表的不同语义。模型不在 Builder 中丢弃非法原始边界；`MobileRobotConfigurationValidator` 以不可变 Issue 列表报告非有限值、百分比越界、倒置期望区间和超出 `uint32` 的充电时间，不修改输入，也不解析网络字符串。运行期网络信息不变规则需要历史状态，由 Factsheet 角色流程执行。
+`BatteryCharging` 使用三个可选 `Double` 保存临界低电量、最小期望电量和最大期望电量百分比；`minimumChargingTime` 按规范正文的 `uint32` 语义使用 `Long`。`MobileRobotConfiguration` 聚合可选版本列表、网络元数据和充电参数，保持缺失与空版本列表的不同语义。默认 Codec 与独立 Jackson Module 可确定性往返完整配置对象图，并在绑定前识别全部嵌套标准字段，使标准显式 `null` 与非法形状结构化拒绝、未知扩展及扩展 `null` 透明保存。
+
+模型不在 Builder 中丢弃非法原始边界；`MobileRobotConfigurationValidator` 以不可变 Issue 列表报告非有限值、百分比越界、倒置期望区间和超出 `uint32` 的充电时间，不修改输入，也不解析网络字符串。运行期网络信息不变规则需要历史状态，由 Factsheet 角色流程执行。
 
 ## Factsheet 根模型
 

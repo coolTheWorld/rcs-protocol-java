@@ -142,6 +142,24 @@ final class ConformanceManifestTest {
         assertEquals("VERIFIED", topicMetadataRule.status());
         assertEquals("VERIFIED", connectionRule.status());
         assertEquals("PARTIAL", factsheetRule.status());
+        assertTrue(
+            factsheetRule.validator().contains(
+                "MobileRobotConfigurationJacksonSupport"
+            ),
+            "Factsheet rule must retain FS07b configuration Codec evidence"
+        );
+        assertTrue(
+            factsheetRule.fixture().contains(
+                "mobile-robot-configuration-cases.json"
+            ),
+            "Factsheet rule must retain FS07b configuration Fixture evidence"
+        );
+        assertTrue(
+            factsheetRule.test().contains(
+                "MobileRobotConfigurationCodecTest"
+            ),
+            "Factsheet rule must retain FS07b configuration test evidence"
+        );
         assertEquals("SCHEMA_INCORRECT", factsheetSpeedUnitRule.schemaGap());
         assertEquals("VERIFIED", factsheetSpeedUnitRule.status());
         assertEquals("SCHEMA_MISSING", factsheetLoadSemanticsRule.schemaGap());

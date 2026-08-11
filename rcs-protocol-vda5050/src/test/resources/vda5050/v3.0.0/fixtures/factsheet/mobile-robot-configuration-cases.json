@@ -1,0 +1,58 @@
+{
+  "valid": {
+    "versions": [
+      {
+        "key": "softwareVersion",
+        "value": "3.1.4",
+        "vendorVersion": null
+      }
+    ],
+    "network": {
+      "dnsServers": ["10.0.0.2"],
+      "ntpServers": [],
+      "localIpAddress": "10.0.0.20",
+      "netmask": "255.255.255.0",
+      "defaultGateway": "10.0.0.1",
+      "vendorNetwork": {
+        "profile": "plant-a"
+      }
+    },
+    "batteryCharging": {
+      "criticalLowChargingLevel": 10.0,
+      "minimumDesiredChargingLevel": 20.0,
+      "maximumDesiredChargingLevel": 80.0,
+      "minimumChargingTime": 4294967295,
+      "vendorCharging": true
+    },
+    "vendorConfiguration": {
+      "mode": "safe"
+    }
+  },
+  "boundary": {
+    "versions": [],
+    "network": {
+      "dnsServers": [],
+      "vendorNull": null
+    },
+    "batteryCharging": {},
+    "vendorNull": null
+  },
+  "invalid": {
+    "explicitNull": {
+      "batteryCharging": {
+        "minimumChargingTime": null
+      }
+    },
+    "missingVersionKey": {
+      "versions": [
+        {
+          "value": "1"
+        }
+      ]
+    },
+    "wrongVersionsShape": {
+      "versions": {}
+    },
+    "notObject": []
+  }
+}

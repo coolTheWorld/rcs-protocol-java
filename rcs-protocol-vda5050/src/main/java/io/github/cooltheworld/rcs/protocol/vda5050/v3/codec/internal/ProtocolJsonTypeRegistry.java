@@ -9,6 +9,7 @@ import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.action.BlockingType;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.connection.Connection;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.connection.ConnectionState;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.BoundingBoxReference;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.BatteryCharging;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.Envelope2d;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.Envelope2dVertex;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.Envelope3d;
@@ -21,7 +22,9 @@ import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.MaximumArr
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.MaximumStringLengths;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.action.MobileRobotAction;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.MobileRobotGeometry;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.MobileRobotConfiguration;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.NavigationType;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.NetworkConfiguration;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.OptionalParameter;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.OptionalParameterSupport;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.PhysicalParameters;
@@ -31,6 +34,7 @@ import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.ProtocolTi
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.common.ProtocolTimestamp;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.common.ProtocolVersion;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.TypeSpecification;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.VersionInfo;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.WheelDefinition;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.WheelPosition;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.WheelType;
@@ -55,6 +59,18 @@ final class ProtocolJsonTypeRegistry {
         }
         if (type.hasRawClass(PhysicalParameters.class)) {
             return Optional.of(physicalParametersProperties(mapper));
+        }
+        if (type.hasRawClass(MobileRobotConfiguration.class)) {
+            return Optional.of(mobileRobotConfigurationProperties(mapper));
+        }
+        if (type.hasRawClass(VersionInfo.class)) {
+            return Optional.of(versionInfoProperties(mapper));
+        }
+        if (type.hasRawClass(NetworkConfiguration.class)) {
+            return Optional.of(networkConfigurationProperties(mapper));
+        }
+        if (type.hasRawClass(BatteryCharging.class)) {
+            return Optional.of(batteryChargingProperties(mapper));
         }
         if (type.hasRawClass(LoadSpecification.class)) {
             return Optional.of(loadSpecificationProperties(mapper));
@@ -163,6 +179,50 @@ final class ProtocolJsonTypeRegistry {
             "maximumHeight", numberType,
             "width", numberType,
             "length", numberType
+        );
+    }
+
+    private static Map<String, JavaType> mobileRobotConfigurationProperties(
+        ObjectMapper mapper
+    ) {
+        return Map.of(
+            "versions", listType(mapper, VersionInfo.class),
+            "network", mapper.constructType(NetworkConfiguration.class),
+            "batteryCharging", mapper.constructType(BatteryCharging.class)
+        );
+    }
+
+    private static Map<String, JavaType> versionInfoProperties(
+        ObjectMapper mapper
+    ) {
+        return Map.of(
+            "key", mapper.constructType(String.class),
+            "value", mapper.constructType(String.class)
+        );
+    }
+
+    private static Map<String, JavaType> networkConfigurationProperties(
+        ObjectMapper mapper
+    ) {
+        JavaType stringType = mapper.constructType(String.class);
+        return Map.of(
+            "dnsServers", listType(mapper, String.class),
+            "ntpServers", listType(mapper, String.class),
+            "localIpAddress", stringType,
+            "netmask", stringType,
+            "defaultGateway", stringType
+        );
+    }
+
+    private static Map<String, JavaType> batteryChargingProperties(
+        ObjectMapper mapper
+    ) {
+        JavaType numberType = mapper.constructType(Double.class);
+        return Map.of(
+            "criticalLowChargingLevel", numberType,
+            "minimumDesiredChargingLevel", numberType,
+            "maximumDesiredChargingLevel", numberType,
+            "minimumChargingTime", mapper.constructType(Long.class)
         );
     }
 
