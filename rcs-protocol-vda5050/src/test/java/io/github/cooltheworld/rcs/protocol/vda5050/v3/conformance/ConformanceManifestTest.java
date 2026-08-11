@@ -77,6 +77,9 @@ final class ConformanceManifestTest {
         RequirementRow extensionFieldsRule = rowsById.get("VDA3-SHARED-007");
         RequirementRow validationBoundaryRule = rowsById.get("VDA3-SHARED-008");
         RequirementRow topicMetadataRule = rowsById.get("VDA3-SHARED-011");
+        RequirementRow extensionAdmissionRule = rowsById.get(
+            "VDA3-SHARED-012"
+        );
         RequirementRow connectionRule = rowsById.get("VDA3-CONNECTION-001");
         RequirementRow factsheetRule = rowsById.get("VDA3-FACTSHEET-001");
         RequirementRow factsheetSpeedUnitRule = rowsById.get(
@@ -109,6 +112,10 @@ final class ConformanceManifestTest {
         assertNotNull(extensionFieldsRule, "Missing extension fields rule");
         assertNotNull(validationBoundaryRule, "Missing validation boundary rule");
         assertNotNull(topicMetadataRule, "Missing Topic metadata and layout rule");
+        assertNotNull(
+            extensionAdmissionRule,
+            "Missing typed extension admission rule"
+        );
         assertNotNull(connectionRule, "Missing Connection rule");
         assertNotNull(factsheetRule, "Missing Factsheet rule");
         assertNotNull(
@@ -161,6 +168,8 @@ final class ConformanceManifestTest {
         assertEquals("NONE", validationBoundaryRule.schemaGap());
         assertEquals("NONE", topicMetadataRule.schemaGap());
         assertEquals("VERIFIED", topicMetadataRule.status());
+        assertEquals("NONE", extensionAdmissionRule.schemaGap());
+        assertEquals("PLANNED", extensionAdmissionRule.status());
         assertEquals("VERIFIED", connectionRule.status());
         assertEquals("VERIFIED", factsheetRule.status());
         assertTrue(
