@@ -84,6 +84,8 @@ Unix-like 环境使用对应的 `./mvnw` 命令，例如：
 
 `ActionParameter` 以大小写敏感的原文键和封闭 `ActionParameterValue` 保存动作参数线路值；BOOL、NUMBER、INTEGER、STRING、OBJECT 与 ARRAY 分别使用强类型变体，递归对象成员和数组进行防御性复制，不向公共 API 暴露通用 JSON 节点或 `Map<String, Object>`。`ActionDefinition<P>` 组合参数 Class、允许的 Scope/Blocking Type 与封闭结果 Adapter；不可变 `ActionRegistry` 拒绝重复覆盖，并且只按原文 `actionType + Class<P>` 返回类型安全定义。纯 `ActionAdmission` 依次检查注册、Class、Scope、Blocking 与 Adapter，只返回强类型成功或安全结构化拒绝，不执行设备动作。
 
+`ResidualExtensionAdmission` 对运行时接收角色使用显式入口：Mobile Robot 对 `order`、`instantActions`、`zoneSet` 与 `responses` 的非空未注册扩展返回固定 `UNSUPPORTED_PARAMETER`；Fleet Control 对 `state`、`connection`、`factsheet` 与 `visualization` 返回无内容的保留/观察标记。准入结果不携带扩展键和值，反向角色/Topic 组合视为集成编程错误。
+
 ## Factsheet 移动机器人几何
 
 `MobileRobotGeometry` 强类型表达轮定义、二维包络与三维包络；可选集合继续区分缺失与空数组。轮位置、尺寸和二维顶点使用 `Double`，三维包络可以携带内联数据或绝对 URL，未知字段同样透明保存。

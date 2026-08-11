@@ -111,6 +111,14 @@ String path = DefaultTopicLayout.standard().format(
 - 协议模型不引用 Jackson 类型；`ExtensionFields` 与三维包络内联数据只在显式注册的 `Vda5050JacksonModule` 内转换线路 JSON。
 - 不启用 Jackson Default Typing，不把原始 payload、扩展值、动作参数、下载链接或凭据写入日志。
 
+## 厂商 Action 与残余扩展准入
+
+- 使用 `ActionParameter` 和封闭 `ActionParameterValue` 保存线路参数，不把 OBJECT 或 ARRAY 转成通用 Map/JSON 节点。
+- 使用 `ActionDefinition<P>` 注册调用方参数 Class、允许的 Scope/Blocking Type 和返回封闭结果的 `ActionParameterAdapter<P>`；`ActionRegistry` 对原文 actionType 区分大小写并拒绝重复覆盖。
+- 使用 `ActionAdmission` 依次检查注册、参数 Class、Scope、Blocking 与 Adapter。普通参数错误返回结构化 Issue；Adapter 空结果或抛错属于集成编程错误。
+- 已注册 Adapter 处理之后，将仍未识别的 `ExtensionFields` 交给 `ResidualExtensionAdmission` 的角色专属入口。Mobile Robot 控制输入的非空残余扩展 fail closed；Fleet Control 遥测输入只返回不携带扩展内容的观察标记，原强类型消息继续负责不透明保留。
+- 核心只执行准入，不执行设备动作，也不会从 payload 类名实例化调用方类型。
+
 ## 并发与持久化责任
 
 默认 Codec、Schema Validator、Connection Validator、Topic 布局和无状态状态机可缓存复用。调用方必须：

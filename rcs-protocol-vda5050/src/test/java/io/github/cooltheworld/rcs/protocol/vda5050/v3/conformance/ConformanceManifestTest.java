@@ -169,7 +169,7 @@ final class ConformanceManifestTest {
         assertEquals("NONE", topicMetadataRule.schemaGap());
         assertEquals("VERIFIED", topicMetadataRule.status());
         assertEquals("NONE", extensionAdmissionRule.schemaGap());
-        assertEquals("PARTIAL", extensionAdmissionRule.status());
+        assertEquals("VERIFIED", extensionAdmissionRule.status());
         assertTrue(
             extensionAdmissionRule.test().contains("ActionParameterTest"),
             "FS08a must project its typed parameter evidence"
@@ -181,6 +181,12 @@ final class ConformanceManifestTest {
         assertTrue(
             extensionAdmissionRule.test().contains("ActionAdmissionTest"),
             "FS08c must project its typed admission evidence"
+        );
+        assertTrue(
+            extensionAdmissionRule.test().contains(
+                "ResidualExtensionAdmissionTest"
+            ),
+            "FS08d must project its role-aware residual extension evidence"
         );
         assertEquals("VERIFIED", connectionRule.status());
         assertEquals("VERIFIED", factsheetRule.status());
