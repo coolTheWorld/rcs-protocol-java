@@ -66,12 +66,26 @@ final class ProtocolHeaderTest {
     void usesValueEquality() {
         ProtocolHeader header = completeBuilder().build();
         ProtocolHeader equalHeader = completeBuilder().build();
-        ProtocolHeader differentHeader = completeBuilder().headerId(43L).build();
+        ProtocolHeader differentHeaderId = completeBuilder().headerId(43L).build();
+        ProtocolHeader differentTimestamp = completeBuilder()
+            .timestamp(ProtocolTimestamp.from(
+                Instant.parse("2026-08-07T05:00:01.123Z")
+            ))
+            .build();
+        ProtocolHeader differentVersion = completeBuilder()
+            .version(ProtocolVersion.parse("3.1.0"))
+            .build();
+        ProtocolHeader differentIdentity = completeBuilder()
+            .robotIdentity(new RobotIdentity("ACME", "SN-2"))
+            .build();
 
         assertEquals(header, header);
         assertEquals(header, equalHeader);
         assertEquals(header.hashCode(), equalHeader.hashCode());
-        assertNotEquals(header, differentHeader);
+        assertNotEquals(header, differentHeaderId);
+        assertNotEquals(header, differentTimestamp);
+        assertNotEquals(header, differentVersion);
+        assertNotEquals(header, differentIdentity);
         assertNotEquals(header, null);
         assertNotEquals(header, "header");
     }

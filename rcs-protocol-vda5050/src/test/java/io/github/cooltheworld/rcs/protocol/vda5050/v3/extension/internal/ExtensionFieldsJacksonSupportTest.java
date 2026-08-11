@@ -2,6 +2,7 @@ package io.github.cooltheworld.rcs.protocol.vda5050.v3.extension.internal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -84,6 +85,32 @@ final class ExtensionFieldsJacksonSupportTest {
         ObjectNode preserved = (ObjectNode) secondOutput.required("vendorObject");
         assertFalse(preserved.has("afterCapture"));
         assertFalse(preserved.has("afterWrite"));
+    }
+
+    @Test
+    void usesCanonicalExtensionContentForValueEquality() throws Exception {
+        ExtensionFields extensions = ExtensionFieldsJacksonSupport.capture(
+            MAPPER,
+            objectNode("{\"vendorField\":{\"value\":1}}"),
+            Set.of()
+        );
+        ExtensionFields equalExtensions = ExtensionFieldsJacksonSupport.capture(
+            MAPPER,
+            objectNode("{\"vendorField\":{\"value\":1}}"),
+            Set.of()
+        );
+        ExtensionFields differentExtensions = ExtensionFieldsJacksonSupport.capture(
+            MAPPER,
+            objectNode("{\"vendorField\":{\"value\":2}}"),
+            Set.of()
+        );
+
+        assertEquals(extensions, extensions);
+        assertEquals(extensions, equalExtensions);
+        assertEquals(extensions.hashCode(), equalExtensions.hashCode());
+        assertNotEquals(extensions, differentExtensions);
+        assertNotEquals(extensions, null);
+        assertNotEquals(extensions, "extensions");
     }
 
     @Test

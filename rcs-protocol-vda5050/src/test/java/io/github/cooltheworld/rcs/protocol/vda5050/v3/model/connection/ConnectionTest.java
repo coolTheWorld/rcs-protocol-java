@@ -39,6 +39,16 @@ final class ConnectionTest {
             .header(HEADER)
             .connectionState(ConnectionState.OFFLINE)
             .build();
+        ProtocolHeader differentHeader = ProtocolHeader.builder()
+            .headerId(1L)
+            .timestamp(HEADER.timestamp())
+            .version(HEADER.version())
+            .robotIdentity(HEADER.robotIdentity())
+            .build();
+        Connection connectionWithDifferentHeader = Connection.builder()
+            .header(differentHeader)
+            .connectionState(ConnectionState.ONLINE)
+            .build();
 
         assertAll(
             () -> assertSame(HEADER, connection.header()),
@@ -46,7 +56,10 @@ final class ConnectionTest {
             () -> assertTrue(connection.extensionFields().isEmpty()),
             () -> assertEquals(connection, equalConnection),
             () -> assertEquals(connection.hashCode(), equalConnection.hashCode()),
-            () -> assertNotEquals(connection, differentConnection)
+            () -> assertNotEquals(connection, connectionWithDifferentHeader),
+            () -> assertNotEquals(connection, differentConnection),
+            () -> assertNotEquals(connection, null),
+            () -> assertNotEquals(connection, "connection")
         );
     }
 

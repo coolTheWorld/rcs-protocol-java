@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -78,11 +79,12 @@ final class ConnectionCodecTest {
     @DisplayName("[VDA3-SHARED-007] Connection 未知嵌套字段与显式 null 透明往返")
     void preservesUnknownConnectionExtensionsAcrossRoundTrip() throws Exception {
         byte[] payload = fixture("connection/valid/with-extensions.json");
-        JsonNode input = TEST_MAPPER.readTree(payload);
+        ObjectNode input = (ObjectNode) TEST_MAPPER.readTree(payload);
+        input.put("connectionState", ConnectionState.ONLINE.name());
 
         Connection connection = decoded(CODEC.decode(
             TopicName.CONNECTION,
-            payload,
+            TEST_MAPPER.writeValueAsBytes(input),
             Connection.class
         )).message();
         byte[] encoded = CODEC.encode(connection);
@@ -91,11 +93,20 @@ final class ConnectionCodecTest {
             encoded,
             Connection.class
         )).message();
+        ObjectNode standardOnly = input.deepCopy();
+        standardOnly.remove("vendorStatus");
+        standardOnly.remove("vendorNull");
+        Connection withoutExtensions = decoded(CODEC.decode(
+            TopicName.CONNECTION,
+            TEST_MAPPER.writeValueAsBytes(standardOnly),
+            Connection.class
+        )).message();
 
         assertAll(
             () -> assertFalse(connection.extensionFields().isEmpty()),
             () -> assertEquals(input, TEST_MAPPER.readTree(encoded)),
-            () -> assertEquals(connection, roundTripped)
+            () -> assertEquals(connection, roundTripped),
+            () -> assertNotEquals(connection, withoutExtensions)
         );
     }
 
