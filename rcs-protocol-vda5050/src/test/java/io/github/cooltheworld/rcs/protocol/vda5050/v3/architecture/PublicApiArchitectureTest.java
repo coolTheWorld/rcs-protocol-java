@@ -105,6 +105,9 @@ class PublicApiArchitectureTest {
             "Node",
             "NodePosition"
         ));
+        packages.put(ROOT + ".model.trajectory", List.of(
+            "TrajectoryControlPoint"
+        ));
         packages.put(ROOT + ".model.factsheet", List.of(
             "BatteryCharging",
             "BoundingBoxReference",

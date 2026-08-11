@@ -151,6 +151,8 @@ Builder 只保证两个宽度引用存在，会保留负数、非有限数或双
 
 正文与 Schema 没有为 maximumSpeed、maximumMobileRobotHeight、minimumLoadHandlingDeviceHeight、maximumRotationSpeed 或 length 规定非负范围，因此 Validator 不会根据字段名称自行拒绝有限负值。连续 Sequence、Node/Edge 交替、Base/Horizon、起终节点和预定义轨迹可用性由后续 Order 图或会话校验负责。
 
+NURBS 控制点使用 `TrajectoryControlPoint.builder().x(...).y(...)` 构造；只有需要覆盖正文默认权重 1.0 时才调用 `weight(...)`。Builder 会拒绝缺失坐标，但会保留非有限、零或负权重，供完整 Trajectory Validator 返回结构化 Issue；不要在业务层自行物化默认值或绕过后续校验。
+
 ## 并发与持久化责任
 
 默认 Codec、Schema Validator、Connection Validator、Topic 布局和无状态状态机可缓存复用。调用方必须：

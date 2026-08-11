@@ -21,6 +21,7 @@
 - 提供不可变 `Corridor` 及独立封闭的车体参考点和授权丢失行为词汇，精确保存左右宽度、可选字段缺失/显式值和未知扩展；数值语义保留给 Edge Validator。
 - 提供不可变 `Edge` 非 Trajectory 聚合和 `EdgeOrientationType`，强类型保存必填序列/Released/Action 与全部可选标量、方向和 Corridor 字段；按正文使用 `maximumRotationSpeed`，不伪造起终节点字段，Trajectory 留给 O04 回接。
 - 新增 `EdgeValidator` 以固定安全 Issue 校验单 Edge `uint32`、标量有限性、orientation 闭区间和 Corridor 非负/非双零语义；不增加未声明的非负范围、可选字段依赖或 Order 图级规则。
+- 新增共享不可变 `TrajectoryControlPoint`，以必填 `Double x/y`、可选 `Double weight` 和不透明扩展表达 NURBS 控制点；缺失权重保持线路缺失语义，数值范围留给 Trajectory Validator。
 - 提供结构化校验问题、拒绝消息安全上下文和显式协议版本配置。
 
 ### Changed（变更）
