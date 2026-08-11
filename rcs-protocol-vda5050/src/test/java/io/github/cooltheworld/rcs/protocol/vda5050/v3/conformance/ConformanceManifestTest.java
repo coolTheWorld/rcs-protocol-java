@@ -80,6 +80,7 @@ final class ConformanceManifestTest {
         RequirementRow extensionAdmissionRule = rowsById.get(
             "VDA3-SHARED-012"
         );
+        RequirementRow orderNodeRule = rowsById.get("VDA3-ORDER-002");
         RequirementRow connectionRule = rowsById.get("VDA3-CONNECTION-001");
         RequirementRow factsheetRule = rowsById.get("VDA3-FACTSHEET-001");
         RequirementRow factsheetSpeedUnitRule = rowsById.get(
@@ -187,6 +188,16 @@ final class ConformanceManifestTest {
                 "ResidualExtensionAdmissionTest"
             ),
             "FS08d must project its role-aware residual extension evidence"
+        );
+        assertEquals("SCHEMA_MISSING", orderNodeRule.schemaGap());
+        assertEquals("VERIFIED", orderNodeRule.status());
+        assertTrue(
+            orderNodeRule.validator().contains("NodeValidator"),
+            "O02c must project its single-node validator evidence"
+        );
+        assertTrue(
+            orderNodeRule.test().contains("NodeValidatorTest"),
+            "O02c must project its numeric boundary evidence"
         );
         assertEquals("VERIFIED", connectionRule.status());
         assertEquals("VERIFIED", factsheetRule.status());

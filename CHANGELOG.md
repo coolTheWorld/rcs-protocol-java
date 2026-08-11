@@ -17,7 +17,7 @@
 - 提供大小写敏感的 `ActionParameter` 与封闭递归 `ActionParameterValue`，以强类型表达六类协议参数值并保持递归集合不可变；提供 `ActionDefinition<P>`、封闭结果 `ActionParameterAdapter<P>`、不可变 `ActionRegistry`、纯 `ActionAdmission` 与八 Topic 角色感知 `ResidualExtensionAdmission`，拒绝重复注册、参数 Class 错配、不允许的 Scope/Blocking 和 Mobile Robot 无法处理的控制扩展，同时只以无内容标记观察 Fleet Control 遥测扩展。
 - 提供公共不可变 `Action` 线路聚合，复用强类型参数与 `BlockingType`，保留可选参数缺失/空数组和 `retriable` 缺失/显式 `false` 的不同语义；提供独立七值 `ActionStatus` 供后续状态消息复用，Scope 与 Status 不进入 Action 命令对象。
 - 提供不可变 `NodePosition` 与 `AllowedDeviationXY` Order 位置对象图，使用 `Double` 保留坐标、角度、偏差和待 Validator 检查的程序化边界值，地图标识保持原文，未知字段继续不透明保存。
-- 提供不可变 `Node` Order 聚合，强类型组合 sequenceId、released、可选位置与公共 `Action`；必填 actions 允许空列表并保持输入顺序，集合防御性复制且拒绝 `null` 元素。
+- 提供不可变 `Node` Order 聚合，强类型组合 sequenceId、released、可选位置与公共 `Action`；必填 actions 允许空列表并保持输入顺序，集合防御性复制且拒绝 `null` 元素。新增 `NodeValidator` 以固定安全 Issue 校验单节点 `uint32`、有限数和位置闭区间，不提前执行 Order 图级规则。
 - 提供结构化校验问题、拒绝消息安全上下文和显式协议版本配置。
 
 ### Changed（变更）

@@ -131,9 +131,11 @@ String path = DefaultTopicLayout.standard().format(
 
 使用 `AllowedDeviationXY.builder()` 构造可选偏差椭圆，再通过 `NodePosition.builder()` 提供必填 x、y、mapId 和可选 theta、偏差椭圆、允许方向偏差。mapId 保持调用方原文；Builder 不解析地图、不读取坐标系统，也不执行数值范围判断。
 
-通过程序化 API 构造的位置仍须交给后续 `NodeValidator` 检查有限数和闭区间。连续 sequenceId、Node/Edge 连接及 Base/Horizon 不是单个位置对象的职责。
+通过程序化 API 构造的位置仍须交给 `NodeValidator.create().validate(node)` 检查。Validator 会验证 `sequenceId` 的 `uint32` 闭区间、全部位置数值的有限性，以及节点方向 `[-π, π]`、偏差椭圆方向 `[-π/2, π/2]`、非负半轴和允许方向偏差 `[0, π]`。返回列表为不可变快照，问题说明不包含原始输入值。
 
 使用 `Node.builder()` 提供 nodeId、sequenceId、released 和 actions。没有节点动作时仍须显式传入 `List.of()`；不要用 `null` 表示空列表。可选 nodeDescriptor 与 nodePosition 缺失时保持 `null`，Node 会冻结 actions 顺序但不会判断 Action 是否已注册或可以执行。
+
+`NodeValidator` 不增加正文未规定的 `a >= b` 关系，也不因节点 `theta` 缺失而拒绝单独出现的 `allowedDeviationTheta`。连续 sequenceId、Node/Edge 连接、Base/Horizon 及拼接语义不是单个 Node 的职责。
 
 ## 并发与持久化责任
 
