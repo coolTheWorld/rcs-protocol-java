@@ -86,7 +86,7 @@ Unix-like 环境使用对应的 `./mvnw` 命令，例如：
 
 `MobileRobotGeometry` 强类型表达轮定义、二维包络与三维包络；可选集合继续区分缺失与空数组。轮位置、尺寸和二维顶点使用 `Double`，三维包络可以携带内联数据或绝对 URL，未知字段同样透明保存。
 
-`MobileRobotGeometryValidator` 检查有限数值、固定轮必需的朝向，以及三维包络内容来源和 URL 形式。它只返回结构化 `ValidationIssue`，不会下载或打开外部几何资源。
+`MobileRobotGeometryValidator` 检查有限数值、固定轮必需的朝向、二维包络的简单闭合多边形语义，以及三维包络内容来源和 URL 形式。二维包络至少包含三个唯一有限顶点，拒绝退化、非相邻边交叉、接触或重叠；不推断顶点方向。实现按边原位检查并在首个拓扑错误处停止，不创建平方级候选集合；极大或极小有限坐标使用精确行列式回退。Validator 只返回结构化 `ValidationIssue`，不会下载或打开外部几何资源。
 
 ## Factsheet 载荷说明
 

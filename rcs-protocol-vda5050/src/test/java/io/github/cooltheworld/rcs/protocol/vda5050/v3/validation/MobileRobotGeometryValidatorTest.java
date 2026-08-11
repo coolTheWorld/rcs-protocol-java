@@ -16,6 +16,7 @@ import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.WheelType;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.topic.TopicName;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.stream.IntStream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -149,6 +150,197 @@ final class MobileRobotGeometryValidatorTest {
         );
     }
 
+    @Test
+    @DisplayName("[VDA3-FACTSHEET-008] 接受顺逆时针与凹简单多边形")
+    void acceptsSimplePolygonsWithoutInventingAnOrientationRule() {
+        MobileRobotGeometry geometry = geometry(
+            polygon(
+                "clockwise",
+                vertex(0.0D, 0.0D),
+                vertex(0.0D, 2.0D),
+                vertex(2.0D, 0.0D)
+            ),
+            polygon(
+                "concave",
+                vertex(0.0D, 0.0D),
+                vertex(3.0D, 0.0D),
+                vertex(1.0D, 1.0D),
+                vertex(3.0D, 3.0D),
+                vertex(0.0D, 3.0D)
+            ),
+            polygon(
+                "overflow-safe",
+                vertex(Double.MAX_VALUE, 0.0D),
+                vertex(0.0D, Double.MAX_VALUE),
+                vertex(-Double.MAX_VALUE, 0.0D)
+            ),
+            polygon(
+                "underflow-safe",
+                vertex(0.0D, 0.0D),
+                vertex(Double.MIN_VALUE, 0.0D),
+                vertex(0.0D, Double.MIN_VALUE)
+            ),
+            polygon(
+                "parallel-overlapping-boxes",
+                vertex(0.0D, 0.0D),
+                vertex(2.0D, 2.0D),
+                vertex(2.0D, 3.0D),
+                vertex(0.0D, 1.0D),
+                vertex(-1.0D, 0.0D)
+            ),
+            polygon(
+                "line-crosses-outside-segment",
+                vertex(0.0D, 0.0D),
+                vertex(1.0D, 0.0D),
+                vertex(2.0D, -1.0D),
+                vertex(0.5D, 1.0D),
+                vertex(-1.0D, 1.0D)
+            )
+        );
+
+        assertEquals(List.of(), VALIDATOR.validate(geometry));
+    }
+
+    @Test
+    @DisplayName("[VDA3-FACTSHEET-008] 拒绝少于三点、重复点与共线退化包络")
+    void rejectsTooFewDuplicateAndDegenerateVertices() {
+        MobileRobotGeometry geometry = geometry(
+            polygon(
+                "too-few",
+                vertex(0.0D, 0.0D),
+                vertex(1.0D, 0.0D)
+            ),
+            polygon(
+                "explicit-close",
+                vertex(0.0D, 0.0D),
+                vertex(1.0D, 0.0D),
+                vertex(0.0D, 1.0D),
+                vertex(0.0D, 0.0D)
+            ),
+            polygon(
+                "signed-zero-duplicate",
+                vertex(0.0D, 0.0D),
+                vertex(-0.0D, -0.0D),
+                vertex(1.0D, 0.0D)
+            ),
+            polygon(
+                "collinear",
+                vertex(0.0D, 0.0D),
+                vertex(1.0D, 0.0D),
+                vertex(2.0D, 0.0D)
+            )
+        );
+
+        List<ValidationIssue> issues = VALIDATOR.validate(geometry);
+
+        assertAll(
+            () -> assertEquals(
+                List.of(
+                    "TOO_FEW_ENVELOPE2D_VERTICES",
+                    "DUPLICATE_ENVELOPE2D_VERTEX",
+                    "DUPLICATE_ENVELOPE2D_VERTEX",
+                    "DEGENERATE_ENVELOPE2D_POLYGON"
+                ),
+                issues.stream().map(ValidationIssue::code).toList()
+            ),
+            () -> assertEquals(
+                List.of(
+                    "/envelopes2d/0/vertices",
+                    "/envelopes2d/1/vertices/3",
+                    "/envelopes2d/2/vertices/1",
+                    "/envelopes2d/3/vertices"
+                ),
+                issues.stream().map(ValidationIssue::path).toList()
+            ),
+            () -> assertEquals(
+                List.of("VDA3-FACTSHEET-008"),
+                issues.stream()
+                    .map(ValidationIssue::requirementId)
+                    .distinct()
+                    .toList()
+            )
+        );
+    }
+
+    @Test
+    @DisplayName("[VDA3-FACTSHEET-008] 拒绝非相邻边交叉、接触或重叠")
+    void rejectsEveryNonAdjacentEdgeIntersectionForm() {
+        MobileRobotGeometry geometry = geometry(
+            polygon(
+                "crossing",
+                vertex(0.0D, 0.0D),
+                vertex(2.0D, 2.0D),
+                vertex(0.0D, 2.0D),
+                vertex(2.0D, 0.0D)
+            ),
+            polygon(
+                "touching",
+                vertex(0.0D, 0.0D),
+                vertex(2.0D, 0.0D),
+                vertex(1.0D, 0.0D),
+                vertex(1.0D, 1.0D),
+                vertex(0.0D, 1.0D)
+            ),
+            polygon(
+                "overlapping",
+                vertex(0.0D, 0.0D),
+                vertex(4.0D, 0.0D),
+                vertex(5.0D, 1.0D),
+                vertex(1.0D, 0.0D),
+                vertex(3.0D, 0.0D),
+                vertex(0.0D, 2.0D)
+            )
+        );
+
+        List<ValidationIssue> issues = VALIDATOR.validate(geometry);
+
+        assertAll(
+            () -> assertEquals(
+                List.of(
+                    "SELF_INTERSECTING_ENVELOPE2D_POLYGON",
+                    "SELF_INTERSECTING_ENVELOPE2D_POLYGON",
+                    "SELF_INTERSECTING_ENVELOPE2D_POLYGON"
+                ),
+                issues.stream().map(ValidationIssue::code).toList()
+            ),
+            () -> assertEquals(
+                List.of(
+                    "/envelopes2d/0/vertices",
+                    "/envelopes2d/1/vertices",
+                    "/envelopes2d/2/vertices"
+                ),
+                issues.stream().map(ValidationIssue::path).toList()
+            )
+        );
+    }
+
+    @Test
+    @DisplayName("[VDA3-FACTSHEET-008] 大边界包络保持确定性且不修改输入")
+    void validatesALargeBoundaryPolygonDeterministicallyWithoutMutation() {
+        List<Envelope2dVertex> vertices = IntStream.range(0, 512)
+            .mapToObj(index -> {
+                double angle = 2.0D * Math.PI * index / 512.0D;
+                return vertex(Math.cos(angle), Math.sin(angle));
+            })
+            .toList();
+        MobileRobotGeometry geometry = geometry(polygon(
+            "large-boundary",
+            vertices.toArray(Envelope2dVertex[]::new)
+        ));
+        MobileRobotGeometry snapshot = geometry(polygon(
+            "large-boundary",
+            vertices.toArray(Envelope2dVertex[]::new)
+        ));
+
+        List<ValidationIssue> issues = VALIDATOR.validate(geometry);
+
+        assertAll(
+            () -> assertEquals(List.of(), issues),
+            () -> assertEquals(issues, VALIDATOR.validate(geometry)),
+            () -> assertEquals(snapshot, geometry)
+        );
+    }
+
     private static WheelDefinition wheel(
         WheelType type,
         WheelPosition position
@@ -165,6 +357,26 @@ final class MobileRobotGeometryValidatorTest {
 
     private static Envelope3d.Builder envelope3d() {
         return Envelope3d.builder().envelope3dId("body").format("gltf");
+    }
+
+    private static MobileRobotGeometry geometry(Envelope2d... envelopes) {
+        return MobileRobotGeometry.builder()
+            .envelopes2d(List.of(envelopes))
+            .build();
+    }
+
+    private static Envelope2d polygon(
+        String id,
+        Envelope2dVertex... vertices
+    ) {
+        return Envelope2d.builder()
+            .envelope2dId(id)
+            .vertices(List.of(vertices))
+            .build();
+    }
+
+    private static Envelope2dVertex vertex(double x, double y) {
+        return Envelope2dVertex.builder().x(x).y(y).build();
     }
 
     private static Envelope3d decodedDataEnvelope() {

@@ -97,6 +97,9 @@ final class ConformanceManifestTest {
         RequirementRow factsheetPhysicalRule = rowsById.get(
             "VDA3-FACTSHEET-007"
         );
+        RequirementRow factsheetPolygonRule = rowsById.get(
+            "VDA3-FACTSHEET-008"
+        );
         assertNotNull(timestampRule, "Missing strict timestamp rule");
         assertNotNull(unsigned32Rule, "Missing uint32 range rule");
         assertNotNull(versionProfileRule, "Missing explicit version profile rule");
@@ -131,6 +134,10 @@ final class ConformanceManifestTest {
         assertNotNull(
             factsheetPhysicalRule,
             "Missing Factsheet physical parameters rule"
+        );
+        assertNotNull(
+            factsheetPolygonRule,
+            "Missing Factsheet simple polygon rule"
         );
         assertEquals(
             "SCHEMA_WEAKER",
@@ -227,6 +234,14 @@ final class ConformanceManifestTest {
                 "PhysicalParametersValidator"
             ),
             "Physical rule must retain FS07e Validator evidence"
+        );
+        assertEquals("SCHEMA_MISSING", factsheetPolygonRule.schemaGap());
+        assertEquals("VERIFIED", factsheetPolygonRule.status());
+        assertTrue(
+            factsheetPolygonRule.validator().contains(
+                "MobileRobotGeometryValidator"
+            ),
+            "Polygon rule must retain FS07f Validator evidence"
         );
         assertTrue(
             connectionRule.test().contains("ConnectionCodecTest"),

@@ -10,7 +10,7 @@
 - 提供 VDA 5050 v3.0.0 强类型公共值对象、安全 JSON Codec、八个 Topic 的本地 Draft 2020-12 Schema Registry 与 Schema Validator。
 - 提供 VDA 5050 Topic 元数据、默认 Topic 布局和可替换布局契约。
 - 提供 `Connection` 模型、前三层入站 Validator、Fleet Control 与 Mobile Robot 角色专属连接状态机及跨角色对话测试。
-- 提供 Factsheet `TypeSpecification`、`PhysicalParameters`、`ProtocolLimits`、`ProtocolFeatures` 与 `MobileRobotGeometry` 模型片段和确定性 JSON 往返，并校验最大载荷质量、物理参数有限数、Schema 非负下限与成对边界语义。
+- 提供 Factsheet `TypeSpecification`、`PhysicalParameters`、`ProtocolLimits`、`ProtocolFeatures` 与 `MobileRobotGeometry` 模型片段和确定性 JSON 往返，并校验最大载荷质量、物理参数有限数、Schema 非负下限、成对边界与二维简单多边形语义。
 - 提供 Factsheet `LoadSpecification`、`LoadDimensions`、`BoundingBoxReference` 与完整 `LoadSet` 强类型对象图、确定性 Codec 和上下文无关语义 Validator，保留可选集合的缺失/空列表和未知扩展语义。
 - 提供 Factsheet `VersionInfo`、`NetworkConfiguration`、`BatteryCharging` 与 `MobileRobotConfiguration` 不可变配置模型、确定性 Codec，以及有限数、百分比、期望区间和正文 `uint32` 充电时间语义 Validator；网络元数据只作为数据。
 - 提供 Factsheet 强类型根模型、头部无关的 `FactsheetContent` 能力聚合与平铺确定性 Codec，为核心确定性生成协议 Header 保留清晰边界。
