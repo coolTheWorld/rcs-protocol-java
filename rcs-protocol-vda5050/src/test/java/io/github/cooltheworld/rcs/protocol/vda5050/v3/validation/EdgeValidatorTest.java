@@ -10,6 +10,8 @@ import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.order.Corridor;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.order.CorridorReleaseLossBehavior;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.order.Edge;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.order.EdgeOrientationType;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.trajectory.Trajectory;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.trajectory.TrajectoryControlPoint;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -171,6 +173,42 @@ final class EdgeValidatorTest {
             .build();
 
         assertEquals(List.of(), validator.validate(edge));
+    }
+
+    @Test
+    @DisplayName("[VDA3-SHARED-013] Edge 组合 Trajectory Issue 并提升字段路径")
+    void liftsTrajectoryIssuesUnderTheEdgePath() {
+        Edge edge = edge(1L)
+            .trajectory(Trajectory.builder()
+                .degree(0L)
+                .controlPoints(List.of(TrajectoryControlPoint.builder()
+                    .x(Double.NaN)
+                    .y(0.0D)
+                    .build()))
+                .build())
+            .build();
+
+        List<ValidationIssue> issues = validator.validate(edge);
+
+        assertAll(
+            () -> assertEquals(
+                List.of(
+                    "INVALID_TRAJECTORY_DEGREE",
+                    "NON_FINITE_TRAJECTORY_VALUE"
+                ),
+                issues.stream().map(ValidationIssue::code).toList()
+            ),
+            () -> assertEquals(
+                List.of(
+                    "/trajectory/degree",
+                    "/trajectory/controlPoints/0/x"
+                ),
+                issues.stream().map(ValidationIssue::path).toList()
+            ),
+            () -> assertTrue(issues.stream().allMatch(issue ->
+                issue.requirementId().equals("VDA3-SHARED-013")
+            ))
+        );
     }
 
     @Test

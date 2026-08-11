@@ -112,6 +112,8 @@ Builder 只保证必填引用和值语义，会无损保留 NaN、Infinity、负
 
 共享 `Trajectory` 与 `TrajectoryControlPoint` 位于 `model.trajectory`，供后续 Order、State、Visualization 和 Zone 请求复用。控制点使用必填 `Double x/y`、可选 `Double weight` 与不透明扩展；Trajectory 使用可选 `Long degree`、可选 `List<Double> knotVector`、必填控制点列表与扩展。缺失默认字段保持 `null`，列表防御性复制；正文默认值和全部 NURBS 语义由 Trajectory Validator 统一解释。`Edge` 已通过可选 `trajectory` 字段组合该共享值。
 
+`TrajectoryValidator` 使用缺失 degree 的有效默认值 1，校验 degree `uint32`、坐标/权重/knot 有限性、严格正权重、knot `[0,1]` 非递减、控制点最小数量、显式 knot 精确长度以及 clamped 首尾/内部重数。非法 degree 不触发依赖它的派生伪错误；`EdgeValidator` 会组合该结果并把路径提升到 `/trajectory`。
+
 ## Factsheet 移动机器人几何
 
 `MobileRobotGeometry` 强类型表达轮定义、二维包络与三维包络；可选集合继续区分缺失与空数组。轮位置、尺寸和二维顶点使用 `Double`，三维包络可以携带内联数据或绝对 URL，未知字段同样透明保存。

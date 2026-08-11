@@ -201,7 +201,7 @@ final class ConformanceManifestTest {
             "FS08d must project its role-aware residual extension evidence"
         );
         assertEquals("SCHEMA_MISSING", trajectoryRule.schemaGap());
-        assertEquals("PARTIAL", trajectoryRule.status());
+        assertEquals("VERIFIED", trajectoryRule.status());
         assertTrue(
             trajectoryRule.validator().contains("TrajectoryControlPoint"),
             "O04a must project its typed control-point evidence"
@@ -221,6 +221,14 @@ final class ConformanceManifestTest {
         assertTrue(
             trajectoryRule.test().contains("EdgeTest"),
             "O04b must project its Edge attachment tests"
+        );
+        assertTrue(
+            trajectoryRule.validator().contains("TrajectoryValidator"),
+            "O04c must project its NURBS validator evidence"
+        );
+        assertTrue(
+            trajectoryRule.test().contains("TrajectoryValidatorTest"),
+            "O04c must project its numeric and cardinality tests"
         );
         assertEquals("SCHEMA_MISSING", orderNodeRule.schemaGap());
         assertEquals("VERIFIED", orderNodeRule.status());

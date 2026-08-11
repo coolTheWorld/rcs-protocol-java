@@ -155,6 +155,8 @@ NURBS 控制点使用 `TrajectoryControlPoint.builder().x(...).y(...)` 构造；
 
 使用 `Trajectory.builder().controlPoints(...)` 构造共享曲线；`degree` 和 `knotVector` 均可缺失，缺失与显式空 knot 列表不同。模型只保证必填列表存在、集合不可变且无 `null` 元素，随后可通过 `Edge.Builder#trajectory(...)` 回接 Order Edge；O04c 完成前不要把尚未语义校验的对象作为可执行曲线。
 
+构造后调用 `TrajectoryValidator.create().validate(trajectory)`，或对完整 Edge 调用 `EdgeValidator`。Validator 会解释缺失 degree=1 和 weight=1.0，但不会物化默认字段或派生 knot 数组；显式 knot 可使用 `[0,1]` 内任意非递减端点值，只需满足精确长度和正文重数，不额外强制首值为 0、末值为 1。只有空 Issue 列表表示 NURBS 上下文无关语义通过。
+
 ## 并发与持久化责任
 
 默认 Codec、Schema Validator、Connection Validator、Topic 布局和无状态状态机可缓存复用。调用方必须：

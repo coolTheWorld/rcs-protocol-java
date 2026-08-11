@@ -10,6 +10,8 @@ import java.util.Objects;
 /** 对单个 Order {@link Edge} 执行上下文无关数值语义校验。 */
 public final class EdgeValidator {
     private static final String REQUIREMENT_ID = "VDA3-ORDER-003";
+    private static final TrajectoryValidator TRAJECTORY_VALIDATOR =
+        TrajectoryValidator.create();
 
     private EdgeValidator() {}
 
@@ -59,6 +61,17 @@ public final class EdgeValidator {
             "/maximumRotationSpeed",
             issues
         );
+        if (edge.trajectory() != null) {
+            TRAJECTORY_VALIDATOR.validate(edge.trajectory()).forEach(issue ->
+                issues.add(new ValidationIssue(
+                    issue.code(),
+                    issue.severity(),
+                    "/trajectory" + issue.path(),
+                    issue.description(),
+                    issue.requirementId()
+                ))
+            );
+        }
         finite(edge.length(), "/length", issues);
         validateCorridor(edge.corridor(), issues);
         return List.copyOf(issues);

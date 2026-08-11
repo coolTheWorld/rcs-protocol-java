@@ -23,6 +23,7 @@
 - 新增 `EdgeValidator` 以固定安全 Issue 校验单 Edge `uint32`、标量有限性、orientation 闭区间和 Corridor 非负/非双零语义；不增加未声明的非负范围、可选字段依赖或 Order 图级规则。
 - 新增共享不可变 `TrajectoryControlPoint`，以必填 `Double x/y`、可选 `Double weight` 和不透明扩展表达 NURBS 控制点；缺失权重保持线路缺失语义，数值范围留给 Trajectory Validator。
 - 新增共享不可变 `Trajectory`，精确保存可选 degree/knot vector、必填控制点列表和扩展，区分缺失与空 knot 列表并防御性复制集合；`Edge` 新增可选强类型 Trajectory 字段和值语义。
+- 新增 `TrajectoryValidator`，校验 degree `uint32`、有限坐标、严格正权重、knot 范围/非递减、控制点与 knot 基数及 clamped 重数；`EdgeValidator` 组合结果并提升 `/trajectory` 路径，全部新增分支具有测试证据。
 - 提供结构化校验问题、拒绝消息安全上下文和显式协议版本配置。
 
 ### Changed（变更）
