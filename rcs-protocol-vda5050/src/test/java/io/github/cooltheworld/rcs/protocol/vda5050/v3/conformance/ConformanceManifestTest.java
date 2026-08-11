@@ -81,6 +81,10 @@ final class ConformanceManifestTest {
             "VDA3-SHARED-012"
         );
         RequirementRow orderNodeRule = rowsById.get("VDA3-ORDER-002");
+        RequirementRow orderEdgeRule = rowsById.get("VDA3-ORDER-003");
+        RequirementRow orderRotationSpeedRule = rowsById.get(
+            "VDA3-ORDER-004"
+        );
         RequirementRow connectionRule = rowsById.get("VDA3-CONNECTION-001");
         RequirementRow factsheetRule = rowsById.get("VDA3-FACTSHEET-001");
         RequirementRow factsheetSpeedUnitRule = rowsById.get(
@@ -116,6 +120,11 @@ final class ConformanceManifestTest {
         assertNotNull(
             extensionAdmissionRule,
             "Missing typed extension admission rule"
+        );
+        assertNotNull(orderEdgeRule, "Missing Edge/Corridor numeric rule");
+        assertNotNull(
+            orderRotationSpeedRule,
+            "Missing Edge rotation-speed field-name rule"
         );
         assertNotNull(connectionRule, "Missing Connection rule");
         assertNotNull(factsheetRule, "Missing Factsheet rule");
@@ -199,6 +208,13 @@ final class ConformanceManifestTest {
             orderNodeRule.test().contains("NodeValidatorTest"),
             "O02c must project its numeric boundary evidence"
         );
+        assertEquals("SCHEMA_MISSING", orderEdgeRule.schemaGap());
+        assertEquals("PLANNED", orderEdgeRule.status());
+        assertEquals(
+            "SCHEMA_INCORRECT",
+            orderRotationSpeedRule.schemaGap()
+        );
+        assertEquals("PLANNED", orderRotationSpeedRule.status());
         assertEquals("VERIFIED", connectionRule.status());
         assertEquals("VERIFIED", factsheetRule.status());
         assertTrue(
