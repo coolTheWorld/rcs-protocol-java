@@ -104,6 +104,8 @@ Builder 只保证必填引用和值语义，会无损保留 NaN、Infinity、负
 
 `NodeValidator` 执行单节点上下文无关校验：`sequenceId` 必须位于 `uint32` 闭区间，全部位置数值必须有限，节点方向、偏差椭圆方向、半轴和允许方向偏差必须满足各自闭区间。返回的 Issue 列表不可变且不泄露输入值；连续 Sequence、Node/Edge 连接、Base/Horizon 与更新拼接继续由 Order 图级 Validator 负责。
 
+`Corridor` 使用必填 `Double leftWidth/rightWidth` 表达 Edge 轨迹左右的允许偏离边界，并可携带车体参考点、是否需要 Fleet Control 授权、授权丢失行为和不透明扩展。`CorridorReferencePoint` 精确封闭 `KINEMATIC_CENTER/CONTOUR`，`CorridorReleaseLossBehavior` 精确封闭 `STOP/RETURN`。可选字段缺失时保持 `null`，不在模型层物化正文默认值；有限数、非负和非双零语义由后续 Edge Validator 执行。
+
 ## Factsheet 移动机器人几何
 
 `MobileRobotGeometry` 强类型表达轮定义、二维包络与三维包络；可选集合继续区分缺失与空数组。轮位置、尺寸和二维顶点使用 `Double`，三维包络可以携带内联数据或绝对 URL，未知字段同样透明保存。

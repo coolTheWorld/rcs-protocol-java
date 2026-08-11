@@ -97,6 +97,9 @@ class PublicApiArchitectureTest {
         ));
         packages.put(ROOT + ".model.order", List.of(
             "AllowedDeviationXY",
+            "Corridor",
+            "CorridorReferencePoint",
+            "CorridorReleaseLossBehavior",
             "Node",
             "NodePosition"
         ));

@@ -18,6 +18,7 @@
 - 提供公共不可变 `Action` 线路聚合，复用强类型参数与 `BlockingType`，保留可选参数缺失/空数组和 `retriable` 缺失/显式 `false` 的不同语义；提供独立七值 `ActionStatus` 供后续状态消息复用，Scope 与 Status 不进入 Action 命令对象。
 - 提供不可变 `NodePosition` 与 `AllowedDeviationXY` Order 位置对象图，使用 `Double` 保留坐标、角度、偏差和待 Validator 检查的程序化边界值，地图标识保持原文，未知字段继续不透明保存。
 - 提供不可变 `Node` Order 聚合，强类型组合 sequenceId、released、可选位置与公共 `Action`；必填 actions 允许空列表并保持输入顺序，集合防御性复制且拒绝 `null` 元素。新增 `NodeValidator` 以固定安全 Issue 校验单节点 `uint32`、有限数和位置闭区间，不提前执行 Order 图级规则。
+- 提供不可变 `Corridor` 及独立封闭的车体参考点和授权丢失行为词汇，精确保存左右宽度、可选字段缺失/显式值和未知扩展；数值语义保留给 Edge Validator。
 - 提供结构化校验问题、拒绝消息安全上下文和显式协议版本配置。
 
 ### Changed（变更）

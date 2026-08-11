@@ -137,6 +137,12 @@ String path = DefaultTopicLayout.standard().format(
 
 `NodeValidator` 不增加正文未规定的 `a >= b` 关系，也不因节点 `theta` 缺失而拒绝单独出现的 `allowedDeviationTheta`。连续 sequenceId、Node/Edge 连接、Base/Horizon 及拼接语义不是单个 Node 的职责。
 
+## 构造 Edge Corridor
+
+使用 `Corridor.builder()` 提供必填 `leftWidth` 和 `rightWidth`，并按需要设置 `CorridorReferencePoint`、`releaseRequired` 和 `CorridorReleaseLossBehavior`。可选字段缺失时保持 `null`：运动学中心、无需授权和 `STOP` 是后续执行语义的默认，不会在线路模型中改写为显式值。
+
+Builder 只保证两个宽度引用存在，会保留负数、非有限数或双零值供后续 `EdgeValidator` 产生结构化 Issue。Corridor 要求的预定义轨迹可以来自 Order 内联 Trajectory，也可以是 Mobile Robot 已知轨迹；不能仅因 Corridor 对象本身没有 Trajectory 而判断无效。
+
 ## 并发与持久化责任
 
 默认 Codec、Schema Validator、Connection Validator、Topic 布局和无状态状态机可缓存复用。调用方必须：

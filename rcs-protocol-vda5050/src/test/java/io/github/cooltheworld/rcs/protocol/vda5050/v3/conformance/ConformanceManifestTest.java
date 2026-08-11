@@ -209,7 +209,15 @@ final class ConformanceManifestTest {
             "O02c must project its numeric boundary evidence"
         );
         assertEquals("SCHEMA_MISSING", orderEdgeRule.schemaGap());
-        assertEquals("PLANNED", orderEdgeRule.status());
+        assertEquals("PARTIAL", orderEdgeRule.status());
+        assertTrue(
+            orderEdgeRule.validator().contains("Corridor"),
+            "O03a must project its typed Corridor evidence"
+        );
+        assertTrue(
+            orderEdgeRule.test().contains("CorridorTest"),
+            "O03a must project its Corridor model tests"
+        );
         assertEquals(
             "SCHEMA_INCORRECT",
             orderRotationSpeedRule.schemaGap()
