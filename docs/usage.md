@@ -125,6 +125,8 @@ String path = DefaultTopicLayout.standard().format(
 
 `Action` 只表示命令对象。调用 `ActionAdmission` 时仍须单独提供 `ActionScope`；Action 的执行状态由后续状态消息模型表达。Builder 不证明 Action 已在目录注册，也不替代 Topic 的 Schema、语义或角色准入。
 
+需要表达状态消息中的动作阶段时，复用独立 `ActionStatus` 七值词汇；不要向 `Action` 添加 Scope 或 Status 字段。
+
 ## 并发与持久化责任
 
 默认 Codec、Schema Validator、Connection Validator、Topic 布局和无状态状态机可缓存复用。调用方必须：

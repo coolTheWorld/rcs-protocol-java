@@ -92,6 +92,8 @@ Unix-like 环境使用对应的 `./mvnw` 命令，例如：
 
 `ActionScope` 是准入上下文而不是 Action JSON 字段；执行状态也由后续 `ActionState` 模型承载。Order 与 Instant Actions 的根 Codec、Schema 和上下文语义仍由后续 Topic 增量完成。
 
+共享 `ActionStatus` 精确提供 `WAITING`、`INITIALIZING`、`RUNNING`、`PAUSED`、`RETRIABLE`、`FINISHED` 与 `FAILED` 七个规范值，供后续状态消息模型复用；它不会进入 `Action` 命令对象。
+
 ## Factsheet 移动机器人几何
 
 `MobileRobotGeometry` 强类型表达轮定义、二维包络与三维包络；可选集合继续区分缺失与空数组。轮位置、尺寸和二维顶点使用 `Double`，三维包络可以携带内联数据或绝对 URL，未知字段同样透明保存。

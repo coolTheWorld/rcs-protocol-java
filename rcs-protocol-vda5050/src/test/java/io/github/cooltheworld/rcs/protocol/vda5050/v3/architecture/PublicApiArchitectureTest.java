@@ -86,6 +86,7 @@ class PublicApiArchitectureTest {
             "ActionParameterDefinition",
             "ActionParameterValue",
             "ActionScope",
+            "ActionStatus",
             "ActionValueDataType",
             "BlockingType",
             "MobileRobotAction"
