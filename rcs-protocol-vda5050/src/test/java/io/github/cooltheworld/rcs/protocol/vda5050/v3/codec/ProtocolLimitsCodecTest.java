@@ -5,11 +5,13 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.ProtocolLimits;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.topic.TopicName;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.validation.DecodedMessage;
@@ -83,6 +85,30 @@ final class ProtocolLimitsCodecTest {
             firstEncoding,
             ProtocolLimits.class
         )).message();
+        ProtocolLimits withoutRootExtension = decoded(CODEC.decode(
+            TopicName.FACTSHEET,
+            withoutField(payload, "", "vendorPolicy"),
+            ProtocolLimits.class
+        )).message();
+        ProtocolLimits withoutStringExtension = decoded(CODEC.decode(
+            TopicName.FACTSHEET,
+            withoutField(
+                payload,
+                "/maximumStringLengths",
+                "vendorStringRule"
+            ),
+            ProtocolLimits.class
+        )).message();
+        ProtocolLimits withoutArrayExtension = decoded(CODEC.decode(
+            TopicName.FACTSHEET,
+            withoutField(payload, "/maximumArrayLengths", "vendor.array"),
+            ProtocolLimits.class
+        )).message();
+        ProtocolLimits withoutTimingExtension = decoded(CODEC.decode(
+            TopicName.FACTSHEET,
+            withoutField(payload, "/timing", "vendorTiming"),
+            ProtocolLimits.class
+        )).message();
 
         assertAll(
             () -> assertEquals(0L, limits
@@ -108,7 +134,20 @@ final class ProtocolLimitsCodecTest {
                 TEST_MAPPER.readTree(firstEncoding)
             ),
             () -> assertArrayEquals(firstEncoding, secondEncoding),
-            () -> assertEquals(limits, roundTripped)
+            () -> assertEquals(limits, roundTripped),
+            () -> assertNotEquals(limits, withoutRootExtension),
+            () -> assertNotEquals(
+                limits.maximumStringLengths(),
+                withoutStringExtension.maximumStringLengths()
+            ),
+            () -> assertNotEquals(
+                limits.maximumArrayLengths(),
+                withoutArrayExtension.maximumArrayLengths()
+            ),
+            () -> assertNotEquals(
+                limits.timing(),
+                withoutTimingExtension.timing()
+            )
         );
     }
 
@@ -308,5 +347,15 @@ final class ProtocolLimitsCodecTest {
 
     private static byte[] bytes(String json) {
         return json.getBytes(StandardCharsets.UTF_8);
+    }
+
+    private static byte[] withoutField(
+        byte[] payload,
+        String parentPointer,
+        String field
+    ) throws Exception {
+        ObjectNode root = (ObjectNode) TEST_MAPPER.readTree(payload);
+        ((ObjectNode) root.at(parentPointer)).remove(field);
+        return TEST_MAPPER.writeValueAsBytes(root);
     }
 }

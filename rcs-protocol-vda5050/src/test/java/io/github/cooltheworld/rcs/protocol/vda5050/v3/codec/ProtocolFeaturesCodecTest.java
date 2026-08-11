@@ -5,11 +5,13 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.action.ActionScope;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.action.ActionValueDataType;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.action.BlockingType;
@@ -73,6 +75,30 @@ final class ProtocolFeaturesCodecTest {
             firstEncoding,
             ProtocolFeatures.class
         )).message();
+        ProtocolFeatures withoutRootExtension = decoded(CODEC.decode(
+            TopicName.FACTSHEET,
+            withoutField(payload, "", "vendorFeatures"),
+            ProtocolFeatures.class
+        )).message();
+        ProtocolFeatures withoutOptionalParameterExtension = decoded(CODEC.decode(
+            TopicName.FACTSHEET,
+            withoutField(payload, "/optionalParameters/0", "vendorRule"),
+            ProtocolFeatures.class
+        )).message();
+        ProtocolFeatures withoutActionExtension = decoded(CODEC.decode(
+            TopicName.FACTSHEET,
+            withoutField(payload, "/mobileRobotActions/0", "vendorAction"),
+            ProtocolFeatures.class
+        )).message();
+        ProtocolFeatures withoutActionParameterExtension = decoded(CODEC.decode(
+            TopicName.FACTSHEET,
+            withoutField(
+                payload,
+                "/mobileRobotActions/0/actionParameters/0",
+                "vendorUnit"
+            ),
+            ProtocolFeatures.class
+        )).message();
 
         assertAll(
             () -> assertEquals(
@@ -129,7 +155,26 @@ final class ProtocolFeaturesCodecTest {
                 TEST_MAPPER.readTree(firstEncoding)
             ),
             () -> assertArrayEquals(firstEncoding, secondEncoding),
-            () -> assertEquals(features, roundTripped)
+            () -> assertEquals(features, roundTripped),
+            () -> assertNotEquals(features, withoutRootExtension),
+            () -> assertNotEquals(
+                features.optionalParameters().getFirst(),
+                withoutOptionalParameterExtension.optionalParameters().getFirst()
+            ),
+            () -> assertNotEquals(
+                features.mobileRobotActions().getFirst(),
+                withoutActionExtension.mobileRobotActions().getFirst()
+            ),
+            () -> assertNotEquals(
+                features.mobileRobotActions()
+                    .getFirst()
+                    .actionParameters()
+                    .getFirst(),
+                withoutActionParameterExtension.mobileRobotActions()
+                    .getFirst()
+                    .actionParameters()
+                    .getFirst()
+            )
         );
     }
 
@@ -335,5 +380,15 @@ final class ProtocolFeaturesCodecTest {
 
     private static byte[] bytes(String json) {
         return json.getBytes(StandardCharsets.UTF_8);
+    }
+
+    private static byte[] withoutField(
+        byte[] payload,
+        String parentPointer,
+        String field
+    ) throws Exception {
+        ObjectNode root = (ObjectNode) TEST_MAPPER.readTree(payload);
+        ((ObjectNode) root.at(parentPointer)).remove(field);
+        return TEST_MAPPER.writeValueAsBytes(root);
     }
 }

@@ -144,10 +144,19 @@ final class ProtocolLimitsTest {
             .maximumArrayLengths(fullArrays().build())
             .timing(fullTiming().build())
             .build();
+        MaximumStringLengths strings = fullStrings().build();
+        MaximumArrayLengths arrays = fullArrays().build();
+        ProtocolTiming timing = fullTiming().build();
 
         assertAll(
             () -> assertEquals(limits, limits),
             () -> assertNotEquals(limits, null),
+            () -> assertEquals(strings, strings),
+            () -> assertNotEquals(strings, "limits"),
+            () -> assertEquals(arrays, arrays),
+            () -> assertNotEquals(arrays, "limits"),
+            () -> assertEquals(timing, timing),
+            () -> assertNotEquals(timing, "limits"),
             () -> assertNotEquals(
                 limits,
                 ProtocolLimits.builder()

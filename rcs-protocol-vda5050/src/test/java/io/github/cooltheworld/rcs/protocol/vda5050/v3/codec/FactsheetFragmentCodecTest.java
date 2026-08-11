@@ -5,11 +5,13 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.LocalizationType;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.MobileRobotClass;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.MobileRobotKinematics;
@@ -60,6 +62,11 @@ final class FactsheetFragmentCodecTest {
             firstEncoding,
             TypeSpecification.class
         )).message();
+        TypeSpecification withoutExtension = decoded(CODEC.decode(
+            TopicName.FACTSHEET,
+            withoutField(payload, "vendorCapabilities"),
+            TypeSpecification.class
+        )).message();
 
         assertAll(
             () -> assertEquals("CUSTOM_STEERING", specification
@@ -80,7 +87,8 @@ final class FactsheetFragmentCodecTest {
                 TEST_MAPPER.readTree(firstEncoding)
             ),
             () -> assertArrayEquals(firstEncoding, secondEncoding),
-            () -> assertEquals(specification, roundTripped)
+            () -> assertEquals(specification, roundTripped),
+            () -> assertNotEquals(specification, withoutExtension)
         );
     }
 
@@ -112,6 +120,11 @@ final class FactsheetFragmentCodecTest {
             encoded,
             PhysicalParameters.class
         )).message();
+        PhysicalParameters withoutExtension = decoded(CODEC.decode(
+            TopicName.FACTSHEET,
+            withoutField(payload, "vendorCalibration"),
+            PhysicalParameters.class
+        )).message();
         JsonNode encodedTree = TEST_MAPPER.readTree(encoded);
 
         assertAll(
@@ -120,7 +133,8 @@ final class FactsheetFragmentCodecTest {
             () -> assertFalse(encodedTree.has("minimumAngularSpeed")),
             () -> assertFalse(encodedTree.has("maximumAngularSpeed")),
             () -> assertEquals(TEST_MAPPER.readTree(payload), encodedTree),
-            () -> assertEquals(parameters, roundTripped)
+            () -> assertEquals(parameters, roundTripped),
+            () -> assertNotEquals(parameters, withoutExtension)
         );
     }
 
@@ -317,5 +331,12 @@ final class FactsheetFragmentCodecTest {
 
     private static byte[] bytes(String json) {
         return json.getBytes(StandardCharsets.UTF_8);
+    }
+
+    private static byte[] withoutField(byte[] payload, String field)
+        throws Exception {
+        ObjectNode root = (ObjectNode) TEST_MAPPER.readTree(payload);
+        root.remove(field);
+        return TEST_MAPPER.writeValueAsBytes(root);
     }
 }
