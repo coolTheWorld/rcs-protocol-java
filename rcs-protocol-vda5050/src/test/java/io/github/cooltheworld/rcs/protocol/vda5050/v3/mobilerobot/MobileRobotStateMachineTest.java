@@ -212,6 +212,34 @@ final class MobileRobotStateMachineTest {
     }
 
     @Test
+    void rejectsPublicationWhenLastWillExistsWithoutALastConnection() {
+        Connection lastWill = stateMachine.transition(
+            recoveringState(),
+            new MobileRobotEvent.ConnectionOpeningRequested(OCCURRED_AT)
+        ).state().connectionLastWill();
+        MobileRobotState incompleteSession = recoveringState().toBuilder()
+            .connectionLastWill(lastWill)
+            .build();
+
+        MobileRobotTransition transition = stateMachine.transition(
+            incompleteSession,
+            new MobileRobotEvent.ConnectionStatePublicationRequested(
+                ConnectionState.ONLINE,
+                OCCURRED_AT.plusSeconds(1)
+            )
+        );
+
+        assertAll(
+            () -> assertSame(incompleteSession, transition.state()),
+            () -> assertTrue(transition.effects().isEmpty()),
+            () -> assertEquals(
+                "CONNECTION_SESSION_NOT_ACTIVE",
+                transition.issues().getFirst().code()
+            )
+        );
+    }
+
+    @Test
     @DisplayName("[VDA3-CONNECTION-001] 发布 OFFLINE 后必须重新执行上线序列")
     void requiresReopeningAfterPublishingOffline() {
         MobileRobotTransition offline = stateMachine.transition(

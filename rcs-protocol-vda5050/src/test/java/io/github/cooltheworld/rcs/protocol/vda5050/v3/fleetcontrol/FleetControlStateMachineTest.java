@@ -23,6 +23,7 @@ import io.github.cooltheworld.rcs.protocol.vda5050.v3.validation.RejectedInbound
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.validation.ValidatedMessage;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.validation.ValidationIssue;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.validation.ValidationResult;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.validation.ValidationSeverity;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.List;
@@ -188,6 +189,76 @@ final class FleetControlStateMachineTest {
             () -> assertEquals(rejected.issues(), effect.issues()),
             () -> assertEquals(OCCURRED_AT, effect.occurredAt())
         );
+    }
+
+    @Test
+    void preservesMissingHeaderIdentityInARejectedConnection() {
+        ValidationIssue error = new ValidationIssue(
+            "INVALID_JSON_TYPE",
+            ValidationSeverity.ERROR,
+            "/manufacturer",
+            "manufacturer 无法安全解析",
+            "VDA3-SHARED-008"
+        );
+        RejectedInboundMessage<Connection> rejected =
+            RejectedInboundMessage.<Connection>builder(
+                TopicName.CONNECTION,
+                List.of(error)
+            ).build();
+
+        FleetControlTransition transition = stateMachine.transition(
+            recoveringState(),
+            new FleetControlEvent.ConnectionRejected(rejected, OCCURRED_AT)
+        );
+
+        FleetControlEffect.InboundMessageRejected effect = assertInstanceOf(
+            FleetControlEffect.InboundMessageRejected.class,
+            transition.effects().getFirst()
+        );
+        assertAll(
+            () -> assertNull(effect.robotIdentity()),
+            () -> assertNull(effect.headerId()),
+            () -> assertEquals(List.of(error), transition.issues())
+        );
+    }
+
+    @Test
+    void rejectedEffectRequiresAtLeastOneErrorButPreservesWarnings() {
+        ValidationIssue warning = new ValidationIssue(
+            "UNKNOWN_EXTENSION",
+            ValidationSeverity.WARNING,
+            "",
+            "消息包含未知扩展",
+            "VDA3-SHARED-007"
+        );
+        ValidationIssue error = new ValidationIssue(
+            "INVALID_JSON_TYPE",
+            ValidationSeverity.ERROR,
+            "",
+            "消息结构无效",
+            "VDA3-SHARED-008"
+        );
+
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> new FleetControlEffect.InboundMessageRejected(
+                TopicName.CONNECTION,
+                null,
+                null,
+                List.of(warning),
+                OCCURRED_AT
+            )
+        );
+        FleetControlEffect.InboundMessageRejected effect =
+            new FleetControlEffect.InboundMessageRejected(
+                TopicName.CONNECTION,
+                null,
+                null,
+                List.of(warning, error),
+                OCCURRED_AT
+            );
+
+        assertEquals(List.of(warning, error), effect.issues());
     }
 
     @Test

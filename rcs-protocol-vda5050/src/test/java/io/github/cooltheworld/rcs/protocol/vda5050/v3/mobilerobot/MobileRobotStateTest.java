@@ -110,19 +110,60 @@ final class MobileRobotStateTest {
     }
 
     @Test
-    void comparesStatesByTheirCompleteStronglyTypedContent() {
+    void comparesStatesByTheirCompleteStronglyTypedContent() throws Exception {
         MobileRobotState first = stateBuilder().build();
         MobileRobotState same = first.toBuilder().build();
+        MobileRobotState ready = first.toBuilder()
+            .recovering(false)
+            .build();
         MobileRobotState advanced = first.toBuilder()
             .nextConnectionHeaderId(1L)
             .build();
+        MobileRobotState differentRobot = MobileRobotState.builder()
+            .robotIdentity(new RobotIdentity("Other", "R-002"))
+            .versionProfile(ProtocolVersionProfile.V3_0_0)
+            .build();
+        MobileRobotState differentVersion = MobileRobotState.builder()
+            .robotIdentity(ROBOT)
+            .versionProfile(versionProfile("3.1.0"))
+            .build();
+        MobileRobotState withConnection = first.toBuilder()
+            .lastConnection(connection(
+                ROBOT,
+                ProtocolVersion.parse("3.0.0"),
+                ConnectionState.ONLINE
+            ))
+            .build();
+        MobileRobotState withLastWill = first.toBuilder()
+            .connectionLastWill(connection(
+                ROBOT,
+                ProtocolVersion.parse("3.0.0"),
+                ConnectionState.CONNECTION_BROKEN
+            ))
+            .build();
 
         assertAll(
+            () -> assertEquals(first, first),
             () -> assertEquals(first, same),
             () -> assertEquals(first.hashCode(), same.hashCode()),
+            () -> assertNotEquals(first, ready),
+            () -> assertNotEquals(first, differentRobot),
+            () -> assertNotEquals(first, differentVersion),
             () -> assertNotEquals(first, advanced),
-            () -> assertNotEquals(first, null)
+            () -> assertNotEquals(first, withConnection),
+            () -> assertNotEquals(first, withLastWill),
+            () -> assertNotEquals(first, null),
+            () -> assertNotEquals(first, "state")
         );
+    }
+
+    private static ProtocolVersionProfile versionProfile(String version)
+        throws Exception {
+        var constructor = ProtocolVersionProfile.class.getDeclaredConstructor(
+            ProtocolVersion.class
+        );
+        constructor.setAccessible(true);
+        return constructor.newInstance(ProtocolVersion.parse(version));
     }
 
     private static MobileRobotState.Builder stateBuilder() {

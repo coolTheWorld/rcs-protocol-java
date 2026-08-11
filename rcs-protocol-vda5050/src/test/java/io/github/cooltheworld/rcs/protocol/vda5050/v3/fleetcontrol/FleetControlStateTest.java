@@ -54,17 +54,42 @@ final class FleetControlStateTest {
     }
 
     @Test
-    void comparesStatesByTheirCompleteStronglyTypedContent() {
+    void comparesStatesByTheirCompleteStronglyTypedContent() throws Exception {
         FleetControlState first = stateBuilder().build();
         FleetControlState same = first.toBuilder().build();
         FleetControlState ready = first.toBuilder().recovering(false).build();
+        FleetControlState differentRobot = FleetControlState.builder()
+            .robotIdentity(new RobotIdentity("Other", "R-002"))
+            .versionProfile(ProtocolVersionProfile.V3_0_0)
+            .build();
+        FleetControlState differentVersion = FleetControlState.builder()
+            .robotIdentity(ROBOT)
+            .versionProfile(versionProfile("3.1.0"))
+            .build();
+        FleetControlState withConnection = first.toBuilder()
+            .lastConnection(connection(ROBOT, ProtocolVersion.parse("3.0.0")))
+            .build();
 
         assertAll(
+            () -> assertEquals(first, first),
             () -> assertEquals(first, same),
             () -> assertEquals(first.hashCode(), same.hashCode()),
             () -> assertNotEquals(first, ready),
-            () -> assertNotEquals(first, null)
+            () -> assertNotEquals(first, differentRobot),
+            () -> assertNotEquals(first, differentVersion),
+            () -> assertNotEquals(first, withConnection),
+            () -> assertNotEquals(first, null),
+            () -> assertNotEquals(first, "state")
         );
+    }
+
+    private static ProtocolVersionProfile versionProfile(String version)
+        throws Exception {
+        var constructor = ProtocolVersionProfile.class.getDeclaredConstructor(
+            ProtocolVersion.class
+        );
+        constructor.setAccessible(true);
+        return constructor.newInstance(ProtocolVersion.parse(version));
     }
 
     private static FleetControlState.Builder stateBuilder() {
