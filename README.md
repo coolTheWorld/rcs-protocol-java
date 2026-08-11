@@ -62,7 +62,7 @@ Unix-like 环境使用对应的 `./mvnw` 命令，例如：
 
 `Vda5050JsonCodec.createDefault()` 提供默认的安全 UTF-8 编解码边界。入站解码先执行 payload、深度、字符串、字段名、数值、数组、对象和 Token 资源上限，再创建完整协议对象；普通输入错误以 `DecodingResult<T>` 的拒绝分支返回。解码成功只表示完成语法与基础类型处理，仍须经过 Schema 和协议语义校验才能获得 `ValidatedMessage<T>`。
 
-需要复用应用现有 Jackson `ObjectMapper` 时，可以显式注册 `Vda5050JacksonModule`。该 Module 注册协议值类型、不透明 JSON 值以及已建模消息和子对象（目前包括 `Connection`、`TypeSpecification`、`PhysicalParameters`、`ProtocolLimits`、`ProtocolFeatures`、`MobileRobotGeometry`、`LoadSpecification` 与 `MobileRobotConfiguration` 对象图）的线路表示，不修改调用方的 null、未知字段、资源限制或多态配置。
+需要复用应用现有 Jackson `ObjectMapper` 时，可以显式注册 `Vda5050JacksonModule`。该 Module 注册协议值类型、不透明 JSON 值以及已建模消息和子对象（目前包括 `Connection`、`Factsheet`、`TypeSpecification`、`PhysicalParameters`、`ProtocolLimits`、`ProtocolFeatures`、`MobileRobotGeometry`、`LoadSpecification` 与 `MobileRobotConfiguration` 对象图）的线路表示，不修改调用方的 null、未知字段、资源限制或多态配置。
 
 ## Factsheet 类型与物理参数
 
@@ -104,7 +104,9 @@ Unix-like 环境使用对应的 `./mvnw` 命令，例如：
 
 ## Factsheet 根模型
 
-`Factsheet` 强类型组合公共 `ProtocolHeader`、头部无关的 `FactsheetContent` 和根级 `ExtensionFields`。`FactsheetContent` 聚合类型说明、物理参数、协议限制、协议能力、机器人几何、载荷说明和可选机器人配置，供角色 Event 在不伪造 Header 的情况下提交能力内容。它不是额外 JSON 层级；完整 Codec 将在 Factsheet 根对象中平铺这些内容字段。
+`Factsheet` 强类型组合公共 `ProtocolHeader`、头部无关的 `FactsheetContent` 和根级 `ExtensionFields`。`FactsheetContent` 聚合类型说明、物理参数、协议限制、协议能力、机器人几何、载荷说明和可选机器人配置，供角色 Event 在不伪造 Header 的情况下提交能力内容。它不是额外 JSON 层级；默认 Codec 与独立 Jackson Module 会在 Factsheet 根对象中平铺五个 Header 字段和七个内容字段。
+
+完整与边界 Fixture 同时通过确定性往返和 Draft 2020-12 Schema 校验，覆盖 `headerId` 的 `uint32` 两个端点、缺失可选配置、根与嵌套扩展。绑定前字段元数据覆盖全部根字段，标准显式 `null`、缺失必填和非法对象形状均通过封闭解码结果拒绝。
 
 ## Schema Validator
 

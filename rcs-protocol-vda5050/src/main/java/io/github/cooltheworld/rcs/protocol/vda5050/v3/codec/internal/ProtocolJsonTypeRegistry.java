@@ -14,6 +14,7 @@ import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.Envelope2d
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.Envelope2dVertex;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.Envelope3d;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.Envelope3dData;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.Factsheet;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.LoadDimensions;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.LoadSet;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.LoadSpecification;
@@ -53,6 +54,9 @@ final class ProtocolJsonTypeRegistry {
     ) {
         if (type.hasRawClass(Connection.class)) {
             return Optional.of(connectionProperties(mapper));
+        }
+        if (type.hasRawClass(Factsheet.class)) {
+            return Optional.of(factsheetProperties(mapper));
         }
         if (type.hasRawClass(TypeSpecification.class)) {
             return Optional.of(typeSpecificationProperties(mapper));
@@ -137,6 +141,47 @@ final class ProtocolJsonTypeRegistry {
             "manufacturer", mapper.constructType(String.class),
             "serialNumber", mapper.constructType(String.class),
             "connectionState", mapper.constructType(ConnectionState.class)
+        );
+    }
+
+    private static Map<String, JavaType> factsheetProperties(ObjectMapper mapper) {
+        return Map.ofEntries(
+            Map.entry("headerId", mapper.constructType(Long.class)),
+            Map.entry(
+                "timestamp",
+                mapper.constructType(ProtocolTimestamp.class)
+            ),
+            Map.entry("version", mapper.constructType(ProtocolVersion.class)),
+            Map.entry("manufacturer", mapper.constructType(String.class)),
+            Map.entry("serialNumber", mapper.constructType(String.class)),
+            Map.entry(
+                "typeSpecification",
+                mapper.constructType(TypeSpecification.class)
+            ),
+            Map.entry(
+                "physicalParameters",
+                mapper.constructType(PhysicalParameters.class)
+            ),
+            Map.entry(
+                "protocolLimits",
+                mapper.constructType(ProtocolLimits.class)
+            ),
+            Map.entry(
+                "protocolFeatures",
+                mapper.constructType(ProtocolFeatures.class)
+            ),
+            Map.entry(
+                "mobileRobotGeometry",
+                mapper.constructType(MobileRobotGeometry.class)
+            ),
+            Map.entry(
+                "loadSpecification",
+                mapper.constructType(LoadSpecification.class)
+            ),
+            Map.entry(
+                "mobileRobotConfiguration",
+                mapper.constructType(MobileRobotConfiguration.class)
+            )
         );
     }
 

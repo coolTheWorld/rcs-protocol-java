@@ -1,0 +1,171 @@
+{
+  "valid": {
+    "headerId": 4294967295,
+    "timestamp": "2026-08-11T03:00:00.123Z",
+    "version": "3.0.0",
+    "manufacturer": "ACME",
+    "serialNumber": "R-1",
+    "typeSpecification": {
+      "seriesName": "Carrier X",
+      "seriesDescription": "Reference carrier",
+      "mobileRobotKinematics": "DIFFERENTIAL",
+      "mobileRobotClass": "CARRIER",
+      "maximumLoadMass": 1000.0,
+      "localizationTypes": ["NATURAL"],
+      "navigationTypes": ["FREELY_NAVIGATING"],
+      "supportedZones": ["BLOCKED"],
+      "vendorType": null
+    },
+    "physicalParameters": {
+      "minimumSpeed": 0.0,
+      "maximumSpeed": 2.0,
+      "minimumAngularSpeed": 0.0,
+      "maximumAngularSpeed": 1.5,
+      "maximumAcceleration": 0.8,
+      "maximumDeceleration": 1.0,
+      "minimumHeight": 0.2,
+      "maximumHeight": 2.0,
+      "width": 1.0,
+      "length": 2.0,
+      "vendorPhysical": {"revision": 1}
+    },
+    "protocolLimits": {
+      "maximumStringLengths": {
+        "maximumMessageLength": 8388608,
+        "idNumericalOnly": false,
+        "vendorStrings": null
+      },
+      "maximumArrayLengths": {
+        "order.nodes": 100,
+        "vendorArrays": 1
+      },
+      "timing": {
+        "minimumOrderInterval": 0.0,
+        "minimumStateInterval": 0.1,
+        "defaultStateInterval": 1.0,
+        "visualizationInterval": 0.2,
+        "vendorTiming": false
+      },
+      "vendorLimits": {"mode": "safe"}
+    },
+    "protocolFeatures": {
+      "optionalParameters": [],
+      "mobileRobotActions": [],
+      "vendorFeatures": null
+    },
+    "mobileRobotGeometry": {
+      "wheelDefinitions": [],
+      "envelopes2d": [],
+      "envelopes3d": [],
+      "vendorGeometry": {"frame": "base"}
+    },
+    "loadSpecification": {
+      "loadPositions": [],
+      "loadSets": [],
+      "vendorLoads": null
+    },
+    "mobileRobotConfiguration": {
+      "versions": [
+        {
+          "key": "softwareVersion",
+          "value": "3.1.4",
+          "vendorVersion": true
+        }
+      ],
+      "network": {
+        "dnsServers": ["10.0.0.2"],
+        "vendorNetwork": null
+      },
+      "batteryCharging": {
+        "minimumChargingTime": 4294967295,
+        "vendorCharging": "managed"
+      },
+      "vendorConfiguration": false
+    },
+    "vendorFactsheet": {
+      "revision": 1,
+      "nullable": null
+    }
+  },
+  "boundary": {
+    "headerId": 0,
+    "timestamp": "1970-01-01T00:00:00.000Z",
+    "version": "3.0.0",
+    "manufacturer": "A",
+    "serialNumber": "1",
+    "typeSpecification": {
+      "seriesName": "Minimal",
+      "mobileRobotKinematics": "DIFFERENTIAL",
+      "mobileRobotClass": "CARRIER",
+      "maximumLoadMass": 0.0,
+      "localizationTypes": [],
+      "navigationTypes": []
+    },
+    "physicalParameters": {
+      "minimumSpeed": 0.0,
+      "maximumSpeed": 0.0,
+      "maximumAcceleration": 0.0,
+      "maximumDeceleration": 0.0,
+      "minimumHeight": 0.0,
+      "maximumHeight": 0.0,
+      "width": 0.0,
+      "length": 0.0
+    },
+    "protocolLimits": {
+      "maximumStringLengths": {},
+      "maximumArrayLengths": {},
+      "timing": {
+        "minimumOrderInterval": 0.0,
+        "minimumStateInterval": 0.0
+      }
+    },
+    "protocolFeatures": {
+      "optionalParameters": [],
+      "mobileRobotActions": []
+    },
+    "mobileRobotGeometry": {},
+    "loadSpecification": {}
+  },
+  "invalid": {
+    "explicitNullConfiguration": {
+      "headerId": 0,
+      "timestamp": "1970-01-01T00:00:00.000Z",
+      "version": "3.0.0",
+      "manufacturer": "A",
+      "serialNumber": "1",
+      "typeSpecification": {},
+      "physicalParameters": {},
+      "protocolLimits": {},
+      "protocolFeatures": {},
+      "mobileRobotGeometry": {},
+      "loadSpecification": {},
+      "mobileRobotConfiguration": null
+    },
+    "missingLoadSpecification": {
+      "headerId": 0,
+      "timestamp": "1970-01-01T00:00:00.000Z",
+      "version": "3.0.0",
+      "manufacturer": "A",
+      "serialNumber": "1",
+      "typeSpecification": {},
+      "physicalParameters": {},
+      "protocolLimits": {},
+      "protocolFeatures": {},
+      "mobileRobotGeometry": {}
+    },
+    "wrongPhysicalShape": {
+      "headerId": 0,
+      "timestamp": "1970-01-01T00:00:00.000Z",
+      "version": "3.0.0",
+      "manufacturer": "A",
+      "serialNumber": "1",
+      "typeSpecification": {},
+      "physicalParameters": [],
+      "protocolLimits": {},
+      "protocolFeatures": {},
+      "mobileRobotGeometry": {},
+      "loadSpecification": {}
+    },
+    "notObject": []
+  }
+}
