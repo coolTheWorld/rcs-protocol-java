@@ -68,7 +68,7 @@ Unix-like 环境使用对应的 `./mvnw` 命令，例如：
 
 `TypeSpecification` 以独立值类型区分运动学、机器人类别、定位与导航能力。四类可扩展枚举提供 VDA 5050 v3.0.0 标准常量，同时保留未知字符串值；封闭的 `supportedZones` 使用 `ZoneType`。必填能力列表和可选 Zone 列表均执行防御性复制，可选列表继续区分缺失与空数组。
 
-`PhysicalParameters` 的速度、角速度、加速度、减速度及尺寸字段全部使用 `Double`，可选角速度以 `null` 表示缺失。两个对象都使用不可变 Builder，并以 `ExtensionFields` 不透明保存未知字段；默认 Codec 支持确定性片段往返。非负范围、有限数值及最小值/最大值关系将在 Factsheet 组合 Validator 中统一报告。
+`PhysicalParameters` 的速度、角速度、加速度、减速度及尺寸字段全部使用 `Double`，可选角速度以 `null` 表示缺失。两个对象都使用不可变 Builder，并以 `ExtensionFields` 不透明保存未知字段；默认 Codec 支持确定性片段往返。`TypeSpecificationValidator` 已独立保证 `maximumLoadMass` 为有限非负数；物理参数的范围和字段关系由后续组合 Validator 处理。
 
 ## Factsheet Protocol Limits
 

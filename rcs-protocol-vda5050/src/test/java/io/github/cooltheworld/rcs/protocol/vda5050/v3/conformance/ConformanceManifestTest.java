@@ -91,6 +91,9 @@ final class ConformanceManifestTest {
         RequirementRow factsheetNetworkRule = rowsById.get(
             "VDA3-FACTSHEET-005"
         );
+        RequirementRow factsheetTypeRule = rowsById.get(
+            "VDA3-FACTSHEET-006"
+        );
         assertNotNull(timestampRule, "Missing strict timestamp rule");
         assertNotNull(unsigned32Rule, "Missing uint32 range rule");
         assertNotNull(versionProfileRule, "Missing explicit version profile rule");
@@ -117,6 +120,10 @@ final class ConformanceManifestTest {
         assertNotNull(
             factsheetNetworkRule,
             "Missing Factsheet runtime network rule"
+        );
+        assertNotNull(
+            factsheetTypeRule,
+            "Missing Factsheet type specification rule"
         );
         assertEquals(
             "SCHEMA_WEAKER",
@@ -197,6 +204,14 @@ final class ConformanceManifestTest {
                 "MobileRobotConfigurationTest"
             ),
             "Network rule must retain FS06 immutable model evidence"
+        );
+        assertEquals("NONE", factsheetTypeRule.schemaGap());
+        assertEquals("VERIFIED", factsheetTypeRule.status());
+        assertTrue(
+            factsheetTypeRule.validator().contains(
+                "TypeSpecificationValidator"
+            ),
+            "Type rule must retain FS07d Validator evidence"
         );
         assertTrue(
             connectionRule.test().contains("ConnectionCodecTest"),
