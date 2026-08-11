@@ -80,6 +80,7 @@ final class ConformanceManifestTest {
         RequirementRow extensionAdmissionRule = rowsById.get(
             "VDA3-SHARED-012"
         );
+        RequirementRow trajectoryRule = rowsById.get("VDA3-SHARED-013");
         RequirementRow orderNodeRule = rowsById.get("VDA3-ORDER-002");
         RequirementRow orderEdgeRule = rowsById.get("VDA3-ORDER-003");
         RequirementRow orderRotationSpeedRule = rowsById.get(
@@ -121,6 +122,7 @@ final class ConformanceManifestTest {
             extensionAdmissionRule,
             "Missing typed extension admission rule"
         );
+        assertNotNull(trajectoryRule, "Missing shared NURBS trajectory rule");
         assertNotNull(orderEdgeRule, "Missing Edge/Corridor numeric rule");
         assertNotNull(
             orderRotationSpeedRule,
@@ -198,6 +200,8 @@ final class ConformanceManifestTest {
             ),
             "FS08d must project its role-aware residual extension evidence"
         );
+        assertEquals("SCHEMA_MISSING", trajectoryRule.schemaGap());
+        assertEquals("PLANNED", trajectoryRule.status());
         assertEquals("SCHEMA_MISSING", orderNodeRule.schemaGap());
         assertEquals("VERIFIED", orderNodeRule.status());
         assertTrue(
