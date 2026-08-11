@@ -106,13 +106,15 @@ Builder 只保证必填引用和值语义，会无损保留 NaN、Infinity、负
 
 `Corridor` 使用必填 `Double leftWidth/rightWidth` 表达 Edge 轨迹左右的允许偏离边界，并可携带车体参考点、是否需要 Fleet Control 授权、授权丢失行为和不透明扩展。`CorridorReferencePoint` 精确封闭 `KINEMATIC_CENTER/CONTOUR`，`CorridorReleaseLossBehavior` 精确封闭 `STOP/RETURN`。可选字段缺失时保持 `null`，不在模型层物化正文默认值；有限数、非负和非双零语义由后续 Edge Validator 执行。
 
-`Edge` 使用必填原文 `edgeId`、`Long sequenceId`、`Boolean released` 与 `List<Action> actions`，并强类型保存正文定义的全部可选非 Trajectory 字段。`EdgeOrientationType` 封闭 `GLOBAL/TANGENTIAL`，最大旋转速度按正文命名为 `maximumRotationSpeed`；上游 Schema 误写的 `maxRotationSpeed` 不是标准模型字段。Edge 没有起终节点 ID，连接由 Order Sequence 图确定；可选强类型 `Trajectory` 将在 NURBS 模型完成后由 O04 回接。
+`Edge` 使用必填原文 `edgeId`、`Long sequenceId`、`Boolean released` 与 `List<Action> actions`，并强类型保存正文定义的全部可选字段。`EdgeOrientationType` 封闭 `GLOBAL/TANGENTIAL`，最大旋转速度按正文命名为 `maximumRotationSpeed`；上游 Schema 误写的 `maxRotationSpeed` 不是标准模型字段。Edge 没有起终节点 ID，连接由 Order Sequence 图确定；可选强类型 `Trajectory` 已作为共享 NURBS 值回接。
 
 `EdgeValidator` 执行单 Edge 上下文无关校验：`sequenceId` 必须位于 `uint32` 闭区间，当前已建模标量必须有限，`orientation` 位于 `[-π,π]`，Corridor 左右宽度非负且不能同时为零。正文未声明非负范围的速度、高度和长度字段只校验有限性；Validator 不伪造 orientation 可选字段依赖、Corridor 授权字段依赖或 Order 图级规则。
 
 共享 `Trajectory` 与 `TrajectoryControlPoint` 位于 `model.trajectory`，供后续 Order、State、Visualization 和 Zone 请求复用。控制点使用必填 `Double x/y`、可选 `Double weight` 与不透明扩展；Trajectory 使用可选 `Long degree`、可选 `List<Double> knotVector`、必填控制点列表与扩展。缺失默认字段保持 `null`，列表防御性复制；正文默认值和全部 NURBS 语义由 Trajectory Validator 统一解释。`Edge` 已通过可选 `trajectory` 字段组合该共享值。
 
 `TrajectoryValidator` 使用缺失 degree 的有效默认值 1，校验 degree `uint32`、坐标/权重/knot 有限性、严格正权重、knot `[0,1]` 非递减、控制点最小数量、显式 knot 精确长度以及 clamped 首尾/内部重数。非法 degree 不触发依赖它的派生伪错误；`EdgeValidator` 会组合该结果并把路径提升到 `/trajectory`。
+
+`Order` 是不可变根消息，持有必填 `ProtocolHeader`、原文 `orderId`、`Long orderUpdateId`、Node/Edge 列表，以及可选说明和不透明根扩展。两个图列表必须显式提供但允许为空，构造时防御性复制并拒绝 `null` 元素；Builder 不执行更新号范围、Sequence、连接或 Base/Horizon 语义。完整线路 Codec 与 Schema 由 O05 后续增量逐层接入。
 
 ## Factsheet 移动机器人几何
 

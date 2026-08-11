@@ -145,7 +145,7 @@ Builder 只保证两个宽度引用存在，会保留负数、非有限数或双
 
 使用 `Edge.builder()` 提供 edgeId、sequenceId、released 和 actions。actions 必须显式提供，没有边动作时传入 `List.of()`；列表会在构造时冻结并拒绝 `null` 元素。可选标量、方向、Corridor 和不透明扩展保持精确值，Builder 不执行数值语义。
 
-请使用 `maximumRotationSpeed(...)` 和同名 accessor。`maxRotationSpeed` 是上游 Schema 与正文不一致的拼写，不属于标准 Edge API。Edge 也不接受 `startNodeId/endNodeId`：请通过 Order 中 Node/Edge 的 Sequence 交替表达连接。当前 Edge 的强类型 Trajectory 入口由后续 O04 NURBS 增量提供。
+请使用 `maximumRotationSpeed(...)` 和同名 accessor。`maxRotationSpeed` 是上游 Schema 与正文不一致的拼写，不属于标准 Edge API。Edge 也不接受 `startNodeId/endNodeId`：请通过 Order 中 Node/Edge 的 Sequence 交替表达连接。需要内联曲线时，通过 `trajectory(...)` 提供共享强类型 NURBS 值。
 
 构造后调用 `EdgeValidator.create().validate(edge)`。Validator 会检查 sequenceId `uint32`、全部当前标量的有限性、orientation `[-π,π]` 和 Corridor 非负/非双零语义。返回的 Issue 列表不可变，说明不包含输入值。
 
@@ -153,9 +153,15 @@ Builder 只保证两个宽度引用存在，会保留负数、非有限数或双
 
 NURBS 控制点使用 `TrajectoryControlPoint.builder().x(...).y(...)` 构造；只有需要覆盖正文默认权重 1.0 时才调用 `weight(...)`。Builder 会拒绝缺失坐标，但会保留非有限、零或负权重，供完整 Trajectory Validator 返回结构化 Issue；不要在业务层自行物化默认值或绕过后续校验。
 
-使用 `Trajectory.builder().controlPoints(...)` 构造共享曲线；`degree` 和 `knotVector` 均可缺失，缺失与显式空 knot 列表不同。模型只保证必填列表存在、集合不可变且无 `null` 元素，随后可通过 `Edge.Builder#trajectory(...)` 回接 Order Edge；O04c 完成前不要把尚未语义校验的对象作为可执行曲线。
+使用 `Trajectory.builder().controlPoints(...)` 构造共享曲线；`degree` 和 `knotVector` 均可缺失，缺失与显式空 knot 列表不同。模型只保证必填列表存在、集合不可变且无 `null` 元素，随后可通过 `Edge.Builder#trajectory(...)` 回接 Order Edge；进入执行路径前必须通过 `TrajectoryValidator` 或组合它的 `EdgeValidator`。
 
 构造后调用 `TrajectoryValidator.create().validate(trajectory)`，或对完整 Edge 调用 `EdgeValidator`。Validator 会解释缺失 degree=1 和 weight=1.0，但不会物化默认字段或派生 knot 数组；显式 knot 可使用 `[0,1]` 内任意非递减端点值，只需满足精确长度和正文重数，不额外强制首值为 0、末值为 1。只有空 Issue 列表表示 NURBS 上下文无关语义通过。
+
+## 构造 Order 根消息
+
+使用 `Order.builder()` 提供必填 `ProtocolHeader`、原文 `orderId`、`Long orderUpdateId`、`nodes` 和 `edges`。即使暂时构造空图，也必须显式传入 `List.of()`；两个列表会被冻结并拒绝 `null` 元素。可选 `orderDescription` 缺失时保持 `null`，根级未知字段只通过 `ExtensionFields` 不透明保存。
+
+Order Builder 只建立不可变线路值，不证明更新号、Sequence、Node/Edge 连接或 Base/Horizon 合法。O05a 尚未提供 Order 根 JSON Codec；后续 O05b-O05g 将逐层接入完整对象图、Schema 和标准显式 `null` 拒绝，O06 再执行图级语义。
 
 ## 并发与持久化责任
 

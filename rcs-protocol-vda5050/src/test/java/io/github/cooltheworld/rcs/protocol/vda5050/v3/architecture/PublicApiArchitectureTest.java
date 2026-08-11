@@ -103,7 +103,8 @@ class PublicApiArchitectureTest {
             "Edge",
             "EdgeOrientationType",
             "Node",
-            "NodePosition"
+            "NodePosition",
+            "Order"
         ));
         packages.put(ROOT + ".model.trajectory", List.of(
             "Trajectory",
