@@ -1,13 +1,15 @@
 package io.github.cooltheworld.rcs.protocol.vda5050.v3.mobilerobot.event;
 
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.connection.ConnectionState;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.FactsheetContent;
 import java.time.Instant;
 import java.util.Objects;
 
 /** Mobile Robot 状态机可以接收的封闭事件集合。 */
 public sealed interface MobileRobotEvent
     permits MobileRobotEvent.ConnectionOpeningRequested,
-        MobileRobotEvent.ConnectionStatePublicationRequested {
+        MobileRobotEvent.ConnectionStatePublicationRequested,
+        MobileRobotEvent.FactsheetPublicationRequested {
     /** @return 外部采集的事件发生时间 */
     Instant occurredAt();
 
@@ -35,6 +37,17 @@ public sealed interface MobileRobotEvent
                     "Mobile Robot must not actively publish CONNECTION_BROKEN"
                 );
             }
+        }
+    }
+
+    /** 请求使用状态身份、版本和 Topic 计数器发布 Factsheet 内容。 */
+    record FactsheetPublicationRequested(
+        FactsheetContent content,
+        Instant occurredAt
+    ) implements MobileRobotEvent {
+        public FactsheetPublicationRequested {
+            content = Objects.requireNonNull(content, "content");
+            occurredAt = Objects.requireNonNull(occurredAt, "occurredAt");
         }
     }
 }

@@ -13,7 +13,7 @@
 - 提供 Factsheet `TypeSpecification`、`PhysicalParameters`、`ProtocolLimits`、`ProtocolFeatures` 与 `MobileRobotGeometry` 模型片段和确定性 JSON 往返，并校验最大载荷质量、物理参数有限数、Schema 非负下限、成对边界与二维简单多边形语义。
 - 提供 Factsheet `LoadSpecification`、`LoadDimensions`、`BoundingBoxReference` 与完整 `LoadSet` 强类型对象图、确定性 Codec 和上下文无关语义 Validator，保留可选集合的缺失/空列表和未知扩展语义。
 - 提供 Factsheet `VersionInfo`、`NetworkConfiguration`、`BatteryCharging` 与 `MobileRobotConfiguration` 不可变配置模型、确定性 Codec，以及有限数、百分比、期望区间和正文 `uint32` 充电时间语义 Validator；网络元数据只作为数据。
-- 提供 Factsheet 强类型根模型、头部无关的 `FactsheetContent` 能力聚合、平铺确定性 Codec 与完整前三层入站 Validator，为核心确定性生成协议 Header 和角色能力交换保留清晰边界。
+- 提供 Factsheet 强类型根模型、头部无关的 `FactsheetContent` 能力聚合、平铺确定性 Codec 与完整前三层入站 Validator；Mobile Robot State 独立保存 Factsheet Topic 计数器和最近消息，发布 Event 不接受调用方 Header，Effect 只携带强类型 Factsheet。
 - 提供结构化校验问题、拒绝消息安全上下文和显式协议版本配置。
 
 ### Changed（变更）

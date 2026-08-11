@@ -5,6 +5,7 @@ import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.connection.Connectio
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.connection.ConnectionState;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.common.ProtocolVersionProfile;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.common.RobotIdentity;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.Factsheet;
 import java.util.Objects;
 
 /** Mobile Robot 按 Robot Identity 聚合的不可变协议会话状态。 */
@@ -15,6 +16,8 @@ public final class MobileRobotState {
     private final Long nextConnectionHeaderId;
     private final Connection lastConnection;
     private final Connection connectionLastWill;
+    private final Long nextFactsheetHeaderId;
+    private final Factsheet lastFactsheet;
 
     private MobileRobotState(Builder builder) {
         robotIdentity = Objects.requireNonNull(builder.robotIdentity, "robotIdentity");
@@ -23,8 +26,13 @@ public final class MobileRobotState {
         nextConnectionHeaderId = requireHeaderId(builder.nextConnectionHeaderId);
         lastConnection = builder.lastConnection;
         connectionLastWill = builder.connectionLastWill;
+        nextFactsheetHeaderId = requireFactsheetHeaderId(
+            builder.nextFactsheetHeaderId
+        );
+        lastFactsheet = builder.lastFactsheet;
         validateConnection(lastConnection, false, "Last Connection");
         validateConnection(connectionLastWill, true, "Connection Last Will");
+        validateFactsheet(lastFactsheet);
     }
 
     /** 创建缺少历史快照时的安全恢复状态。 */
@@ -52,7 +60,9 @@ public final class MobileRobotState {
             .recovering(recovering)
             .nextConnectionHeaderId(nextConnectionHeaderId)
             .lastConnection(lastConnection)
-            .connectionLastWill(connectionLastWill);
+            .connectionLastWill(connectionLastWill)
+            .nextFactsheetHeaderId(nextFactsheetHeaderId)
+            .lastFactsheet(lastFactsheet);
     }
 
     public RobotIdentity robotIdentity() {
@@ -79,6 +89,14 @@ public final class MobileRobotState {
         return connectionLastWill;
     }
 
+    public Long nextFactsheetHeaderId() {
+        return nextFactsheetHeaderId;
+    }
+
+    public Factsheet lastFactsheet() {
+        return lastFactsheet;
+    }
+
     @Override
     public boolean equals(Object other) {
         return this == other
@@ -88,7 +106,9 @@ public final class MobileRobotState {
                 && versionProfile.version().equals(that.versionProfile.version())
                 && nextConnectionHeaderId.equals(that.nextConnectionHeaderId)
                 && Objects.equals(lastConnection, that.lastConnection)
-                && Objects.equals(connectionLastWill, that.connectionLastWill);
+                && Objects.equals(connectionLastWill, that.connectionLastWill)
+                && nextFactsheetHeaderId.equals(that.nextFactsheetHeaderId)
+                && Objects.equals(lastFactsheet, that.lastFactsheet);
     }
 
     @Override
@@ -99,7 +119,9 @@ public final class MobileRobotState {
             recovering,
             nextConnectionHeaderId,
             lastConnection,
-            connectionLastWill
+            connectionLastWill,
+            nextFactsheetHeaderId,
+            lastFactsheet
         );
     }
 
@@ -108,6 +130,16 @@ public final class MobileRobotState {
         if (!Unsigned32.isValid(headerId)) {
             throw new IllegalArgumentException(
                 "Next Connection headerId is outside the uint32 range"
+            );
+        }
+        return headerId;
+    }
+
+    private Long requireFactsheetHeaderId(Long headerId) {
+        Objects.requireNonNull(headerId, "nextFactsheetHeaderId");
+        if (!Unsigned32.isValid(headerId)) {
+            throw new IllegalArgumentException(
+                "Next Factsheet headerId is outside the uint32 range"
             );
         }
         return headerId;
@@ -134,6 +166,22 @@ public final class MobileRobotState {
         }
     }
 
+    private void validateFactsheet(Factsheet factsheet) {
+        if (factsheet == null) {
+            return;
+        }
+        if (!robotIdentity.equals(factsheet.header().robotIdentity())) {
+            throw new IllegalArgumentException(
+                "Last Factsheet identity does not match state"
+            );
+        }
+        if (!versionProfile.version().equals(factsheet.header().version())) {
+            throw new IllegalArgumentException(
+                "Last Factsheet version does not match state"
+            );
+        }
+    }
+
     /** 用于构造满足会话、计数器与 Connection 不变量的状态。 */
     public static final class Builder {
         private RobotIdentity robotIdentity;
@@ -142,6 +190,8 @@ public final class MobileRobotState {
         private Long nextConnectionHeaderId = Unsigned32.initial();
         private Connection lastConnection;
         private Connection connectionLastWill;
+        private Long nextFactsheetHeaderId = Unsigned32.initial();
+        private Factsheet lastFactsheet;
 
         private Builder() {}
 
@@ -172,6 +222,16 @@ public final class MobileRobotState {
 
         public Builder connectionLastWill(Connection connectionLastWill) {
             this.connectionLastWill = connectionLastWill;
+            return this;
+        }
+
+        public Builder nextFactsheetHeaderId(Long nextFactsheetHeaderId) {
+            this.nextFactsheetHeaderId = nextFactsheetHeaderId;
+            return this;
+        }
+
+        public Builder lastFactsheet(Factsheet lastFactsheet) {
+            this.lastFactsheet = lastFactsheet;
             return this;
         }
 
