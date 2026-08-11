@@ -16,6 +16,7 @@
 - 提供 Factsheet 强类型根模型、头部无关的 `FactsheetContent` 能力聚合、平铺确定性 Codec 与完整前三层入站 Validator；Mobile Robot 在活跃连接会话中确定性生成强类型发布 Effect，Fleet Control 保存身份/版本一致的能力、抑制完整重复变化 Effect、冻结首次非空网络基线，并以不泄露扩展键值的诊断 Effect 观察根级和子级扩展；无基础设施跨角色对话验证 Codec、Topic、Validator、重复与拒绝闭环。
 - 提供大小写敏感的 `ActionParameter` 与封闭递归 `ActionParameterValue`，以强类型表达六类协议参数值并保持递归集合不可变；提供 `ActionDefinition<P>`、封闭结果 `ActionParameterAdapter<P>`、不可变 `ActionRegistry`、纯 `ActionAdmission` 与八 Topic 角色感知 `ResidualExtensionAdmission`，拒绝重复注册、参数 Class 错配、不允许的 Scope/Blocking 和 Mobile Robot 无法处理的控制扩展，同时只以无内容标记观察 Fleet Control 遥测扩展。
 - 提供公共不可变 `Action` 线路聚合，复用强类型参数与 `BlockingType`，保留可选参数缺失/空数组和 `retriable` 缺失/显式 `false` 的不同语义；提供独立七值 `ActionStatus` 供后续状态消息复用，Scope 与 Status 不进入 Action 命令对象。
+- 提供不可变 `NodePosition` 与 `AllowedDeviationXY` Order 位置对象图，使用 `Double` 保留坐标、角度、偏差和待 Validator 检查的程序化边界值，地图标识保持原文，未知字段继续不透明保存。
 - 提供结构化校验问题、拒绝消息安全上下文和显式协议版本配置。
 
 ### Changed（变更）

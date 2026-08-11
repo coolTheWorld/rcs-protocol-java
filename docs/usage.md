@@ -127,6 +127,12 @@ String path = DefaultTopicLayout.standard().format(
 
 需要表达状态消息中的动作阶段时，复用独立 `ActionStatus` 七值词汇；不要向 `Action` 添加 Scope 或 Status 字段。
 
+## 构造 Node Position
+
+使用 `AllowedDeviationXY.builder()` 构造可选偏差椭圆，再通过 `NodePosition.builder()` 提供必填 x、y、mapId 和可选 theta、偏差椭圆、允许方向偏差。mapId 保持调用方原文；Builder 不解析地图、不读取坐标系统，也不执行数值范围判断。
+
+通过程序化 API 构造的位置仍须交给后续 `NodeValidator` 检查有限数和闭区间。连续 sequenceId、Node/Edge 连接及 Base/Horizon 不是单个位置对象的职责。
+
 ## 并发与持久化责任
 
 默认 Codec、Schema Validator、Connection Validator、Topic 布局和无状态状态机可缓存复用。调用方必须：

@@ -95,6 +95,10 @@ class PublicApiArchitectureTest {
             "Connection",
             "ConnectionState"
         ));
+        packages.put(ROOT + ".model.order", List.of(
+            "AllowedDeviationXY",
+            "NodePosition"
+        ));
         packages.put(ROOT + ".model.factsheet", List.of(
             "BatteryCharging",
             "BoundingBoxReference",

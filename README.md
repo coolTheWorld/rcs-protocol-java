@@ -94,6 +94,12 @@ Unix-like 环境使用对应的 `./mvnw` 命令，例如：
 
 共享 `ActionStatus` 精确提供 `WAITING`、`INITIALIZING`、`RUNNING`、`PAUSED`、`RETRIABLE`、`FINISHED` 与 `FAILED` 七个规范值，供后续状态消息模型复用；它不会进入 `Action` 命令对象。
 
+## Order Node 位置模型
+
+`NodePosition` 使用必填 `Double x`、`Double y` 与原文 `mapId`，并可携带节点方向、`AllowedDeviationXY` 偏差椭圆和允许方向偏差。偏差椭圆使用必填 `Double a`、`Double b`、`Double theta`。两个模型均不可变，并以 `ExtensionFields` 不透明保存未知字段。
+
+Builder 只保证必填引用和值语义，会无损保留 NaN、Infinity、负半轴或越界角度等程序化输入，供后续 `NodeValidator` 统一产生结构化 Issue；构造成功不表示位置数值已通过协议语义校验。
+
 ## Factsheet 移动机器人几何
 
 `MobileRobotGeometry` 强类型表达轮定义、二维包络与三维包络；可选集合继续区分缺失与空数组。轮位置、尺寸和二维顶点使用 `Double`，三维包络可以携带内联数据或绝对 URL，未知字段同样透明保存。
