@@ -94,6 +94,10 @@ Unix-like 环境使用对应的 `./mvnw` 命令，例如：
 
 模型只强制正文与 Schema 明确声明的必填字段，不在 Builder 中执行有限值、范围或字段关系校验。默认 Codec 和独立 Jackson Module 可确定性往返完整载荷对象图；`LoadSpecificationValidator` 以不可变 Issue 列表报告非有限数、违反 Schema 非负下限的数值、倒置边界、重复 `setName` 和未知位置引用，不修改输入。`maximumDeceleration` 在正文与 Schema 中没有非负下限，因此保留有限负值。上游 Schema 把 `LoadSet.maximumSpeed` 的单位元数据误写为 `m/s²`，公共模型按正文使用 `m/s`，差异由 `VDA3-FACTSHEET-002` 跟踪。
 
+## Factsheet 版本与网络配置
+
+`VersionInfo` 使用必填原始 `key`/`value` 表达软件或硬件版本。`NetworkConfiguration` 保存可选 DNS/NTP 服务器、本地地址、子网掩码和默认网关；服务器列表防御性复制，并保持字段缺失与空列表的不同线路语义。网络值只作为不透明配置数据存在，核心不会解析地址、查询 DNS、发起连接或把它们转换为 MQTT 客户端配置。
+
 ## Schema Validator
 
 `Vda5050SchemaValidator.createDefault()` 提供八个 Topic 的 Draft 2020-12 Schema 校验。它会在 NetworkNT 解析前执行与默认 Codec 相同的 JSON 资源硬上限，关闭远程 Schema 获取，并为 `date-time` 启用 Format Assertion。语法、资源和 Schema 失败统一返回不可变 `ValidationIssue` 列表；说明文本不复制不可信输入值。
