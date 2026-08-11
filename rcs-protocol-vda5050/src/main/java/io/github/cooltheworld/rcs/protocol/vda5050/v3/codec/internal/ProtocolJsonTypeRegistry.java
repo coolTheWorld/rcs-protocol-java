@@ -37,6 +37,9 @@ import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.ProtocolLi
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.ProtocolTiming;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.common.ProtocolTimestamp;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.common.ProtocolVersion;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.order.AllowedDeviationXY;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.order.Node;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.order.NodePosition;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.TypeSpecification;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.VersionInfo;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.WheelDefinition;
@@ -63,6 +66,15 @@ final class ProtocolJsonTypeRegistry {
         }
         if (type.hasRawClass(ActionParameter.class)) {
             return Optional.of(actionParameterProperties(mapper));
+        }
+        if (type.hasRawClass(AllowedDeviationXY.class)) {
+            return Optional.of(allowedDeviationXYProperties(mapper));
+        }
+        if (type.hasRawClass(NodePosition.class)) {
+            return Optional.of(nodePositionProperties(mapper));
+        }
+        if (type.hasRawClass(Node.class)) {
+            return Optional.of(nodeProperties(mapper));
         }
         if (type.hasRawClass(Factsheet.class)) {
             return Optional.of(factsheetProperties(mapper));
@@ -170,6 +182,43 @@ final class ProtocolJsonTypeRegistry {
         return Map.of(
             "key", mapper.constructType(String.class),
             "value", mapper.constructType(ActionParameterValue.class)
+        );
+    }
+
+    private static Map<String, JavaType> allowedDeviationXYProperties(
+        ObjectMapper mapper
+    ) {
+        JavaType numberType = mapper.constructType(Double.class);
+        return Map.of(
+            "a", numberType,
+            "b", numberType,
+            "theta", numberType
+        );
+    }
+
+    private static Map<String, JavaType> nodePositionProperties(
+        ObjectMapper mapper
+    ) {
+        JavaType numberType = mapper.constructType(Double.class);
+        return Map.of(
+            "x", numberType,
+            "y", numberType,
+            "theta", numberType,
+            "allowedDeviationXY",
+            mapper.constructType(AllowedDeviationXY.class),
+            "allowedDeviationTheta", numberType,
+            "mapId", mapper.constructType(String.class)
+        );
+    }
+
+    private static Map<String, JavaType> nodeProperties(ObjectMapper mapper) {
+        return Map.of(
+            "nodeId", mapper.constructType(String.class),
+            "sequenceId", mapper.constructType(Long.class),
+            "nodeDescriptor", mapper.constructType(String.class),
+            "released", mapper.constructType(Boolean.class),
+            "nodePosition", mapper.constructType(NodePosition.class),
+            "actions", listType(mapper, Action.class)
         );
     }
 

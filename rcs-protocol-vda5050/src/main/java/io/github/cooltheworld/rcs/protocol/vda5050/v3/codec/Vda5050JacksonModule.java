@@ -51,6 +51,7 @@ public final class Vda5050JacksonModule extends SimpleModule {
         addDeserializer(Connection.class, new ConnectionDeserializer());
         ExtensionFieldsJacksonSupport.register(this);
         OrderActionJacksonSupport.register(this);
+        OrderNodeJacksonSupport.register(this);
         FactsheetFragmentJacksonSupport.register(this);
         ProtocolLimitsJacksonSupport.register(this);
         ProtocolFeaturesJacksonSupport.register(this);

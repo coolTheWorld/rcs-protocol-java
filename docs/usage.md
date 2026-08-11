@@ -137,6 +137,8 @@ Action 片段可以直接交给默认 `Vda5050JsonCodec`，也可以由显式注
 
 使用 `Node.builder()` 提供 nodeId、sequenceId、released 和 actions。没有节点动作时仍须显式传入 `List.of()`；不要用 `null` 表示空列表。可选 nodeDescriptor 与 nodePosition 缺失时保持 `null`，Node 会冻结 actions 顺序但不会判断 Action 是否已注册或可以执行。
 
+Node 片段可以直接由默认 `Vda5050JsonCodec` 或显式 `Vda5050JacksonModule` 读写。Codec 已覆盖偏差椭圆、位置、Node、嵌套 Action 及每层不透明扩展；缺失的可选位置字段不会被物化，空 actions 会保留为显式数组。标准字段显式 `null`、缺失必填字段或非法对象/数组形状返回结构化解码错误，数值范围仍由 `NodeValidator` 判断。
+
 `NodeValidator` 不增加正文未规定的 `a >= b` 关系，也不因节点 `theta` 缺失而拒绝单独出现的 `allowedDeviationTheta`。连续 sequenceId、Node/Edge 连接、Base/Horizon 及拼接语义不是单个 Node 的职责。
 
 ## 构造 Edge Corridor

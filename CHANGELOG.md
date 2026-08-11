@@ -26,6 +26,7 @@
 - 新增 `TrajectoryValidator`，校验 degree `uint32`、有限坐标、严格正权重、knot 范围/非递减、控制点与 knot 基数及 clamped 重数；`EdgeValidator` 组合结果并提升 `/trajectory` 路径，全部新增分支具有测试证据。
 - 新增不可变 `Order` 根模型，强类型组合公共 Header、订单标识、更新号、可选说明、Node/Edge 列表和不透明扩展；列表防御性复制并保留待图级 Validator 检查的原始值。
 - 新增 `OrderActionJacksonSupport` 并接入默认 Codec、显式 Module 与解码前类型注册；Action 和六类递归参数值可确定往返，嵌套标准 null、非法 shape、超范围整数、非有限 number 及会造成线路丢失的重复对象成员封闭拒绝。
+- 新增 `OrderNodeJacksonSupport`，为偏差椭圆、NodePosition 与 Node 注册默认 Codec、显式 Module 和逐层预检元数据；可选缺失、必填空 Action、嵌套扩展与标准 null 路径均有测试证据。
 - 提供结构化校验问题、拒绝消息安全上下文和显式协议版本配置。
 
 ### Changed（变更）
