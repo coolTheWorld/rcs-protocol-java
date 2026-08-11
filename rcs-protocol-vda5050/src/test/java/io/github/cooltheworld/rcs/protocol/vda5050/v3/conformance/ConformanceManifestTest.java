@@ -94,6 +94,9 @@ final class ConformanceManifestTest {
         RequirementRow factsheetTypeRule = rowsById.get(
             "VDA3-FACTSHEET-006"
         );
+        RequirementRow factsheetPhysicalRule = rowsById.get(
+            "VDA3-FACTSHEET-007"
+        );
         assertNotNull(timestampRule, "Missing strict timestamp rule");
         assertNotNull(unsigned32Rule, "Missing uint32 range rule");
         assertNotNull(versionProfileRule, "Missing explicit version profile rule");
@@ -124,6 +127,10 @@ final class ConformanceManifestTest {
         assertNotNull(
             factsheetTypeRule,
             "Missing Factsheet type specification rule"
+        );
+        assertNotNull(
+            factsheetPhysicalRule,
+            "Missing Factsheet physical parameters rule"
         );
         assertEquals(
             "SCHEMA_WEAKER",
@@ -212,6 +219,14 @@ final class ConformanceManifestTest {
                 "TypeSpecificationValidator"
             ),
             "Type rule must retain FS07d Validator evidence"
+        );
+        assertEquals("SCHEMA_MISSING", factsheetPhysicalRule.schemaGap());
+        assertEquals("VERIFIED", factsheetPhysicalRule.status());
+        assertTrue(
+            factsheetPhysicalRule.validator().contains(
+                "PhysicalParametersValidator"
+            ),
+            "Physical rule must retain FS07e Validator evidence"
         );
         assertTrue(
             connectionRule.test().contains("ConnectionCodecTest"),
