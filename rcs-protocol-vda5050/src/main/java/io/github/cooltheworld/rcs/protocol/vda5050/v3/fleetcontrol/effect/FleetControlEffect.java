@@ -3,6 +3,7 @@ package io.github.cooltheworld.rcs.protocol.vda5050.v3.fleetcontrol.effect;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.connection.Connection;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.connection.ConnectionState;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.common.RobotIdentity;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.Factsheet;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.topic.TopicName;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.validation.ValidationIssue;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.validation.ValidationSeverity;
@@ -13,6 +14,7 @@ import java.util.Objects;
 /** Fleet Control 状态机产生的封闭效果集合。 */
 public sealed interface FleetControlEffect
     permits FleetControlEffect.ConnectionStateChanged,
+        FleetControlEffect.FactsheetChanged,
         FleetControlEffect.InboundMessageRejected,
         FleetControlEffect.UnknownExtensionObserved {
     /** 向外部报告已观察到的连接状态变化。 */
@@ -23,6 +25,18 @@ public sealed interface FleetControlEffect
     ) implements FleetControlEffect {
         public ConnectionStateChanged {
             connection = Objects.requireNonNull(connection, "connection");
+            occurredAt = Objects.requireNonNull(occurredAt, "occurredAt");
+        }
+    }
+
+    /** 向外部报告已验证的标准 Factsheet 能力发生变化。 */
+    record FactsheetChanged(
+        Factsheet previousFactsheet,
+        Factsheet factsheet,
+        Instant occurredAt
+    ) implements FleetControlEffect {
+        public FactsheetChanged {
+            factsheet = Objects.requireNonNull(factsheet, "factsheet");
             occurredAt = Objects.requireNonNull(occurredAt, "occurredAt");
         }
     }

@@ -112,6 +112,8 @@ Unix-like 环境使用对应的 `./mvnw` 命令，例如：
 
 Mobile Robot 的 Factsheet 发布边界由强类型角色契约表达：`FactsheetPublicationRequested` 只携带 `FactsheetContent` 与显式发生时间，不允许调用方提供 Header；`MobileRobotState` 为 Factsheet Topic 独立保存下一个 `uint32` Header ID 和最近生成的完整消息；`PublishFactsheet` Effect 只携带强类型 `Factsheet`。默认状态机仅在 Connection 上线且未主动 `OFFLINE` 时，使用事件时间、状态身份/版本和独立循环计数器确定性生成消息；QoS 0 与 retained 语义继续由不可变 `TopicDescriptor` 提供给外部 Adapter。
 
+Fleet Control 通过 `FactsheetReceived` 和 `FactsheetRejected` 明确区分前三层成功凭证与拒绝结果；`FleetControlState` 保存身份和版本一致的最近 Factsheet。`FactsheetChanged` 描述标准能力变化，既有 `InboundMessageRejected` 和 `UnknownExtensionObserved` 按 `TopicName.FACTSHEET` 复用，其中未知扩展观察只暴露 Topic 与安全 Header 上下文，不暴露扩展键和值。能力保存、重复判断和网络基线门禁由后续状态转换负责。
+
 ## Schema Validator
 
 `Vda5050SchemaValidator.createDefault()` 提供八个 Topic 的 Draft 2020-12 Schema 校验。它会在 NetworkNT 解析前执行与默认 Codec 相同的 JSON 资源硬上限，关闭远程 Schema 获取，并为 `date-time` 启用 Format Assertion。语法、资源和 Schema 失败统一返回不可变 `ValidationIssue` 列表；说明文本不复制不可信输入值。

@@ -1,6 +1,7 @@
 package io.github.cooltheworld.rcs.protocol.vda5050.v3.fleetcontrol.event;
 
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.connection.Connection;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.Factsheet;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.validation.RejectedInboundMessage;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.validation.ValidatedMessage;
 import java.time.Instant;
@@ -9,7 +10,9 @@ import java.util.Objects;
 /** Fleet Control 状态机可以接收的封闭事件集合。 */
 public sealed interface FleetControlEvent
     permits FleetControlEvent.ConnectionReceived,
-        FleetControlEvent.ConnectionRejected {
+        FleetControlEvent.ConnectionRejected,
+        FleetControlEvent.FactsheetReceived,
+        FleetControlEvent.FactsheetRejected {
     /** @return 外部采集的事件发生时间 */
     Instant occurredAt();
 
@@ -30,6 +33,28 @@ public sealed interface FleetControlEvent
         Instant occurredAt
     ) implements FleetControlEvent {
         public ConnectionRejected {
+            rejection = Objects.requireNonNull(rejection, "rejection");
+            occurredAt = Objects.requireNonNull(occurredAt, "occurredAt");
+        }
+    }
+
+    /** 已通过前三层校验的 Factsheet 入站事件。 */
+    record FactsheetReceived(
+        ValidatedMessage<Factsheet> message,
+        Instant occurredAt
+    ) implements FleetControlEvent {
+        public FactsheetReceived {
+            message = Objects.requireNonNull(message, "message");
+            occurredAt = Objects.requireNonNull(occurredAt, "occurredAt");
+        }
+    }
+
+    /** 前三层校验未通过的 Factsheet 入站事件。 */
+    record FactsheetRejected(
+        RejectedInboundMessage<Factsheet> rejection,
+        Instant occurredAt
+    ) implements FleetControlEvent {
+        public FactsheetRejected {
             rejection = Objects.requireNonNull(rejection, "rejection");
             occurredAt = Objects.requireNonNull(occurredAt, "occurredAt");
         }

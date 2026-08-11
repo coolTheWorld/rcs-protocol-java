@@ -4,6 +4,7 @@ import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.connection.Connectio
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.connection.ConnectionState;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.common.ProtocolVersionProfile;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.common.RobotIdentity;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.Factsheet;
 import java.util.Objects;
 
 /** Fleet Control 按 Robot Identity 聚合的不可变协议会话状态。 */
@@ -12,6 +13,7 @@ public final class FleetControlState {
     private final ProtocolVersionProfile versionProfile;
     private final boolean recovering;
     private final Connection lastConnection;
+    private final Factsheet lastFactsheet;
 
     private FleetControlState(Builder builder) {
         robotIdentity = Objects.requireNonNull(
@@ -24,7 +26,9 @@ public final class FleetControlState {
         );
         recovering = builder.recovering;
         lastConnection = builder.lastConnection;
+        lastFactsheet = builder.lastFactsheet;
         validateLastConnection();
+        validateLastFactsheet();
     }
 
     /**
@@ -56,7 +60,8 @@ public final class FleetControlState {
             .robotIdentity(robotIdentity)
             .versionProfile(versionProfile)
             .recovering(recovering)
-            .lastConnection(lastConnection);
+            .lastConnection(lastConnection)
+            .lastFactsheet(lastFactsheet);
     }
 
     /** @return 会话聚合身份 */
@@ -79,6 +84,11 @@ public final class FleetControlState {
         return lastConnection;
     }
 
+    /** @return 最近一条已验证 Factsheet；尚未收到时为 {@code null} */
+    public Factsheet lastFactsheet() {
+        return lastFactsheet;
+    }
+
     /** @return 最近观察到的连接状态；尚未收到 Connection 时为 {@code null} */
     public ConnectionState connectionState() {
         return lastConnection == null ? null : lastConnection.connectionState();
@@ -91,7 +101,8 @@ public final class FleetControlState {
                 && recovering == that.recovering
                 && robotIdentity.equals(that.robotIdentity)
                 && versionProfile.version().equals(that.versionProfile.version())
-                && Objects.equals(lastConnection, that.lastConnection);
+                && Objects.equals(lastConnection, that.lastConnection)
+                && Objects.equals(lastFactsheet, that.lastFactsheet);
     }
 
     @Override
@@ -100,7 +111,8 @@ public final class FleetControlState {
             robotIdentity,
             versionProfile.version(),
             recovering,
-            lastConnection
+            lastConnection,
+            lastFactsheet
         );
     }
 
@@ -120,12 +132,29 @@ public final class FleetControlState {
         }
     }
 
+    private void validateLastFactsheet() {
+        if (lastFactsheet == null) {
+            return;
+        }
+        if (!robotIdentity.equals(lastFactsheet.header().robotIdentity())) {
+            throw new IllegalArgumentException(
+                "Last Factsheet identity does not match the Fleet Control state"
+            );
+        }
+        if (!versionProfile.version().equals(lastFactsheet.header().version())) {
+            throw new IllegalArgumentException(
+                "Last Factsheet version does not match the Fleet Control state"
+            );
+        }
+    }
+
     /** 用于构造满足会话身份和版本不变量的状态。 */
     public static final class Builder {
         private RobotIdentity robotIdentity;
         private ProtocolVersionProfile versionProfile;
         private boolean recovering = true;
         private Connection lastConnection;
+        private Factsheet lastFactsheet;
 
         private Builder() {}
 
@@ -146,6 +175,11 @@ public final class FleetControlState {
 
         public Builder lastConnection(Connection lastConnection) {
             this.lastConnection = lastConnection;
+            return this;
+        }
+
+        public Builder lastFactsheet(Factsheet lastFactsheet) {
+            this.lastFactsheet = lastFactsheet;
             return this;
         }
 

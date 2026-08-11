@@ -215,6 +215,14 @@ final class ConformanceManifestTest {
             factsheetRule.test().contains("MobileRobotStateTest"),
             "Factsheet rule must retain FS07h Mobile Robot contract tests"
         );
+        assertTrue(
+            factsheetRule.transition().contains("FleetControlState"),
+            "Factsheet rule must retain FS07j Fleet Control contract evidence"
+        );
+        assertTrue(
+            factsheetRule.test().contains("FleetControlStateTest"),
+            "Factsheet rule must retain FS07j Fleet Control contract tests"
+        );
         assertEquals("SCHEMA_INCORRECT", factsheetSpeedUnitRule.schemaGap());
         assertEquals("VERIFIED", factsheetSpeedUnitRule.status());
         assertEquals("SCHEMA_MISSING", factsheetLoadSemanticsRule.schemaGap());
