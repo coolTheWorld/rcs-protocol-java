@@ -162,7 +162,17 @@ final class ConformanceManifestTest {
         assertEquals("NONE", topicMetadataRule.schemaGap());
         assertEquals("VERIFIED", topicMetadataRule.status());
         assertEquals("VERIFIED", connectionRule.status());
-        assertEquals("PARTIAL", factsheetRule.status());
+        assertEquals("VERIFIED", factsheetRule.status());
+        assertTrue(
+            factsheetRule.fixture().contains(
+                "fixtures/factsheet/dialogue/capability.json"
+            ),
+            "Factsheet rule must retain FS07l cross-role Fixture evidence"
+        );
+        assertTrue(
+            factsheetRule.test().contains("FactsheetDialogueTest"),
+            "Factsheet rule must retain FS07l cross-role dialogue evidence"
+        );
         assertTrue(
             factsheetRule.validator().contains(
                 "MobileRobotConfigurationJacksonSupport"
@@ -254,7 +264,17 @@ final class ConformanceManifestTest {
             "Charging rule must retain FS06c Validator evidence"
         );
         assertEquals("NONE", factsheetNetworkRule.schemaGap());
-        assertEquals("PARTIAL", factsheetNetworkRule.status());
+        assertEquals("VERIFIED", factsheetNetworkRule.status());
+        assertTrue(
+            factsheetNetworkRule.fixture().contains(
+                "fixtures/factsheet/dialogue/capability.json"
+            ),
+            "Network rule must retain FS07l cross-role Fixture evidence"
+        );
+        assertTrue(
+            factsheetNetworkRule.test().contains("FactsheetDialogueTest"),
+            "Network rule must retain FS07l cross-role dialogue evidence"
+        );
         assertTrue(
             factsheetNetworkRule.test().contains(
                 "MobileRobotConfigurationTest"

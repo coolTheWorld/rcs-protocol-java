@@ -114,6 +114,8 @@ Mobile Robot 的 Factsheet 发布边界由强类型角色契约表达：`Factshe
 
 Fleet Control 通过 `FactsheetReceived` 和 `FactsheetRejected` 明确区分前三层成功凭证与拒绝结果；默认状态机只保存身份和版本匹配会话的 Factsheet，完整重复不会再次产生 `FactsheetChanged`。首次非空 `NetworkConfiguration` 可以建立基线；已有非空基线后，网络缺失或任何强类型值变化都会保持 State 并产生固定安全拒绝。Connection `OFFLINE` 不清除该基线。`UnknownExtensionObserved` 会遍历根级和全部强类型子对象，但只暴露 Topic 与安全 Header 上下文，不暴露扩展键和值。
 
+跨角色对话测试在无 MQTT、Spring 或 Redis 的条件下串接 Mobile Robot Event/Effect、确定性 Codec、Factsheet Topic 布局与传输元数据、完整 Validator 和 Fleet Control Event/Effect；固定能力 Fixture 证明首次消息精确保留、重复投递无变化 Effect、网络变化与 Topic/Header 身份错误 fail closed。
+
 ## Schema Validator
 
 `Vda5050SchemaValidator.createDefault()` 提供八个 Topic 的 Draft 2020-12 Schema 校验。它会在 NetworkNT 解析前执行与默认 Codec 相同的 JSON 资源硬上限，关闭远程 Schema 获取，并为 `date-time` 启用 Format Assertion。语法、资源和 Schema 失败统一返回不可变 `ValidationIssue` 列表；说明文本不复制不可信输入值。

@@ -1,0 +1,49 @@
+{
+  "headerId": 0,
+  "timestamp": "2026-08-11T07:00:00.123Z",
+  "version": "3.0.0",
+  "manufacturer": "Acme",
+  "serialNumber": "R-001",
+  "typeSpecification": {
+    "seriesName": "Dialogue Carrier",
+    "seriesDescription": "Cross-role Factsheet reference",
+    "mobileRobotKinematics": "DIFFERENTIAL",
+    "mobileRobotClass": "CARRIER",
+    "maximumLoadMass": 1000.0,
+    "localizationTypes": ["NATURAL"],
+    "navigationTypes": ["FREELY_NAVIGATING"]
+  },
+  "physicalParameters": {
+    "minimumSpeed": 0.0,
+    "maximumSpeed": 2.0,
+    "maximumAcceleration": 1.0,
+    "maximumDeceleration": 1.0,
+    "minimumHeight": 0.2,
+    "maximumHeight": 1.5,
+    "width": 0.8,
+    "length": 1.2
+  },
+  "protocolLimits": {
+    "maximumStringLengths": {},
+    "maximumArrayLengths": {},
+    "timing": {
+      "minimumOrderInterval": 0.0,
+      "minimumStateInterval": 0.0
+    }
+  },
+  "protocolFeatures": {
+    "optionalParameters": [],
+    "mobileRobotActions": []
+  },
+  "mobileRobotGeometry": {},
+  "loadSpecification": {},
+  "mobileRobotConfiguration": {
+    "network": {
+      "dnsServers": ["10.0.0.2"],
+      "ntpServers": ["10.0.0.3"],
+      "localIpAddress": "10.0.0.10",
+      "netmask": "255.255.255.0",
+      "defaultGateway": "10.0.0.1"
+    }
+  }
+}
