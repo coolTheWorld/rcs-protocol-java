@@ -108,6 +108,8 @@ Builder 只保证必填引用和值语义，会无损保留 NaN、Infinity、负
 
 `Edge` 使用必填原文 `edgeId`、`Long sequenceId`、`Boolean released` 与 `List<Action> actions`，并强类型保存正文定义的全部可选非 Trajectory 字段。`EdgeOrientationType` 封闭 `GLOBAL/TANGENTIAL`，最大旋转速度按正文命名为 `maximumRotationSpeed`；上游 Schema 误写的 `maxRotationSpeed` 不是标准模型字段。Edge 没有起终节点 ID，连接由 Order Sequence 图确定；可选强类型 `Trajectory` 将在 NURBS 模型完成后由 O04 回接。
 
+`EdgeValidator` 执行单 Edge 上下文无关校验：`sequenceId` 必须位于 `uint32` 闭区间，当前已建模标量必须有限，`orientation` 位于 `[-π,π]`，Corridor 左右宽度非负且不能同时为零。正文未声明非负范围的速度、高度和长度字段只校验有限性；Validator 不伪造 orientation 可选字段依赖、Corridor 授权字段依赖或 Order 图级规则。
+
 ## Factsheet 移动机器人几何
 
 `MobileRobotGeometry` 强类型表达轮定义、二维包络与三维包络；可选集合继续区分缺失与空数组。轮位置、尺寸和二维顶点使用 `Double`，三维包络可以携带内联数据或绝对 URL，未知字段同样透明保存。

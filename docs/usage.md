@@ -147,6 +147,10 @@ Builder 只保证两个宽度引用存在，会保留负数、非有限数或双
 
 请使用 `maximumRotationSpeed(...)` 和同名 accessor。`maxRotationSpeed` 是上游 Schema 与正文不一致的拼写，不属于标准 Edge API。Edge 也不接受 `startNodeId/endNodeId`：请通过 Order 中 Node/Edge 的 Sequence 交替表达连接。当前 Edge 的强类型 Trajectory 入口由后续 O04 NURBS 增量提供。
 
+构造后调用 `EdgeValidator.create().validate(edge)`。Validator 会检查 sequenceId `uint32`、全部当前标量的有限性、orientation `[-π,π]` 和 Corridor 非负/非双零语义。返回的 Issue 列表不可变，说明不包含输入值。
+
+正文与 Schema 没有为 maximumSpeed、maximumMobileRobotHeight、minimumLoadHandlingDeviceHeight、maximumRotationSpeed 或 length 规定非负范围，因此 Validator 不会根据字段名称自行拒绝有限负值。连续 Sequence、Node/Edge 交替、Base/Horizon、起终节点和预定义轨迹可用性由后续 Order 图或会话校验负责。
+
 ## 并发与持久化责任
 
 默认 Codec、Schema Validator、Connection Validator、Topic 布局和无状态状态机可缓存复用。调用方必须：
