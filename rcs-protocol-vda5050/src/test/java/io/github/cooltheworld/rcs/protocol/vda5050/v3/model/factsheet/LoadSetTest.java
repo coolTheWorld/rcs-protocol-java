@@ -7,14 +7,20 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.extension.ExtensionFields;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.extension.internal.ExtensionFieldsJacksonSupport;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 final class LoadSetTest {
+    private static final ObjectMapper TEST_MAPPER = JsonMapper.builder().build();
+
     @Test
     @DisplayName("[VDA3-FACTSHEET-001] 包围盒引用保留必填坐标和可选方向")
     void buildsBoundingBoxReference() {
@@ -317,6 +323,65 @@ final class LoadSetTest {
                 NullPointerException.class,
                 () -> LoadSet.builder().setName("DEFAULT").build()
             )
+        );
+    }
+
+    @Test
+    @DisplayName("[VDA3-FACTSHEET-001] 载荷对象各层扩展参与值语义")
+    void extensionsParticipateInLoadValueSemantics() throws Exception {
+        ExtensionFields extensions = ExtensionFieldsJacksonSupport.capture(
+            TEST_MAPPER,
+            TEST_MAPPER.createObjectNode().put("vendorRule", true),
+            Set.of()
+        );
+        BoundingBoxReference reference = BoundingBoxReference.builder()
+            .x(0.0D)
+            .y(0.0D)
+            .z(0.0D)
+            .build();
+        BoundingBoxReference referenceWithExtension = BoundingBoxReference.builder()
+            .x(0.0D)
+            .y(0.0D)
+            .z(0.0D)
+            .extensionFields(extensions)
+            .build();
+        LoadDimensions dimensions = LoadDimensions.builder()
+            .length(1.2D)
+            .width(0.8D)
+            .build();
+        LoadDimensions dimensionsWithExtension = LoadDimensions.builder()
+            .length(1.2D)
+            .width(0.8D)
+            .extensionFields(extensions)
+            .build();
+        LoadSet loadSet = LoadSet.builder()
+            .setName("DEFAULT")
+            .loadType("EPAL")
+            .boundingBoxReference(reference)
+            .loadDimensions(dimensions)
+            .build();
+        LoadSet loadSetWithExtension = LoadSet.builder()
+            .setName("DEFAULT")
+            .loadType("EPAL")
+            .boundingBoxReference(reference)
+            .loadDimensions(dimensions)
+            .extensionFields(extensions)
+            .build();
+        LoadSpecification specification = LoadSpecification.builder()
+            .loadPositions(List.of("front"))
+            .loadSets(List.of(loadSet))
+            .build();
+        LoadSpecification specificationWithExtension = LoadSpecification.builder()
+            .loadPositions(List.of("front"))
+            .loadSets(List.of(loadSet))
+            .extensionFields(extensions)
+            .build();
+
+        assertAll(
+            () -> assertNotEquals(reference, referenceWithExtension),
+            () -> assertNotEquals(dimensions, dimensionsWithExtension),
+            () -> assertNotEquals(loadSet, loadSetWithExtension),
+            () -> assertNotEquals(specification, specificationWithExtension)
         );
     }
 

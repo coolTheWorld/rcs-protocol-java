@@ -5,10 +5,13 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.MobileRobotGeometry;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet.WheelType;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.topic.TopicName;
@@ -57,6 +60,25 @@ final class MobileRobotGeometryCodecTest {
             firstEncoding,
             MobileRobotGeometry.class
         )).message();
+        MobileRobotGeometry withoutGeometryExtension = decoded(CODEC.decode(
+            TopicName.FACTSHEET,
+            withoutField(payload, "", "vendorGeometry"),
+            MobileRobotGeometry.class
+        )).message();
+        MobileRobotGeometry withoutWheelExtension = decoded(CODEC.decode(
+            TopicName.FACTSHEET,
+            withoutField(payload, "/wheelDefinitions/0", "vendorWheel"),
+            MobileRobotGeometry.class
+        )).message();
+        MobileRobotGeometry withoutPositionExtension = decoded(CODEC.decode(
+            TopicName.FACTSHEET,
+            withoutField(
+                payload,
+                "/wheelDefinitions/0/position",
+                "vendorFrame"
+            ),
+            MobileRobotGeometry.class
+        )).message();
 
         assertAll(
             () -> assertEquals(
@@ -85,7 +107,16 @@ final class MobileRobotGeometryCodecTest {
                 TEST_MAPPER.readTree(firstEncoding)
             ),
             () -> assertArrayEquals(firstEncoding, secondEncoding),
-            () -> assertEquals(geometry, roundTripped)
+            () -> assertEquals(geometry, roundTripped),
+            () -> assertNotEquals(geometry, withoutGeometryExtension),
+            () -> assertNotEquals(
+                geometry.wheelDefinitions().getFirst(),
+                withoutWheelExtension.wheelDefinitions().getFirst()
+            ),
+            () -> assertNotEquals(
+                geometry.wheelDefinitions().getFirst().position(),
+                withoutPositionExtension.wheelDefinitions().getFirst().position()
+            )
         );
     }
 
@@ -151,6 +182,30 @@ final class MobileRobotGeometryCodecTest {
             encoded,
             MobileRobotGeometry.class
         )).message();
+        MobileRobotGeometry withoutVertexExtension = decoded(CODEC.decode(
+            TopicName.FACTSHEET,
+            withoutField(
+                payload,
+                "/envelopes2d/0/vertices/0",
+                "vendorVertex"
+            ),
+            MobileRobotGeometry.class
+        )).message();
+        MobileRobotGeometry withoutEnvelope2dExtension = decoded(CODEC.decode(
+            TopicName.FACTSHEET,
+            withoutField(payload, "/envelopes2d/0", "vendorEnvelope"),
+            MobileRobotGeometry.class
+        )).message();
+        MobileRobotGeometry withoutEnvelope3dExtension = decoded(CODEC.decode(
+            TopicName.FACTSHEET,
+            withoutField(payload, "/envelopes3d/0", "vendorEnvelope"),
+            MobileRobotGeometry.class
+        )).message();
+        MobileRobotGeometry withEmptyEnvelope3dData = decoded(CODEC.decode(
+            TopicName.FACTSHEET,
+            withEmptyObjectField(payload, "/envelopes3d/0", "data"),
+            MobileRobotGeometry.class
+        )).message();
 
         assertAll(
             () -> assertEquals(
@@ -173,7 +228,37 @@ final class MobileRobotGeometryCodecTest {
                 TEST_MAPPER.readTree(payload),
                 TEST_MAPPER.readTree(encoded)
             ),
-            () -> assertEquals(geometry, roundTripped)
+            () -> assertEquals(geometry, roundTripped),
+            () -> assertNotEquals(
+                geometry.envelopes2d().getFirst().vertices().getFirst(),
+                withoutVertexExtension.envelopes2d()
+                    .getFirst()
+                    .vertices()
+                    .getFirst()
+            ),
+            () -> assertNotEquals(
+                geometry.envelopes2d().getFirst(),
+                withoutEnvelope2dExtension.envelopes2d().getFirst()
+            ),
+            () -> assertNotEquals(
+                geometry.envelopes3d().getFirst(),
+                withoutEnvelope3dExtension.envelopes3d().getFirst()
+            ),
+            () -> assertEquals(
+                geometry.envelopes3d().getFirst().data(),
+                geometry.envelopes3d().getFirst().data()
+            ),
+            () -> assertNotEquals(
+                geometry.envelopes3d().getFirst().data(),
+                withEmptyEnvelope3dData.envelopes3d().getFirst().data()
+            ),
+            () -> assertNotEquals(
+                geometry.envelopes3d().getFirst().data(),
+                "data"
+            ),
+            () -> assertTrue(
+                withEmptyEnvelope3dData.envelopes3d().getFirst().data().isEmpty()
+            )
         );
     }
 
@@ -293,6 +378,29 @@ final class MobileRobotGeometryCodecTest {
 
     private static byte[] bytes(String json) {
         return json.getBytes(StandardCharsets.UTF_8);
+    }
+
+    private static byte[] withoutField(
+        byte[] payload,
+        String parentPointer,
+        String field
+    ) throws Exception {
+        ObjectNode root = (ObjectNode) TEST_MAPPER.readTree(payload);
+        ((ObjectNode) root.at(parentPointer)).remove(field);
+        return TEST_MAPPER.writeValueAsBytes(root);
+    }
+
+    private static byte[] withEmptyObjectField(
+        byte[] payload,
+        String parentPointer,
+        String field
+    ) throws Exception {
+        ObjectNode root = (ObjectNode) TEST_MAPPER.readTree(payload);
+        ((ObjectNode) root.at(parentPointer)).set(
+            field,
+            TEST_MAPPER.createObjectNode()
+        );
+        return TEST_MAPPER.writeValueAsBytes(root);
     }
 
     private static String text(byte[] json) {

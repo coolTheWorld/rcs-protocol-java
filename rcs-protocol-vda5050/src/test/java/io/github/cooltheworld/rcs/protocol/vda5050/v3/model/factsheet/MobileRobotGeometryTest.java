@@ -2,6 +2,7 @@ package io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -73,6 +74,82 @@ final class MobileRobotGeometryTest {
     }
 
     @Test
+    @DisplayName("[VDA3-FACTSHEET-001] 车轮几何值相等覆盖每个标准字段")
+    void includesEveryStandardWheelGeometryFieldInValueEquality() {
+        WheelPosition position = fullPosition().build();
+        WheelDefinition wheel = fullWheel().build();
+        Envelope2d envelope2d = Envelope2d.builder()
+            .envelope2dId("footprint")
+            .vertices(List.of())
+            .build();
+        Envelope3d envelope3d = Envelope3d.builder()
+            .envelope3dId("body")
+            .format("gltf")
+            .build();
+        MobileRobotGeometry geometry = MobileRobotGeometry.builder()
+            .wheelDefinitions(List.of(wheel))
+            .envelopes2d(List.of(envelope2d))
+            .envelopes3d(List.of(envelope3d))
+            .build();
+
+        assertAll(
+            () -> assertEquals(position, position),
+            () -> assertNotEquals(position, null),
+            () -> assertNotEquals(position, "position"),
+            () -> assertNotEquals(position, fullPosition().x(0.9D).build()),
+            () -> assertNotEquals(position, fullPosition().y(-0.5D).build()),
+            () -> assertNotEquals(position, fullPosition().theta(0.0D).build()),
+            () -> assertEquals(wheel, wheel),
+            () -> assertNotEquals(wheel, null),
+            () -> assertNotEquals(wheel, "wheel"),
+            () -> assertNotEquals(wheel, fullWheel().type(WheelType.DRIVE).build()),
+            () -> assertNotEquals(wheel, fullWheel().isActiveDriven(false).build()),
+            () -> assertNotEquals(wheel, fullWheel().isActiveSteered(true).build()),
+            () -> assertNotEquals(
+                wheel,
+                fullWheel().position(fullPosition().x(0.9D).build()).build()
+            ),
+            () -> assertNotEquals(wheel, fullWheel().diameter(0.4D).build()),
+            () -> assertNotEquals(wheel, fullWheel().width(0.2D).build()),
+            () -> assertNotEquals(
+                wheel,
+                fullWheel().centerDisplacement(0.1D).build()
+            ),
+            () -> assertNotEquals(
+                wheel,
+                fullWheel().constraints("front axle").build()
+            ),
+            () -> assertEquals(geometry, geometry),
+            () -> assertNotEquals(geometry, null),
+            () -> assertNotEquals(geometry, "geometry"),
+            () -> assertNotEquals(
+                geometry,
+                MobileRobotGeometry.builder()
+                    .wheelDefinitions(List.of())
+                    .envelopes2d(List.of(envelope2d))
+                    .envelopes3d(List.of(envelope3d))
+                    .build()
+            ),
+            () -> assertNotEquals(
+                geometry,
+                MobileRobotGeometry.builder()
+                    .wheelDefinitions(List.of(wheel))
+                    .envelopes2d(List.of())
+                    .envelopes3d(List.of(envelope3d))
+                    .build()
+            ),
+            () -> assertNotEquals(
+                geometry,
+                MobileRobotGeometry.builder()
+                    .wheelDefinitions(List.of(wheel))
+                    .envelopes2d(List.of(envelope2d))
+                    .envelopes3d(List.of())
+                    .build()
+            )
+        );
+    }
+
+    @Test
     @DisplayName("[VDA3-FACTSHEET-001] 几何构造拒绝缺失必填字段和 null 列表元素")
     void rejectsMissingRequiredFieldsAndNullListElements() {
         WheelPosition position = WheelPosition.builder().x(0.0D).y(0.0D).build();
@@ -108,5 +185,24 @@ final class MobileRobotGeometryTest {
                     .build()
             )
         );
+    }
+
+    private static WheelPosition.Builder fullPosition() {
+        return WheelPosition.builder()
+            .x(0.8D)
+            .y(-0.4D)
+            .theta(1.57D);
+    }
+
+    private static WheelDefinition.Builder fullWheel() {
+        return WheelDefinition.builder()
+            .type(WheelType.FIXED)
+            .isActiveDriven(true)
+            .isActiveSteered(false)
+            .position(fullPosition().build())
+            .diameter(0.32D)
+            .width(0.1D)
+            .centerDisplacement(0.0D)
+            .constraints("rear axle");
     }
 }

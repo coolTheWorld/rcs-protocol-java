@@ -2,6 +2,7 @@ package io.github.cooltheworld.rcs.protocol.vda5050.v3.model.factsheet;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -74,6 +75,91 @@ final class EnvelopeGeometryTest {
     }
 
     @Test
+    @DisplayName("[VDA3-FACTSHEET-001] 包络值相等覆盖每个标准字段")
+    void includesEveryStandardEnvelopeFieldInValueEquality() {
+        Envelope2dVertex vertex = Envelope2dVertex.builder()
+            .x(-1.0D)
+            .y(-0.5D)
+            .build();
+        Envelope2d envelope2d = Envelope2d.builder()
+            .envelope2dId("footprint")
+            .vertices(List.of(vertex))
+            .description("Simple footprint")
+            .build();
+        Envelope3d envelope3d = Envelope3d.builder()
+            .envelope3dId("body")
+            .format("gltf")
+            .data(Envelope3dData.empty())
+            .url("https://example.invalid/body.gltf")
+            .description("Robot body")
+            .build();
+
+        assertAll(
+            () -> assertEquals(vertex, vertex),
+            () -> assertNotEquals(vertex, null),
+            () -> assertNotEquals(vertex, "vertex"),
+            () -> assertNotEquals(
+                vertex,
+                Envelope2dVertex.builder().x(1.0D).y(-0.5D).build()
+            ),
+            () -> assertNotEquals(
+                vertex,
+                Envelope2dVertex.builder().x(-1.0D).y(0.5D).build()
+            ),
+            () -> assertEquals(envelope2d, envelope2d),
+            () -> assertNotEquals(envelope2d, null),
+            () -> assertNotEquals(envelope2d, "envelope"),
+            () -> assertNotEquals(
+                envelope2d,
+                Envelope2d.builder()
+                    .envelope2dId("safety")
+                    .vertices(List.of(vertex))
+                    .description("Simple footprint")
+                    .build()
+            ),
+            () -> assertNotEquals(
+                envelope2d,
+                Envelope2d.builder()
+                    .envelope2dId("footprint")
+                    .vertices(List.of())
+                    .description("Simple footprint")
+                    .build()
+            ),
+            () -> assertNotEquals(
+                envelope2d,
+                Envelope2d.builder()
+                    .envelope2dId("footprint")
+                    .vertices(List.of(vertex))
+                    .description("Different")
+                    .build()
+            ),
+            () -> assertEquals(envelope3d, envelope3d),
+            () -> assertNotEquals(envelope3d, null),
+            () -> assertNotEquals(envelope3d, "envelope"),
+            () -> assertNotEquals(
+                envelope3d,
+                fullEnvelope3d().envelope3dId("safety").build()
+            ),
+            () -> assertNotEquals(
+                envelope3d,
+                fullEnvelope3d().format("obj").build()
+            ),
+            () -> assertNotEquals(
+                envelope3d,
+                fullEnvelope3d().data(null).build()
+            ),
+            () -> assertNotEquals(
+                envelope3d,
+                fullEnvelope3d().url("https://example.invalid/other.gltf").build()
+            ),
+            () -> assertNotEquals(
+                envelope3d,
+                fullEnvelope3d().description("Different").build()
+            )
+        );
+    }
+
+    @Test
     @DisplayName("[VDA3-FACTSHEET-001] 包络构造拒绝缺失必填字段和 null 顶点")
     void rejectsMissingRequiredFieldsAndNullVertices() {
         Envelope2dVertex vertex = Envelope2dVertex.builder()
@@ -106,5 +192,14 @@ final class EnvelopeGeometryTest {
                 () -> Envelope3d.builder().envelope3dId("body").build()
             )
         );
+    }
+
+    private static Envelope3d.Builder fullEnvelope3d() {
+        return Envelope3d.builder()
+            .envelope3dId("body")
+            .format("gltf")
+            .data(Envelope3dData.empty())
+            .url("https://example.invalid/body.gltf")
+            .description("Robot body");
     }
 }
