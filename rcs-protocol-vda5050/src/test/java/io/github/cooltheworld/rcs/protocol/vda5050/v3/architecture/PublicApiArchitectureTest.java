@@ -81,6 +81,7 @@ class PublicApiArchitectureTest {
             "ConnectionState"
         ));
         packages.put(ROOT + ".model.factsheet", List.of(
+            "BatteryCharging",
             "BoundingBoxReference",
             "Envelope2d",
             "Envelope2dVertex",
@@ -93,6 +94,7 @@ class PublicApiArchitectureTest {
             "MaximumArrayLengths",
             "MaximumStringLengths",
             "MobileRobotClass",
+            "MobileRobotConfiguration",
             "MobileRobotGeometry",
             "MobileRobotKinematics",
             "NavigationType",

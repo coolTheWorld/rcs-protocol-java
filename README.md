@@ -94,9 +94,11 @@ Unix-like 环境使用对应的 `./mvnw` 命令，例如：
 
 模型只强制正文与 Schema 明确声明的必填字段，不在 Builder 中执行有限值、范围或字段关系校验。默认 Codec 和独立 Jackson Module 可确定性往返完整载荷对象图；`LoadSpecificationValidator` 以不可变 Issue 列表报告非有限数、违反 Schema 非负下限的数值、倒置边界、重复 `setName` 和未知位置引用，不修改输入。`maximumDeceleration` 在正文与 Schema 中没有非负下限，因此保留有限负值。上游 Schema 把 `LoadSet.maximumSpeed` 的单位元数据误写为 `m/s²`，公共模型按正文使用 `m/s`，差异由 `VDA3-FACTSHEET-002` 跟踪。
 
-## Factsheet 版本与网络配置
+## Factsheet 机器人配置
 
 `VersionInfo` 使用必填原始 `key`/`value` 表达软件或硬件版本。`NetworkConfiguration` 保存可选 DNS/NTP 服务器、本地地址、子网掩码和默认网关；服务器列表防御性复制，并保持字段缺失与空列表的不同线路语义。网络值只作为不透明配置数据存在，核心不会解析地址、查询 DNS、发起连接或把它们转换为 MQTT 客户端配置。
+
+`BatteryCharging` 使用三个可选 `Double` 保存临界低电量、最小期望电量和最大期望电量百分比；`minimumChargingTime` 按规范正文的 `uint32` 语义使用 `Long`。`MobileRobotConfiguration` 聚合可选版本列表、网络元数据和充电参数，保持缺失与空版本列表的不同语义。模型不在 Builder 中丢弃非法原始边界；有限值、百分比范围、期望电量关系和 `uint32` 闭区间由独立配置 Validator 统一报告。
 
 ## Schema Validator
 
