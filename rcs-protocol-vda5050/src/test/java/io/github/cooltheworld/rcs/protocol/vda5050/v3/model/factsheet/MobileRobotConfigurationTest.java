@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test;
 
 final class MobileRobotConfigurationTest {
     @Test
-    @DisplayName("[VDA3-FACTSHEET-001] 机器人配置聚合版本网络与充电片段")
+    @DisplayName("[VDA3-FACTSHEET-001][VDA3-FACTSHEET-005] 机器人配置聚合版本网络与充电片段")
     void aggregatesImmutableConfigurationFragments() {
         List<VersionInfo> versions = new ArrayList<>(List.of(version()));
         MobileRobotConfiguration configuration = completeBuilder()

@@ -85,6 +85,12 @@ final class ConformanceManifestTest {
         RequirementRow factsheetLoadSemanticsRule = rowsById.get(
             "VDA3-FACTSHEET-003"
         );
+        RequirementRow factsheetChargingRule = rowsById.get(
+            "VDA3-FACTSHEET-004"
+        );
+        RequirementRow factsheetNetworkRule = rowsById.get(
+            "VDA3-FACTSHEET-005"
+        );
         assertNotNull(timestampRule, "Missing strict timestamp rule");
         assertNotNull(unsigned32Rule, "Missing uint32 range rule");
         assertNotNull(versionProfileRule, "Missing explicit version profile rule");
@@ -103,6 +109,14 @@ final class ConformanceManifestTest {
         assertNotNull(
             factsheetLoadSemanticsRule,
             "Missing Factsheet load semantics rule"
+        );
+        assertNotNull(
+            factsheetChargingRule,
+            "Missing Factsheet charging semantics rule"
+        );
+        assertNotNull(
+            factsheetNetworkRule,
+            "Missing Factsheet runtime network rule"
         );
         assertEquals(
             "SCHEMA_WEAKER",
@@ -137,6 +151,22 @@ final class ConformanceManifestTest {
                 "LoadSpecificationValidator"
             ),
             "Load semantics rule must retain FS05d Validator evidence"
+        );
+        assertEquals("SCHEMA_WEAKER", factsheetChargingRule.schemaGap());
+        assertEquals("VERIFIED", factsheetChargingRule.status());
+        assertTrue(
+            factsheetChargingRule.validator().contains(
+                "MobileRobotConfigurationValidator"
+            ),
+            "Charging rule must retain FS06c Validator evidence"
+        );
+        assertEquals("NONE", factsheetNetworkRule.schemaGap());
+        assertEquals("PARTIAL", factsheetNetworkRule.status());
+        assertTrue(
+            factsheetNetworkRule.test().contains(
+                "MobileRobotConfigurationTest"
+            ),
+            "Network rule must retain FS06 immutable model evidence"
         );
         assertTrue(
             connectionRule.test().contains("ConnectionCodecTest"),

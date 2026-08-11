@@ -98,7 +98,7 @@ Unix-like 环境使用对应的 `./mvnw` 命令，例如：
 
 `VersionInfo` 使用必填原始 `key`/`value` 表达软件或硬件版本。`NetworkConfiguration` 保存可选 DNS/NTP 服务器、本地地址、子网掩码和默认网关；服务器列表防御性复制，并保持字段缺失与空列表的不同线路语义。网络值只作为不透明配置数据存在，核心不会解析地址、查询 DNS、发起连接或把它们转换为 MQTT 客户端配置。
 
-`BatteryCharging` 使用三个可选 `Double` 保存临界低电量、最小期望电量和最大期望电量百分比；`minimumChargingTime` 按规范正文的 `uint32` 语义使用 `Long`。`MobileRobotConfiguration` 聚合可选版本列表、网络元数据和充电参数，保持缺失与空版本列表的不同语义。模型不在 Builder 中丢弃非法原始边界；有限值、百分比范围、期望电量关系和 `uint32` 闭区间由独立配置 Validator 统一报告。
+`BatteryCharging` 使用三个可选 `Double` 保存临界低电量、最小期望电量和最大期望电量百分比；`minimumChargingTime` 按规范正文的 `uint32` 语义使用 `Long`。`MobileRobotConfiguration` 聚合可选版本列表、网络元数据和充电参数，保持缺失与空版本列表的不同语义。模型不在 Builder 中丢弃非法原始边界；`MobileRobotConfigurationValidator` 以不可变 Issue 列表报告非有限值、百分比越界、倒置期望区间和超出 `uint32` 的充电时间，不修改输入，也不解析网络字符串。运行期网络信息不变规则需要历史状态，由 Factsheet 角色流程执行。
 
 ## Schema Validator
 

@@ -12,7 +12,7 @@
 - 提供 `Connection` 模型、前三层入站 Validator、Fleet Control 与 Mobile Robot 角色专属连接状态机及跨角色对话测试。
 - 提供 Factsheet `TypeSpecification`、`PhysicalParameters`、`ProtocolLimits`、`ProtocolFeatures` 与 `MobileRobotGeometry` 模型片段和确定性 JSON 往返。
 - 提供 Factsheet `LoadSpecification`、`LoadDimensions`、`BoundingBoxReference` 与完整 `LoadSet` 强类型对象图、确定性 Codec 和上下文无关语义 Validator，保留可选集合的缺失/空列表和未知扩展语义。
-- 提供 Factsheet `VersionInfo`、`NetworkConfiguration`、`BatteryCharging` 与 `MobileRobotConfiguration` 不可变配置模型；网络元数据只作为数据，充电时间按正文 `uint32` 使用 `Long`。
+- 提供 Factsheet `VersionInfo`、`NetworkConfiguration`、`BatteryCharging` 与 `MobileRobotConfiguration` 不可变配置模型，以及有限数、百分比、期望区间和正文 `uint32` 充电时间语义 Validator；网络元数据只作为数据。
 - 提供结构化校验问题、拒绝消息安全上下文和显式协议版本配置。
 
 ### Changed（变更）
