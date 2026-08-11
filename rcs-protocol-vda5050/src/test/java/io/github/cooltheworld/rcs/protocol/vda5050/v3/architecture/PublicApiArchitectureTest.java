@@ -70,7 +70,9 @@ class PublicApiArchitectureTest {
             "RobotIdentity"
         ));
         packages.put(ROOT + ".model.action", List.of(
+            "ActionParameter",
             "ActionParameterDefinition",
+            "ActionParameterValue",
             "ActionScope",
             "ActionValueDataType",
             "BlockingType",

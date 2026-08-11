@@ -169,7 +169,11 @@ final class ConformanceManifestTest {
         assertEquals("NONE", topicMetadataRule.schemaGap());
         assertEquals("VERIFIED", topicMetadataRule.status());
         assertEquals("NONE", extensionAdmissionRule.schemaGap());
-        assertEquals("PLANNED", extensionAdmissionRule.status());
+        assertEquals("PARTIAL", extensionAdmissionRule.status());
+        assertTrue(
+            extensionAdmissionRule.test().contains("ActionParameterTest"),
+            "FS08a must project its typed parameter evidence"
+        );
         assertEquals("VERIFIED", connectionRule.status());
         assertEquals("VERIFIED", factsheetRule.status());
         assertTrue(

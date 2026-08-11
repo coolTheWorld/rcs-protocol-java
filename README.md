@@ -82,6 +82,8 @@ Unix-like 环境使用对应的 `./mvnw` 命令，例如：
 
 `ProtocolFeaturesValidator` 按输入顺序报告重复或冲突的参数、Action、Scope、参数定义和 Blocking Type，不修改或静默去重原始声明。默认 Codec 与 `Vda5050JacksonModule` 支持确定性 JSON 片段往返。
 
+`ActionParameter` 以大小写敏感的原文键和封闭 `ActionParameterValue` 保存动作参数线路值；BOOL、NUMBER、INTEGER、STRING、OBJECT 与 ARRAY 分别使用强类型变体，递归对象成员和数组进行防御性复制，不向公共 API 暴露通用 JSON 节点或 `Map<String, Object>`。参数注册、适配和角色准入由后续独立服务承担。
+
 ## Factsheet 移动机器人几何
 
 `MobileRobotGeometry` 强类型表达轮定义、二维包络与三维包络；可选集合继续区分缺失与空数组。轮位置、尺寸和二维顶点使用 `Double`，三维包络可以携带内联数据或绝对 URL，未知字段同样透明保存。
