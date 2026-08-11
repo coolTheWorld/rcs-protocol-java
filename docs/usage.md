@@ -153,6 +153,8 @@ Builder 只保证两个宽度引用存在，会保留负数、非有限数或双
 
 NURBS 控制点使用 `TrajectoryControlPoint.builder().x(...).y(...)` 构造；只有需要覆盖正文默认权重 1.0 时才调用 `weight(...)`。Builder 会拒绝缺失坐标，但会保留非有限、零或负权重，供完整 Trajectory Validator 返回结构化 Issue；不要在业务层自行物化默认值或绕过后续校验。
 
+使用 `Trajectory.builder().controlPoints(...)` 构造共享曲线；`degree` 和 `knotVector` 均可缺失，缺失与显式空 knot 列表不同。模型只保证必填列表存在、集合不可变且无 `null` 元素，随后可通过 `Edge.Builder#trajectory(...)` 回接 Order Edge；O04c 完成前不要把尚未语义校验的对象作为可执行曲线。
+
 ## 并发与持久化责任
 
 默认 Codec、Schema Validator、Connection Validator、Topic 布局和无状态状态机可缓存复用。调用方必须：

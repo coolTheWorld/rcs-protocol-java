@@ -11,6 +11,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.extension.ExtensionFields;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.action.Action;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.action.BlockingType;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.trajectory.Trajectory;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.trajectory.TrajectoryControlPoint;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
@@ -45,6 +47,7 @@ final class EdgeTest {
             () -> assertNull(edge.direction()),
             () -> assertNull(edge.reachOrientationBeforeEntering()),
             () -> assertNull(edge.maximumRotationSpeed()),
+            () -> assertNull(edge.trajectory()),
             () -> assertNull(edge.length()),
             () -> assertNull(edge.corridor()),
             () -> assertTrue(edge.extensionFields().isEmpty())
@@ -52,8 +55,8 @@ final class EdgeTest {
     }
 
     @Test
-    @DisplayName("[VDA3-ORDER-001][VDA3-ORDER-004] 完整 Edge 保存全部非 Trajectory 字段")
-    void buildsTheCompleteNonTrajectoryEdge() throws ReflectiveOperationException {
+    @DisplayName("[VDA3-ORDER-001][VDA3-ORDER-004][VDA3-SHARED-013] 完整 Edge 保存全部字段")
+    void buildsTheCompleteEdge() throws ReflectiveOperationException {
         ExtensionFields extensions = extensionFields("{\"vendor\":true}");
         Action first = action("first");
         Action second = action("second");
@@ -80,6 +83,7 @@ final class EdgeTest {
                 edge.reachOrientationBeforeEntering()
             ),
             () -> assertEquals(0.75D, edge.maximumRotationSpeed()),
+            () -> assertEquals(trajectory(), edge.trajectory()),
             () -> assertEquals(10.0D, edge.length()),
             () -> assertEquals(corridor(), edge.corridor()),
             () -> assertEquals(List.of(first, second), edge.actions()),
@@ -172,7 +176,7 @@ final class EdgeTest {
     }
 
     @Test
-    @DisplayName("[VDA3-ORDER-001] Edge 值相等覆盖全部非 Trajectory 字段")
+    @DisplayName("[VDA3-ORDER-001][VDA3-SHARED-013] Edge 值相等覆盖全部字段")
     void includesEveryFieldInValueEquality() throws ReflectiveOperationException {
         ExtensionFields extensions = extensionFields("{\"vendor\":true}");
         Edge equal = fullEdge(extensions).build();
@@ -232,6 +236,10 @@ final class EdgeTest {
             ),
             () -> assertNotEquals(
                 equal,
+                fullEdge(extensions).trajectory(null).build()
+            ),
+            () -> assertNotEquals(
+                equal,
                 fullEdge(extensions).length(11.0D).build()
             ),
             () -> assertNotEquals(
@@ -280,6 +288,7 @@ final class EdgeTest {
                     "direction",
                     "reachOrientationBeforeEntering",
                     "maximumRotationSpeed",
+                    "trajectory",
                     "length",
                     "corridor",
                     "actions",
@@ -289,8 +298,7 @@ final class EdgeTest {
             ),
             () -> assertFalse(fields.contains("startNodeId")),
             () -> assertFalse(fields.contains("endNodeId")),
-            () -> assertFalse(fields.contains("maxRotationSpeed")),
-            () -> assertFalse(fields.contains("trajectory"))
+            () -> assertFalse(fields.contains("maxRotationSpeed"))
         );
     }
 
@@ -315,6 +323,7 @@ final class EdgeTest {
             .direction(" left ")
             .reachOrientationBeforeEntering(Boolean.FALSE)
             .maximumRotationSpeed(0.75D)
+            .trajectory(trajectory())
             .length(10.0D)
             .corridor(corridor())
             .actions(List.of(action("first"), action("second")))
@@ -325,6 +334,17 @@ final class EdgeTest {
         return Corridor.builder()
             .leftWidth(1.0D)
             .rightWidth(2.0D)
+            .build();
+    }
+
+    private static Trajectory trajectory() {
+        return Trajectory.builder()
+            .degree(1L)
+            .knotVector(List.of(0.0D, 0.0D, 1.0D, 1.0D))
+            .controlPoints(List.of(
+                TrajectoryControlPoint.builder().x(0.0D).y(0.0D).build(),
+                TrajectoryControlPoint.builder().x(1.0D).y(1.0D).build()
+            ))
             .build();
     }
 

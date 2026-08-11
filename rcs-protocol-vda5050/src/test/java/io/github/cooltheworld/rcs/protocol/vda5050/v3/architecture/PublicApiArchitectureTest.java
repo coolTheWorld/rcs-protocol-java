@@ -106,6 +106,7 @@ class PublicApiArchitectureTest {
             "NodePosition"
         ));
         packages.put(ROOT + ".model.trajectory", List.of(
+            "Trajectory",
             "TrajectoryControlPoint"
         ));
         packages.put(ROOT + ".model.factsheet", List.of(

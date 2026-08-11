@@ -2,10 +2,11 @@ package io.github.cooltheworld.rcs.protocol.vda5050.v3.model.order;
 
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.extension.ExtensionFields;
 import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.action.Action;
+import io.github.cooltheworld.rcs.protocol.vda5050.v3.model.trajectory.Trajectory;
 import java.util.List;
 import java.util.Objects;
 
-/** VDA 5050 Order 中不可变的 Edge（有向边）非 Trajectory 聚合。 */
+/** VDA 5050 Order 中不可变的 Edge（有向边）聚合。 */
 public final class Edge {
     private final String edgeId;
     private final Long sequenceId;
@@ -19,6 +20,7 @@ public final class Edge {
     private final String direction;
     private final Boolean reachOrientationBeforeEntering;
     private final Double maximumRotationSpeed;
+    private final Trajectory trajectory;
     private final Double length;
     private final Corridor corridor;
     private final List<Action> actions;
@@ -42,6 +44,7 @@ public final class Edge {
         this.reachOrientationBeforeEntering =
             builder.reachOrientationBeforeEntering;
         this.maximumRotationSpeed = builder.maximumRotationSpeed;
+        this.trajectory = builder.trajectory;
         this.length = builder.length;
         this.corridor = builder.corridor;
         this.actions = List.copyOf(Objects.requireNonNull(
@@ -118,6 +121,11 @@ public final class Edge {
         return maximumRotationSpeed;
     }
 
+    /** @return 可选的共享 NURBS Trajectory */
+    public Trajectory trajectory() {
+        return trajectory;
+    }
+
     /** @return 可选的路径长度，单位米 */
     public Double length() {
         return length;
@@ -166,6 +174,7 @@ public final class Edge {
                     maximumRotationSpeed,
                     that.maximumRotationSpeed
                 )
+                && Objects.equals(trajectory, that.trajectory)
                 && Objects.equals(length, that.length)
                 && Objects.equals(corridor, that.corridor)
                 && actions.equals(that.actions)
@@ -187,6 +196,7 @@ public final class Edge {
             direction,
             reachOrientationBeforeEntering,
             maximumRotationSpeed,
+            trajectory,
             length,
             corridor,
             actions,
@@ -208,6 +218,7 @@ public final class Edge {
         private String direction;
         private Boolean reachOrientationBeforeEntering;
         private Double maximumRotationSpeed;
+        private Trajectory trajectory;
         private Double length;
         private Corridor corridor;
         private List<Action> actions;
@@ -292,6 +303,12 @@ public final class Edge {
         /** @param maximumRotationSpeed 可选最大旋转速度 @return 当前 Builder */
         public Builder maximumRotationSpeed(Double maximumRotationSpeed) {
             this.maximumRotationSpeed = maximumRotationSpeed;
+            return this;
+        }
+
+        /** @param trajectory 可选的共享 NURBS Trajectory @return 当前 Builder */
+        public Builder trajectory(Trajectory trajectory) {
+            this.trajectory = trajectory;
             return this;
         }
 

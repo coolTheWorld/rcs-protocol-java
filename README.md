@@ -110,7 +110,7 @@ Builder 只保证必填引用和值语义，会无损保留 NaN、Infinity、负
 
 `EdgeValidator` 执行单 Edge 上下文无关校验：`sequenceId` 必须位于 `uint32` 闭区间，当前已建模标量必须有限，`orientation` 位于 `[-π,π]`，Corridor 左右宽度非负且不能同时为零。正文未声明非负范围的速度、高度和长度字段只校验有限性；Validator 不伪造 orientation 可选字段依赖、Corridor 授权字段依赖或 Order 图级规则。
 
-共享 `TrajectoryControlPoint` 位于 `model.trajectory`，供后续 Order、State、Visualization 和 Zone 请求复用。它使用必填 `Double x/y`、可选 `Double weight` 与不透明扩展；缺失 weight 保持 `null`，正文默认值 1.0 不在模型层物化。有限性和严格正权重由 Trajectory Validator 统一判断。
+共享 `Trajectory` 与 `TrajectoryControlPoint` 位于 `model.trajectory`，供后续 Order、State、Visualization 和 Zone 请求复用。控制点使用必填 `Double x/y`、可选 `Double weight` 与不透明扩展；Trajectory 使用可选 `Long degree`、可选 `List<Double> knotVector`、必填控制点列表与扩展。缺失默认字段保持 `null`，列表防御性复制；正文默认值和全部 NURBS 语义由 Trajectory Validator 统一解释。`Edge` 已通过可选 `trajectory` 字段组合该共享值。
 
 ## Factsheet 移动机器人几何
 

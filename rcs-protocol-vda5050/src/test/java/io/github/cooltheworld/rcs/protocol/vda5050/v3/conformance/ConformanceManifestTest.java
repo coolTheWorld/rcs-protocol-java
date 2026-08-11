@@ -210,6 +210,18 @@ final class ConformanceManifestTest {
             trajectoryRule.test().contains("TrajectoryControlPointTest"),
             "O04a must project its control-point model tests"
         );
+        assertTrue(
+            trajectoryRule.validator().contains("Trajectory"),
+            "O04b must project its shared trajectory model evidence"
+        );
+        assertTrue(
+            trajectoryRule.test().contains("TrajectoryTest"),
+            "O04b must project its trajectory aggregate tests"
+        );
+        assertTrue(
+            trajectoryRule.test().contains("EdgeTest"),
+            "O04b must project its Edge attachment tests"
+        );
         assertEquals("SCHEMA_MISSING", orderNodeRule.schemaGap());
         assertEquals("VERIFIED", orderNodeRule.status());
         assertTrue(
