@@ -174,6 +174,10 @@ final class ConformanceManifestTest {
             extensionAdmissionRule.test().contains("ActionParameterTest"),
             "FS08a must project its typed parameter evidence"
         );
+        assertTrue(
+            extensionAdmissionRule.test().contains("ActionRegistryTest"),
+            "FS08b must project its typed registry evidence"
+        );
         assertEquals("VERIFIED", connectionRule.status());
         assertEquals("VERIFIED", factsheetRule.status());
         assertTrue(

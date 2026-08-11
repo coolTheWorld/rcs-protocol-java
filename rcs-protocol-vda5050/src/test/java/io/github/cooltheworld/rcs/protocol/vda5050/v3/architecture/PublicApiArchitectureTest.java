@@ -17,6 +17,12 @@ class PublicApiArchitectureTest {
     private static final String JACKSON_CLASS_PREFIX = "com/fasterxml/jackson";
 
     private static final Map<String, List<String>> MODEL_PACKAGES = modelPackages();
+    private static final List<String> EXTENSION_TYPES = List.of(
+        "ActionDefinition",
+        "ActionParameterAdapter",
+        "ActionRegistry",
+        "ExtensionFields"
+    );
     private static final Map<String, String> ROLE_TYPES = Map.of(
         "FleetControlEvent", ROOT + ".fleetcontrol.event",
         "FleetControlEffect", ROOT + ".fleetcontrol.effect",
@@ -31,6 +37,9 @@ class PublicApiArchitectureTest {
         MODEL_PACKAGES.forEach((packageName, typeNames) -> typeNames.forEach(typeName -> {
             requirePresent(packageName + "." + typeName, violations);
         }));
+        EXTENSION_TYPES.forEach(typeName -> {
+            requirePresent(ROOT + ".extension." + typeName, violations);
+        });
         ROLE_TYPES.forEach((typeName, packageName) -> {
             requirePresent(packageName + "." + typeName, violations);
         });
@@ -44,7 +53,9 @@ class PublicApiArchitectureTest {
         MODEL_PACKAGES.forEach((packageName, typeNames) -> typeNames.forEach(typeName ->
             requireJacksonFree(packageName + "." + typeName, LEGACY_MODEL_PACKAGE + "." + typeName, violations)
         ));
-        requireJacksonFree(ROOT + ".extension.ExtensionFields", null, violations);
+        EXTENSION_TYPES.forEach(typeName -> {
+            requireJacksonFree(ROOT + ".extension." + typeName, null, violations);
+        });
         ROLE_TYPES.forEach((typeName, packageName) -> requireJacksonFree(
             packageName + "." + typeName,
             ROOT + "." + roleName(typeName) + "." + typeName,
